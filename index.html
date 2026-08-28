@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Accountability App</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>My Daily Tasks 🎯</h1>
+
+        <p>Complete your work. Stay accountable.</p>
+
+        <div class="add-task">
+
+            <input
+                type="text"
+                id="taskInput"
+                placeholder="Enter today's task"
+            >
+
+            <button id="addButton">
+                Add Task
+            </button>
+
+        </div>
+
+        <div id="taskList"></div>
+
+        <h2 id="progress">
+            Progress: 0%
+        </h2>
+
+    </div>
+
+
+    <!-- Firebase -->
+
+    <script type="module">
+
+        import { initializeApp }
+        from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            onSnapshot,
+            doc,
+            updateDoc,
+            deleteDoc,
+            serverTimestamp
+        }
+        from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+        // Firebase configuration
+
+        const firebaseConfig = {
+
+            apiKey: "AIzaSyCoM00m6KgrWHOn_UB9_Qf9MAowGtovZSA",
+
+            authDomain: "sister-accountability-app.firebaseapp.com",
+
+            projectId: "sister-accountability-app",
+
+            storageBucket: "sister-accountability-app.firebasestorage.app",
+
+            messagingSenderId: "311794164387",
+
+            appId: "1:311794164387:web:ccb0dbc236fe8111d51516",
+
+            measurementId: "G-S95T59VWRJ"
+
+        };
+
+
+        // Initialize Firebase
+
+        const app = initializeApp(firebaseConfig);
+
+        const db = getFirestore(app);
+
+        console.log("Firebase connected!");
+
+
+        // Get HTML elements
+
+        const taskInput = document.getElementById("taskInput");
+
+        const addButton = document.getElementById("addButton");
+
+        const taskList = document.getElementById("taskList");
+
+        const progress = document.getElementById("progress");
+
+
+        // Add task
+
+        addButton.addEventListener("click", async () => {
+
+            const taskText = taskInput.value.trim();
+
+            if (taskText === "") {
+
+                alert("Please enter a task");
+
+                return;
+
+            }
+
+
+            try {
+
+                await addDoc(collection(db, "tasks"), {
+
+                    text: taskText,
+
+                    completed: false,
+
+                    createdAt: serverTimestamp()
+
+                });
+
+                taskInput.value = "";
+
+                console.log("Task added!");
+
+            }
+
+            catch (error) {
+
+                console.error("Error adding task:", error);
+
+                alert("Task add avvaledu. Console check cheyyi.");
+
+            }
+
+        });
+
+
+        // Display tasks in real time
+
+        onSnapshot(collection(db, "tasks"), (snapshot) => {
+
+            taskList.innerHTML = "";
+
+            let totalTasks = 0;
+
+            let completedTasks = 0;
+
+
+            snapshot.forEach((taskDoc) => {
+
+                const task = taskDoc.data();
+
+                totalTasks++;
+
+
+                if (task.completed) {
+
+                    completedTasks++;
+
+                }
+
+
+                const taskDiv = document.createElement("div");
+
+                taskDiv.className = "task";
+
+
+                taskDiv.innerHTML = `
+
+                    <span style="
+
+                        text-decoration: ${task.completed ? "line-through" : "none"};
+
+                    ">
+
+                        ${task.text}
+
+                    </span>
+
+                    <button class="completeButton">
+
+                        ${task.completed ? "Undo" : "Complete"}
+
+                    </button>
+
+                    <button class="deleteButton">
+
+                        Delete
+
+                    </button>
+
+                `;
+
+
+                // Complete / Undo
+
+                taskDiv.querySelector(".completeButton")
+
+                    .addEventListener("click", async () => {
+
+                        await updateDoc(
+
+                            doc(db, "tasks", taskDoc.id),
+
+                            {
+
+                                completed: !task.completed
+
+                            }
+
+                        );
+
+                    });
+
+
+                // Delete
+
+                taskDiv.querySelector(".deleteButton")
+
+                    .addEventListener("click", async () => {
+
+                        await deleteDoc(
+
+                            doc(db, "tasks", taskDoc.id)
+
+                        );
+
+                    });
+
+
+                taskList.appendChild(taskDiv);
+
+            });
+
+
+            // Calculate progress
+
+            let percentage = 0;
+
+
+            if (totalTasks > 0) {
+
+                percentage = Math.round(
+
+                    (completedTasks / totalTasks) * 100
+
+                );
+
+            }
+
+
+            progress.textContent =
+
+                `Progress: ${percentage}%`;
+
+        });
+
+
+    </script>
+
+</body>
+</html>

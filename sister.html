@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sister Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f1f3f5;
+            border-radius: 10px;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .progress {
+            text-align: center;
+            font-size: 24px;
+            margin: 25px 0;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>My Brother's Accountability 👀</h1>
+
+        <div class="progress" id="progress">
+            Progress: 0%
+        </div>
+
+        <div id="taskList">
+            Loading tasks...
+        </div>
+
+    </div>
+
+
+    <script type="module">
+
+        import { initializeApp }
+        from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+        import {
+            getFirestore,
+            collection,
+            onSnapshot
+        }
+        from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+        // Firebase configuration
+
+        const firebaseConfig = {
+
+            apiKey: "AIzaSyCoM00m6KgrWHOn_UB9_Qf9MAowGtovZSA",
+
+            authDomain: "sister-accountability-app.firebaseapp.com",
+
+            projectId: "sister-accountability-app",
+
+            storageBucket: "sister-accountability-app.firebasestorage.app",
+
+            messagingSenderId: "311794164387",
+
+            appId: "1:311794164387:web:ccb0dbc236fe8111d51516",
+
+            measurementId: "G-S95T59VWRJ"
+
+        };
+
+
+        // Firebase
+
+        const app = initializeApp(firebaseConfig);
+
+        const db = getFirestore(app);
+
+
+        const taskList = document.getElementById("taskList");
+
+        const progress = document.getElementById("progress");
+
+
+        // Listen for tasks in real time
+
+        onSnapshot(collection(db, "tasks"), (snapshot) => {
+
+            taskList.innerHTML = "";
+
+            let total = 0;
+
+            let completed = 0;
+
+
+            snapshot.forEach((taskDoc) => {
+
+                const task = taskDoc.data();
+
+                total++;
+
+
+                if (task.completed) {
+                    completed++;
+                }
+
+
+                const taskDiv = document.createElement("div");
+
+                taskDiv.className = "task";
+
+
+                taskDiv.innerHTML = `
+
+                    <span class="${task.completed ? "completed" : ""}">
+                        ${task.text}
+                    </span>
+
+                    <span class="status">
+                        ${task.completed ? "✅ Completed" : "❌ Not completed"}
+                    </span>
+
+                `;
+
+
+                taskList.appendChild(taskDiv);
+
+            });
+
+
+            let percentage = 0;
+
+
+            if (total > 0) {
+
+                percentage = Math.round(
+                    (completed / total) * 100
+                );
+
+            }
+
+
+            progress.textContent =
+                `Progress: ${percentage}%`;
+
+        });
+
+    </script>
+
+</body>
+
+</html>
