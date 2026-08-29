@@ -5,182 +5,1453 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sister Dashboard</title>
+    <title>My Lovely Sister ❤️</title>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
+
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 40px;
+            padding: 0;
         }
 
-        .container {
-            max-width: 700px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                linear-gradient(135deg, #eef6ff, #f8f1ff, #fff5f8);
+            min-height: 100vh;
+            color: #202431;
         }
 
-        h1 {
-            text-align: center;
-        }
+        /* LOGIN */
 
-        .task {
+        .login-page {
+            min-height: 100vh;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 430px;
+            background: rgba(255,255,255,0.94);
+            padding: 45px 35px;
+            border-radius: 28px;
+            text-align: center;
+            box-shadow: 0 25px 70px rgba(50,70,120,0.12);
+        }
+
+        .heart-logo {
+            width: 75px;
+            height: 75px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef5ff;
+            font-size: 36px;
+        }
+
+        .login-card h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7d8290;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .input {
+            width: 100%;
             padding: 15px;
-            margin: 10px 0;
-            background: #f1f3f5;
-            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e5ef;
+            border-radius: 13px;
+            background: #fafcff;
+            font-size: 15px;
+            outline: none;
         }
 
-        .completed {
-            text-decoration: line-through;
-            opacity: 0.6;
+        .input:focus {
+            border-color: #7ca8e8;
         }
 
-        .status {
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 13px;
+            background: #477fc9;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #loginMessage {
+            color: #e05260;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        /* DASHBOARD */
+
+        #dashboard {
+            display: none;
+        }
+
+        .topbar {
+            height: 75px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e7eaf2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+        }
+
+        .brand {
+            font-size: 19px;
             font-weight: bold;
         }
 
-        .progress {
-            text-align: center;
-            font-size: 24px;
-            margin: 25px 0;
+        .logout {
+            border: none;
+            padding: 10px 17px;
+            border-radius: 10px;
+            background: #f0f3f8;
+            cursor: pointer;
+            font-weight: bold;
         }
+
+        .container {
+            width: 92%;
+            max-width: 950px;
+            margin: auto;
+            padding: 55px 0 60px;
+        }
+
+        /* HERO */
+
+        .hero {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .hero .flower {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
+
+        .hero h1 span {
+            color: #477fc9;
+        }
+
+        .hero p {
+            color: #747a89;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        /* PROUD */
+
+        .proud-card {
+            background: linear-gradient(135deg, #ffffff, #f4f8ff);
+            border: 1px solid #e1e8f4;
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(50,80,130,0.07);
+        }
+
+        .proud-card h2 {
+            font-size: 27px;
+            margin-bottom: 10px;
+        }
+
+        .proud-card p {
+            color: #737987;
+            line-height: 1.7;
+        }
+
+        /* PROGRESS */
+
+        .progress-card {
+            background: white;
+            border-radius: 25px;
+            padding: 32px;
+            border: 1px solid #e6eaf1;
+            margin-bottom: 35px;
+            box-shadow: 0 12px 35px rgba(40,50,80,0.05);
+        }
+
+        .progress-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .progress-title small {
+            color: #8a90a0;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+        }
+
+        .progress-title h2 {
+            margin-top: 8px;
+            font-size: 27px;
+        }
+
+        .progress-circle {
+            width: 145px;
+            height: 145px;
+            border-radius: 50%;
+            margin: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background:
+                conic-gradient(
+                    #5b8fd4 0deg,
+                    #5b8fd4 0deg,
+                    #e9edf4 0deg,
+                    #e9edf4 360deg
+                );
+            position: relative;
+        }
+
+        .progress-circle::after {
+            content: "";
+            width: 115px;
+            height: 115px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .progress-circle span {
+            position: relative;
+            z-index: 2;
+            font-size: 30px;
+            font-weight: bold;
+            color: #477fc9;
+        }
+
+        .progress-message {
+            text-align: center;
+            margin-top: 20px;
+            color: #777e8d;
+        }
+
+        /* CELEBRATION */
+
+        .celebration {
+            display: none;
+            text-align: center;
+            background: white;
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 25px;
+            border: 1px solid #e5e8ef;
+        }
+
+        .celebration .emoji {
+            font-size: 45px;
+        }
+
+        .celebration h2 {
+            font-size: 30px;
+            margin: 10px 0;
+        }
+
+        .celebration p {
+            color: #777e8d;
+        }
+
+        /* TASKS */
+
+        .tasks-section {
+            margin-bottom: 35px;
+        }
+
+        .section-heading {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .section-heading h2 {
+            font-size: 27px;
+        }
+
+        .section-heading p {
+            color: #858b99;
+            margin-top: 7px;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task {
+            background: rgba(255,255,255,0.95);
+            border: 1px solid #e4e8ef;
+            padding: 19px 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 7px 20px rgba(30,40,70,0.04);
+        }
+
+        .task-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .task-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f0f5fc;
+        }
+
+        .task-name {
+            font-weight: bold;
+        }
+
+        .completed .task-name {
+            text-decoration: line-through;
+            color: #9297a2;
+        }
+
+        .status {
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .done {
+            background: #edf7f0;
+            color: #4c9a63;
+        }
+
+        .pending {
+            background: #fff5e8;
+            color: #c38335;
+        }
+
+        /* HISTORY */
+
+        .history-section {
+            margin-top: 45px;
+            margin-bottom: 35px;
+        }
+
+        .history-heading {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .history-heading h2 {
+            font-size: 27px;
+        }
+
+        .history-heading p {
+            color: #858b99;
+            margin-top: 7px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-card {
+            background: white;
+            border: 1px solid #e4e8ef;
+            border-radius: 18px;
+            padding: 18px 20px;
+            box-shadow: 0 7px 20px rgba(30,40,70,0.04);
+        }
+
+        .history-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .history-date {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .history-result {
+            color: #777e8d;
+            font-size: 13px;
+        }
+
+        .history-bar {
+            height: 10px;
+            background: #edf0f5;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .history-fill {
+            height: 100%;
+            background: #5b8fd4;
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+
+        .history-bottom {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            color: #777e8d;
+            font-size: 13px;
+        }
+
+        .history-empty {
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            text-align: center;
+            color: #777e8d;
+        }
+
+        /* MESSAGE */
+
+        .message-card {
+            background: linear-gradient(135deg, #f7faff, #fff5fa);
+            border: 1px solid #e8e6ee;
+            border-radius: 25px;
+            padding: 35px 30px;
+            text-align: center;
+            margin-top: 35px;
+        }
+
+        .message-card .icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .message-card h2 {
+            margin-bottom: 15px;
+        }
+
+        .message-card p {
+            max-width: 650px;
+            margin: auto;
+            color: #737987;
+            line-height: 1.9;
+            font-style: italic;
+        }
+
+        .signature {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #477fc9;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 650px) {
+
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .container {
+                width: 92%;
+                padding-top: 40px;
+            }
+
+            .hero h1 {
+                font-size: 31px;
+            }
+
+            .hero p {
+                font-size: 14px;
+            }
+
+            .progress-card {
+                padding: 25px 15px;
+            }
+
+            .task {
+                padding: 15px;
+            }
+
+            .task-left {
+                gap: 10px;
+            }
+
+            .task-name {
+                font-size: 14px;
+            }
+
+            .status {
+                font-size: 10px;
+                padding: 6px 8px;
+            }
+
+            .message-card {
+                padding: 28px 20px;
+            }
+        }
+
     </style>
 
 </head>
 
+
 <body>
 
-    <div class="container">
 
-        <h1>My Brother's Accountability 👀</h1>
+    <!-- LOGIN PAGE -->
 
-        <div class="progress" id="progress">
-            Progress: 0%
+    <section id="loginPage" class="login-page">
+
+        <div class="login-card">
+
+            <div class="heart-logo">
+                🌷
+            </div>
+
+            <h1>
+                My Lovely Sister ❤️
+            </h1>
+
+            <p class="subtitle">
+                A little place to see my progress
+                and keep me motivated.
+            </p>
+
+            <input
+                class="input"
+                type="email"
+                id="email"
+                placeholder="Your email"
+            >
+
+            <input
+                class="input"
+                type="password"
+                id="password"
+                placeholder="Your password"
+            >
+
+            <button
+                class="login-button"
+                id="loginButton"
+            >
+                Enter With Love ❤️
+            </button>
+
+            <p id="loginMessage"></p>
+
         </div>
 
-        <div id="taskList">
-            Loading tasks...
-        </div>
+    </section>
 
-    </div>
 
+    <!-- DASHBOARD -->
+
+    <section id="dashboard">
+
+        <header class="topbar">
+
+            <div class="brand">
+                🌷 My Lovely Sister
+            </div>
+
+            <button
+                class="logout"
+                id="logoutButton"
+            >
+                Logout
+            </button>
+
+        </header>
+
+
+        <main class="container">
+
+
+            <!-- HERO -->
+
+            <section class="hero">
+
+                <div class="flower">
+                    🌷
+                </div>
+
+                <h1>
+                    My Lovely Sister <span>❤️</span>
+                </h1>
+
+                <p>
+                    No matter how far you are,
+                    your support is always with me.
+                </p>
+
+            </section>
+
+
+            <!-- PROUD MESSAGE -->
+
+            <section class="proud-card">
+
+                <h2>
+                    I'm Proud of You, Varma 🫶
+                </h2>
+
+                <p>
+                    You don't have to be perfect.
+                    Just keep showing up,
+                    one day at a time.
+                </p>
+
+            </section>
+
+
+            <!-- TODAY'S PROGRESS -->
+
+            <section class="progress-card">
+
+                <div class="progress-title">
+
+                    <small>
+                        TODAY'S PROGRESS
+                    </small>
+
+                    <h2 id="progress">
+                        Progress: 0%
+                    </h2>
+
+                </div>
+
+
+                <div
+                    class="progress-circle"
+                    id="progressCircle"
+                >
+
+                    <span id="progressNumber">
+                        0%
+                    </span>
+
+                </div>
+
+
+                <p
+                    class="progress-message"
+                    id="progressMessage"
+                >
+                    Let's complete the first task! 💪
+                </p>
+
+            </section>
+
+
+            <!-- CELEBRATION -->
+
+            <section
+                class="celebration"
+                id="celebration"
+            >
+
+                <div class="emoji">
+                    🎉
+                </div>
+
+                <h2>
+                    You Did It! ❤️
+                </h2>
+
+                <p>
+                    I'm so proud of you.
+                    You kept your promise to yourself today.
+                </p>
+
+            </section>
+
+
+            <!-- TODAY'S TASKS -->
+
+            <section class="tasks-section">
+
+                <div class="section-heading">
+
+                    <h2>
+                        📋 Today's Work
+                    </h2>
+
+                    <p>
+                        Here is how the day is going.
+                    </p>
+
+                </div>
+
+
+                <div
+                    id="taskList"
+                    class="task-list"
+                >
+                    Loading tasks...
+                </div>
+
+            </section>
+
+
+            <!-- DAILY HISTORY -->
+
+            <section class="history-section">
+
+                <div class="history-heading">
+
+                    <h2>
+                        📅 Daily History
+                    </h2>
+
+                    <p>
+                        A little look at your consistency ❤️
+                    </p>
+
+                </div>
+
+
+                <div
+                    id="historyList"
+                    class="history-list"
+                >
+                    Loading history...
+                </div>
+
+            </section>
+
+
+            <!-- MESSAGE -->
+
+            <section class="message-card">
+
+                <div class="icon">
+                    💌
+                </div>
+
+                <h2>
+                    A Little Message From Your Brother
+                </h2>
+
+                <p>
+                    "No matter how far I am,
+                    I'm always cheering for you.
+                    Keep going. I believe in you,
+                    even on the days when you don't
+                    believe in yourself."
+                </p>
+
+                <div class="signature">
+                    With Love, Your Brother ❤️
+                </div>
+
+            </section>
+
+
+        </main>
+
+    </section>
+
+
+    <!-- FIREBASE -->
 
     <script type="module">
 
-        import { initializeApp }
-        from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import {
+            initializeApp
+        }
+        from
+        "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            signOut
+        }
+        from
+        "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
 
         import {
             getFirestore,
             collection,
-            onSnapshot
+            onSnapshot,
+            query,
+            where
         }
-        from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        from
+        "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-
-        // Firebase configuration
 
         const firebaseConfig = {
 
-            apiKey: "AIzaSyCoM00m6KgrWHOn_UB9_Qf9MAowGtovZSA",
+            apiKey:
+                "AIzaSyCoM00m6KgrWHOn_UB9_Qf9MAowGtovZSA",
 
-            authDomain: "sister-accountability-app.firebaseapp.com",
+            authDomain:
+                "sister-accountability-app.firebaseapp.com",
 
-            projectId: "sister-accountability-app",
+            projectId:
+                "sister-accountability-app",
 
-            storageBucket: "sister-accountability-app.firebasestorage.app",
+            storageBucket:
+                "sister-accountability-app.firebasestorage.app",
 
-            messagingSenderId: "311794164387",
+            messagingSenderId:
+                "311794164387",
 
-            appId: "1:311794164387:web:ccb0dbc236fe8111d51516",
+            appId:
+                "1:311794164387:web:ccb0dbc236fe8111d51516",
 
-            measurementId: "G-S95T59VWRJ"
+            measurementId:
+                "G-S95T59VWRJ"
 
         };
 
 
-        // Firebase
-
-        const app = initializeApp(firebaseConfig);
-
-        const db = getFirestore(app);
+        const app =
+            initializeApp(firebaseConfig);
 
 
-        const taskList = document.getElementById("taskList");
-
-        const progress = document.getElementById("progress");
-
-
-        // Listen for tasks in real time
-
-        onSnapshot(collection(db, "tasks"), (snapshot) => {
-
-            taskList.innerHTML = "";
-
-            let total = 0;
-
-            let completed = 0;
+        const auth =
+            getAuth(app);
 
 
-            snapshot.forEach((taskDoc) => {
-
-                const task = taskDoc.data();
-
-                total++;
+        const db =
+            getFirestore(app);
 
 
-                if (task.completed) {
-                    completed++;
+        /* ELEMENTS */
+
+        const loginPage =
+            document.getElementById("loginPage");
+
+
+        const dashboard =
+            document.getElementById("dashboard");
+
+
+        const email =
+            document.getElementById("email");
+
+
+        const password =
+            document.getElementById("password");
+
+
+        const loginButton =
+            document.getElementById("loginButton");
+
+
+        const loginMessage =
+            document.getElementById("loginMessage");
+
+
+        const logoutButton =
+            document.getElementById("logoutButton");
+
+
+        const taskList =
+            document.getElementById("taskList");
+
+
+        const progress =
+            document.getElementById("progress");
+
+
+        const progressNumber =
+            document.getElementById("progressNumber");
+
+
+        const progressMessage =
+            document.getElementById("progressMessage");
+
+
+        const progressCircle =
+            document.getElementById("progressCircle");
+
+
+        const celebration =
+            document.getElementById("celebration");
+
+
+        const historyList =
+            document.getElementById("historyList");
+
+
+        /* TODAY */
+
+        function getTodayDate() {
+
+            return new Date()
+                .toISOString()
+                .split("T")[0];
+
+        }
+
+
+        /* LOGIN */
+
+        loginButton.addEventListener(
+            "click",
+            async () => {
+
+                const userEmail =
+                    email.value.trim();
+
+
+                const userPassword =
+                    password.value;
+
+
+                if (
+                    !userEmail ||
+                    !userPassword
+                ) {
+
+                    loginMessage.textContent =
+                        "Please enter your email and password.";
+
+                    return;
+
                 }
 
 
-                const taskDiv = document.createElement("div");
+                try {
 
-                taskDiv.className = "task";
+                    await signInWithEmailAndPassword(
+                        auth,
+                        userEmail,
+                        userPassword
+                    );
 
 
-                taskDiv.innerHTML = `
+                    loginMessage.textContent =
+                        "";
 
-                    <span class="${task.completed ? "completed" : ""}">
-                        ${task.text}
-                    </span>
+                }
 
-                    <span class="status">
-                        ${task.completed ? "✅ Completed" : "❌ Not completed"}
-                    </span>
+                catch (error) {
 
+                    console.error(error);
+
+                    loginMessage.textContent =
+                        "Login failed. Please check your details.";
+
+                }
+
+            }
+        );
+
+
+        /* LOGOUT */
+
+        logoutButton.addEventListener(
+            "click",
+            async () => {
+
+                await signOut(auth);
+
+            }
+        );
+
+
+        /* AUTH */
+
+        onAuthStateChanged(
+            auth,
+            (user) => {
+
+                if (user) {
+
+                    loginPage.style.display =
+                        "none";
+
+                    dashboard.style.display =
+                        "block";
+
+                    loadTasks(user.uid);
+
+                }
+
+                else {
+
+                    loginPage.style.display =
+                        "flex";
+
+                    dashboard.style.display =
+                        "none";
+
+                }
+
+            }
+        );
+
+
+        /* LOAD ALL TASKS */
+
+        function loadTasks(userId) {
+
+            const tasksQuery =
+                query(
+                    collection(
+                        db,
+                        "tasks"
+                    ),
+
+                    where(
+                        "userId",
+                        "==",
+                        userId
+                    )
+                );
+
+
+            onSnapshot(
+                tasksQuery,
+                (snapshot) => {
+
+                    const today =
+                        getTodayDate();
+
+
+                    let total =
+                        0;
+
+
+                    let completed =
+                        0;
+
+
+                    const history = {};
+
+
+                    taskList.innerHTML =
+                        "";
+
+
+                    snapshot.forEach(
+                        (taskDoc) => {
+
+                            const task =
+                                taskDoc.data();
+
+
+                            /* HISTORY */
+
+                            if (task.date) {
+
+                                if (!history[task.date]) {
+
+                                    history[task.date] = {
+
+                                        total: 0,
+
+                                        completed: 0
+
+                                    };
+
+                                }
+
+
+                                history[task.date].total++;
+
+
+                                if (task.completed) {
+
+                                    history[task.date].completed++;
+
+                                }
+
+                            }
+
+
+                            /* TODAY */
+
+                            if (
+                                task.date !== today
+                            ) {
+
+                                return;
+
+                            }
+
+
+                            total++;
+
+
+                            if (task.completed) {
+
+                                completed++;
+
+                            }
+
+
+                            const taskDiv =
+                                document.createElement(
+                                    "div"
+                                );
+
+
+                            taskDiv.className =
+                                "task";
+
+
+                            if (task.completed) {
+
+                                taskDiv.classList.add(
+                                    "completed"
+                                );
+
+                            }
+
+
+                            const left =
+                                document.createElement(
+                                    "div"
+                                );
+
+
+                            left.className =
+                                "task-left";
+
+
+                            const icon =
+                                document.createElement(
+                                    "div"
+                                );
+
+
+                            icon.className =
+                                "task-icon";
+
+
+                            icon.textContent =
+                                task.completed
+                                    ? "✓"
+                                    : "⏳";
+
+
+                            const name =
+                                document.createElement(
+                                    "span"
+                                );
+
+
+                            name.className =
+                                "task-name";
+
+
+                            name.textContent =
+                                task.text;
+
+
+                            left.appendChild(
+                                icon
+                            );
+
+
+                            left.appendChild(
+                                name
+                            );
+
+
+                            const status =
+                                document.createElement(
+                                    "span"
+                                );
+
+
+                            status.className =
+                                "status";
+
+
+                            if (task.completed) {
+
+                                status.classList.add(
+                                    "done"
+                                );
+
+                                status.textContent =
+                                    "COMPLETED";
+
+                            }
+
+                            else {
+
+                                status.classList.add(
+                                    "pending"
+                                );
+
+                                status.textContent =
+                                    "PENDING";
+
+                            }
+
+
+                            taskDiv.appendChild(
+                                left
+                            );
+
+
+                            taskDiv.appendChild(
+                                status
+                            );
+
+
+                            taskList.appendChild(
+                                taskDiv
+                            );
+
+                        }
+                    );
+
+
+                    /* PROGRESS */
+
+                    let percentage =
+                        0;
+
+
+                    if (total > 0) {
+
+                        percentage =
+                            Math.round(
+                                (
+                                    completed /
+                                    total
+                                ) * 100
+                            );
+
+                    }
+
+
+                    progress.textContent =
+                        `Progress: ${percentage}%`;
+
+
+                    progressNumber.textContent =
+                        `${percentage}%`;
+
+
+                    const degree =
+                        percentage * 3.6;
+
+
+                    progressCircle.style.background =
+                        `conic-gradient(
+                            #5b8fd4 0deg,
+                            #5b8fd4 ${degree}deg,
+                            #e9edf4 ${degree}deg,
+                            #e9edf4 360deg
+                        )`;
+
+
+                    if (total === 0) {
+
+                        progressMessage.textContent =
+                            "No tasks for today yet. ❤️";
+
+                        celebration.style.display =
+                            "none";
+
+                    }
+
+                    else if (
+                        percentage === 100
+                    ) {
+
+                        progressMessage.textContent =
+                            "You completed everything today! 🎉";
+
+                        celebration.style.display =
+                            "block";
+
+                    }
+
+                    else if (
+                        percentage >= 50
+                    ) {
+
+                        progressMessage.textContent =
+                            "You're doing great! Keep going! 💪";
+
+                        celebration.style.display =
+                            "none";
+
+                    }
+
+                    else {
+
+                        progressMessage.textContent =
+                            "One task at a time. You've got this! ❤️";
+
+                        celebration.style.display =
+                            "none";
+
+                    }
+
+
+                    /* HISTORY */
+
+                    displayHistory(
+                        history
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* DISPLAY HISTORY */
+
+        function displayHistory(history) {
+
+            historyList.innerHTML =
+                "";
+
+
+            const dates =
+                Object.keys(history)
+                    .sort()
+                    .reverse();
+
+
+            if (dates.length === 0) {
+
+                historyList.innerHTML = `
+                    <div class="history-empty">
+                        No history yet. Keep going! 💪
+                    </div>
                 `;
 
-
-                taskList.appendChild(taskDiv);
-
-            });
-
-
-            let percentage = 0;
-
-
-            if (total > 0) {
-
-                percentage = Math.round(
-                    (completed / total) * 100
-                );
+                return;
 
             }
 
 
-            progress.textContent =
-                `Progress: ${percentage}%`;
+            dates.forEach(
+                (date) => {
 
-        });
+                    const data =
+                        history[date];
+
+
+                    const percentage =
+                        Math.round(
+                            (
+                                data.completed /
+                                data.total
+                            ) * 100
+                        );
+
+
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    card.className =
+                        "history-card";
+
+
+                    const formattedDate =
+                        new Date(
+                            date + "T00:00:00"
+                        ).toLocaleDateString(
+                            "en-IN",
+                            {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric"
+                            }
+                        );
+
+
+                    card.innerHTML = `
+
+                        <div class="history-top">
+
+                            <span class="history-date">
+                                📅 ${formattedDate}
+                            </span>
+
+                            <span class="history-result">
+                                ${data.completed} /
+                                ${data.total} completed
+                            </span>
+
+                        </div>
+
+
+                        <div class="history-bar">
+
+                            <div
+                                class="history-fill"
+                                style="width: ${percentage}%"
+                            ></div>
+
+                        </div>
+
+
+                        <div class="history-bottom">
+
+                            <span>
+                                Daily Progress
+                            </span>
+
+                            <strong>
+                                ${percentage}%
+                            </strong>
+
+                        </div>
+
+                    `;
+
+
+                    historyList.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+        }
 
     </script>
 

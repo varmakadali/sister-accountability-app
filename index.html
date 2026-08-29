@@ -1,272 +1,1796 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My Accountability App</title>
+    <title>IRON MAN | Accountability</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div class="container">
+<!-- ================= LOGIN ================= -->
 
-        <h1>My Daily Tasks 🎯</h1>
+<section id="loginBox" class="login-page">
 
-        <p>Complete your work. Stay accountable.</p>
+    <div class="arc-reactor-bg"></div>
 
-        <div class="add-task">
+    <div class="login-card">
+
+        <div class="iron-logo">
+            ⚡
+        </div>
+
+        <div class="system-label">
+            PERSONAL ACCOUNTABILITY SYSTEM
+        </div>
+
+        <h1>
+            IRON MAN
+            <span>MODE</span>
+        </h1>
+
+        <p class="subtitle">
+            Build discipline.<br>
+            Complete your mission.
+        </p>
+
+        <div class="input-group">
+
+            <label>EMAIL</label>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+            >
+
+        </div>
+
+        <div class="input-group">
+
+            <label>PASSWORD</label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+            >
+
+        </div>
+
+        <button
+            id="loginButton"
+            class="primary-button"
+        >
+            INITIALIZE SYSTEM →
+        </button>
+
+        <p
+            id="loginMessage"
+            class="error-message"
+        ></p>
+
+    </div>
+
+</section>
+
+
+<!-- ================= MAIN APP ================= -->
+
+<section
+    id="app"
+    class="app-page"
+>
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="mini-reactor">
+                ⚡
+            </div>
+
+            <div>
+
+                <strong>
+                    IRON MAN
+                </strong>
+
+                <span>
+                    ACCOUNTABILITY SYSTEM
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="system-status">
+
+            <span class="status-dot"></span>
+
+            SYSTEM ONLINE
+
+        </div>
+
+        <button
+            id="logoutButton"
+            class="logout-button"
+        >
+            LOGOUT
+        </button>
+
+    </header>
+
+
+    <main class="dashboard">
+
+
+        <!-- ================= HERO ================= -->
+
+        <section class="hero-section">
+
+            <div class="hero-text">
+
+                <p class="system-label">
+                    MARK 01 • DAILY PROTOCOL
+                </p>
+
+                <h1>
+                    GOOD MORNING,
+                    <span>WARRIOR.</span>
+                </h1>
+
+                <p class="hero-description">
+                    Your mission is simple.
+                    Show up. Execute. Improve.
+                </p>
+
+            </div>
+
+            <div class="date-card">
+
+                <span class="date-icon">
+                    ◈
+                </span>
+
+                <strong id="todayDate">
+                    TODAY
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= STREAK ================= -->
+
+        <section class="streak-card">
+
+            <div class="streak-icon">
+                🔥
+            </div>
+
+            <div class="streak-content">
+
+                <p class="system-label">
+                    CURRENT STREAK
+                </p>
+
+                <h2>
+                    <span id="streakNumber">
+                        0
+                    </span>
+
+                    <small>
+                        DAYS
+                    </small>
+                </h2>
+
+                <p id="streakMessage">
+                    Complete every mission today to start your streak.
+                </p>
+
+            </div>
+
+            <div class="streak-badge">
+                STAY<br>
+                SHARP
+            </div>
+
+        </section>
+
+
+        <!-- ================= PROGRESS ================= -->
+
+        <section class="progress-card">
+
+            <div class="progress-info">
+
+                <p class="system-label">
+                    TODAY'S SYSTEM STATUS
+                </p>
+
+                <h2 id="progress">
+                    PROGRESS: 0%
+                </h2>
+
+                <p id="progressText">
+                    Initialize your first mission.
+                </p>
+
+                <div class="hud-line"></div>
+
+                <div class="mission-count">
+
+                    <span>
+                        COMPLETED
+                    </span>
+
+                    <strong id="completedCount">
+                        0
+                    </strong>
+
+                    <span>
+                        /
+                    </span>
+
+                    <strong id="totalCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="progress-circle">
+
+                <div class="circle-inner">
+
+                    <span id="progressNumber">
+                        0%
+                    </span>
+
+                    <small>
+                        POWER
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= TODAY MISSIONS ================= -->
+
+        <section class="section-title">
+
+            <div>
+
+                <p class="system-label">
+                    PRIMARY DIRECTIVE
+                </p>
+
+                <h2>
+                    ⚡ TODAY'S MISSIONS
+                </h2>
+
+                <p>
+                    One mission at a time. No excuses.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ADD TASK -->
+
+        <div class="add-task-card">
+
+            <div class="input-icon">
+                +
+            </div>
 
             <input
                 type="text"
                 id="taskInput"
-                placeholder="Enter today's task"
+                placeholder="Enter your next mission..."
             >
 
-            <button id="addButton">
-                Add Task
+            <button
+                id="addButton"
+                class="add-button"
+            >
+                ADD MISSION
             </button>
 
         </div>
 
-        <div id="taskList"></div>
 
-        <h2 id="progress">
-            Progress: 0%
-        </h2>
+        <!-- TASKS -->
 
-    </div>
+        <div
+            id="taskList"
+            class="task-list"
+        ></div>
 
 
-    <!-- Firebase -->
+        <!-- ================= TOMORROW ================= -->
 
-    <script type="module">
+        <section class="tomorrow-section">
 
-        import { initializeApp }
-        from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+            <div class="section-title">
 
-        import {
-            getFirestore,
-            collection,
-            addDoc,
-            onSnapshot,
-            doc,
-            updateDoc,
-            deleteDoc,
-            serverTimestamp
+                <div>
+
+                    <p class="system-label">
+                        NEXT PROTOCOL
+                    </p>
+
+                    <h2>
+                        🌙 TOMORROW'S MISSIONS
+                    </h2>
+
+                    <p>
+                        Prepare tonight. Execute tomorrow.
+                    </p>
+
+                </div>
+
+                <div
+                    id="tomorrowDate"
+                    class="tomorrow-date"
+                >
+                    TOMORROW
+                </div>
+
+            </div>
+
+
+            <div class="tomorrow-add">
+
+                <input
+                    type="text"
+                    id="tomorrowInput"
+                    placeholder="Plan tomorrow's mission..."
+                >
+
+                <button
+                    id="tomorrowAddButton"
+                >
+                    + ADD
+                </button>
+
+            </div>
+
+
+            <div
+                id="tomorrowList"
+                class="task-list"
+            ></div>
+
+        </section>
+
+
+        <!-- ================= ACHIEVEMENTS ================= -->
+
+        <section class="achievements-section">
+
+            <div class="section-title">
+
+                <div>
+
+                    <p class="system-label">
+                        ARMOR DATABASE
+                    </p>
+
+                    <h2>
+                        🏆 ACHIEVEMENTS
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="achievement-grid">
+
+                <div
+                    id="achievement1"
+                    class="achievement locked"
+                >
+
+                    <span>🔥</span>
+
+                    <strong>
+                        FIRST MISSION
+                    </strong>
+
+                    <small>
+                        Complete your first day
+                    </small>
+
+                </div>
+
+
+                <div
+                    id="achievement3"
+                    class="achievement locked"
+                >
+
+                    <span>⚡</span>
+
+                    <strong>
+                        3 DAY STREAK
+                    </strong>
+
+                    <small>
+                        Stay consistent
+                    </small>
+
+                </div>
+
+
+                <div
+                    id="achievement7"
+                    class="achievement locked"
+                >
+
+                    <span>🛡️</span>
+
+                    <strong>
+                        7 DAY STREAK
+                    </strong>
+
+                    <small>
+                        One full week
+                    </small>
+
+                </div>
+
+
+                <div
+                    id="achievement30"
+                    class="achievement locked"
+                >
+
+                    <span>👑</span>
+
+                    <strong>
+                        30 DAY STREAK
+                    </strong>
+
+                    <small>
+                        Master your discipline
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= HISTORY ================= -->
+
+        <section class="history-section">
+
+            <div class="section-title">
+
+                <div>
+
+                    <p class="system-label">
+                        MISSION LOG
+                    </p>
+
+                    <h2>
+                        📅 DAILY HISTORY
+                    </h2>
+
+                    <p>
+                        Your past missions never disappear.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="historyList"
+                class="history-list"
+            ></div>
+
+        </section>
+
+
+        <!-- ================= MOTIVATION ================= -->
+
+        <section class="motivation">
+
+            <div class="reactor-message">
+                ⚡
+            </div>
+
+            <div>
+
+                <strong>
+                    DISCIPLINE IS YOUR ARMOR.
+                </strong>
+
+                <p>
+                    Motivation comes and goes.
+                    Discipline keeps the system running.
+                </p>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</section>
+
+
+<!-- ================= FIREBASE ================= -->
+
+<script type="module">
+
+import { initializeApp }
+
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+
+import {
+
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+
+}
+
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+
+import {
+
+    getFirestore,
+    collection,
+    addDoc,
+    onSnapshot,
+    doc,
+    updateDoc,
+    deleteDoc,
+    serverTimestamp,
+    query,
+    where
+
+}
+
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyCoM00m6KgrWHOn_UB9_Qf9MAowGtovZSA",
+
+    authDomain:
+        "sister-accountability-app.firebaseapp.com",
+
+    projectId:
+        "sister-accountability-app",
+
+    storageBucket:
+        "sister-accountability-app.firebasestorage.app",
+
+    messagingSenderId:
+        "311794164387",
+
+    appId:
+        "1:311794164387:web:ccb0dbc236fe8111d51516",
+
+    measurementId:
+        "G-S95T59VWRJ"
+
+};
+
+
+const app =
+    initializeApp(firebaseConfig);
+
+
+const auth =
+    getAuth(app);
+
+
+const db =
+    getFirestore(app);
+
+
+/* ELEMENTS */
+
+const loginBox =
+    document.getElementById("loginBox");
+
+const appBox =
+    document.getElementById("app");
+
+const emailInput =
+    document.getElementById("email");
+
+const passwordInput =
+    document.getElementById("password");
+
+const loginButton =
+    document.getElementById("loginButton");
+
+const loginMessage =
+    document.getElementById("loginMessage");
+
+const logoutButton =
+    document.getElementById("logoutButton");
+
+const taskInput =
+    document.getElementById("taskInput");
+
+const addButton =
+    document.getElementById("addButton");
+
+const taskList =
+    document.getElementById("taskList");
+
+const tomorrowInput =
+    document.getElementById("tomorrowInput");
+
+const tomorrowAddButton =
+    document.getElementById("tomorrowAddButton");
+
+const tomorrowList =
+    document.getElementById("tomorrowList");
+
+const progress =
+    document.getElementById("progress");
+
+const progressNumber =
+    document.getElementById("progressNumber");
+
+const progressText =
+    document.getElementById("progressText");
+
+const todayDate =
+    document.getElementById("todayDate");
+
+const tomorrowDate =
+    document.getElementById("tomorrowDate");
+
+const historyList =
+    document.getElementById("historyList");
+
+const completedCount =
+    document.getElementById("completedCount");
+
+const totalCount =
+    document.getElementById("totalCount");
+
+const streakNumber =
+    document.getElementById("streakNumber");
+
+const streakMessage =
+    document.getElementById("streakMessage");
+
+
+/* DATE */
+
+function getDateString(date) {
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(date.getMonth() + 1)
+        .padStart(2, "0");
+
+    const day =
+        String(date.getDate())
+        .padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
+function getTodayDate() {
+
+    return getDateString(
+        new Date()
+    );
+
+}
+
+
+function getTomorrowDate() {
+
+    const date =
+        new Date();
+
+    date.setDate(
+        date.getDate() + 1
+    );
+
+    return getDateString(date);
+
+}
+
+
+function prettyDate(dateString) {
+
+    return new Date(
+        dateString + "T00:00:00"
+    ).toLocaleDateString(
+        "en-IN",
+        {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
         }
-        from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    );
+
+}
 
 
-        // Firebase configuration
+const TODAY =
+    getTodayDate();
 
-        const firebaseConfig = {
-
-            apiKey: "AIzaSyCoM00m6KgrWHOn_UB9_Qf9MAowGtovZSA",
-
-            authDomain: "sister-accountability-app.firebaseapp.com",
-
-            projectId: "sister-accountability-app",
-
-            storageBucket: "sister-accountability-app.firebasestorage.app",
-
-            messagingSenderId: "311794164387",
-
-            appId: "1:311794164387:web:ccb0dbc236fe8111d51516",
-
-            measurementId: "G-S95T59VWRJ"
-
-        };
+const TOMORROW =
+    getTomorrowDate();
 
 
-        // Initialize Firebase
+todayDate.textContent =
+    prettyDate(TODAY);
 
-        const app = initializeApp(firebaseConfig);
-
-        const db = getFirestore(app);
-
-        console.log("Firebase connected!");
+tomorrowDate.textContent =
+    prettyDate(TOMORROW);
 
 
-        // Get HTML elements
+/* LOGIN */
 
-        const taskInput = document.getElementById("taskInput");
+loginButton.addEventListener(
+    "click",
+    async () => {
 
-        const addButton = document.getElementById("addButton");
+        const email =
+            emailInput.value.trim();
 
-        const taskList = document.getElementById("taskList");
+        const password =
+            passwordInput.value;
 
-        const progress = document.getElementById("progress");
+
+        if (!email || !password) {
+
+            loginMessage.textContent =
+                "Enter email and password.";
+
+            return;
+
+        }
 
 
-        // Add task
+        try {
 
-        addButton.addEventListener("click", async () => {
+            await signInWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
 
-            const taskText = taskInput.value.trim();
+            loginMessage.textContent =
+                "";
 
-            if (taskText === "") {
+        }
 
-                alert("Please enter a task");
+        catch (error) {
+
+            console.error(error);
+
+            loginMessage.textContent =
+                "Invalid email or password.";
+
+        }
+
+    }
+);
+
+
+/* LOGOUT */
+
+logoutButton.addEventListener(
+    "click",
+    async () => {
+
+        await signOut(auth);
+
+    }
+);
+
+
+/* AUTH */
+
+onAuthStateChanged(
+    auth,
+    user => {
+
+        if (user) {
+
+            loginBox.style.display =
+                "none";
+
+            appBox.style.display =
+                "block";
+
+            loadTasks(user.uid);
+
+        }
+
+        else {
+
+            loginBox.style.display =
+                "flex";
+
+            appBox.style.display =
+                "none";
+
+        }
+
+    }
+);
+
+
+/* ADD TODAY TASK */
+
+async function addTodayTask(userId) {
+
+    const text =
+        taskInput.value.trim();
+
+
+    if (!text) {
+
+        return;
+
+    }
+
+
+    try {
+
+        await addDoc(
+            collection(db, "tasks"),
+            {
+
+                text: text,
+
+                completed: false,
+
+                userId: userId,
+
+                date: getTodayDate(),
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        taskInput.value = "";
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not add mission."
+        );
+
+    }
+
+}
+
+
+addButton.addEventListener(
+    "click",
+    () => {
+
+        const user =
+            auth.currentUser;
+
+        if (user) {
+
+            addTodayTask(
+                user.uid
+            );
+
+        }
+
+    }
+);
+
+
+/* ENTER TODAY */
+
+taskInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key === "Enter") {
+
+            addButton.click();
+
+        }
+
+    }
+);
+
+
+/* ADD TOMORROW */
+
+async function addTomorrowTask(userId) {
+
+    const text =
+        tomorrowInput.value.trim();
+
+
+    if (!text) {
+
+        return;
+
+    }
+
+
+    try {
+
+        await addDoc(
+            collection(db, "tasks"),
+            {
+
+                text: text,
+
+                completed: false,
+
+                userId: userId,
+
+                date: getTomorrowDate(),
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        tomorrowInput.value = "";
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not add tomorrow mission."
+        );
+
+    }
+
+}
+
+
+tomorrowAddButton.addEventListener(
+    "click",
+    () => {
+
+        const user =
+            auth.currentUser;
+
+        if (user) {
+
+            addTomorrowTask(
+                user.uid
+            );
+
+        }
+
+    }
+);
+
+
+tomorrowInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key === "Enter") {
+
+            tomorrowAddButton.click();
+
+        }
+
+    }
+);
+
+
+/* LOAD TASKS */
+
+function loadTasks(userId) {
+
+    const tasksQuery =
+        query(
+            collection(db, "tasks"),
+
+            where(
+                "userId",
+                "==",
+                userId
+            )
+        );
+
+
+    onSnapshot(
+        tasksQuery,
+        snapshot => {
+
+            const allTasks = [];
+
+
+            snapshot.forEach(
+                taskDoc => {
+
+                    allTasks.push({
+
+                        id:
+                            taskDoc.id,
+
+                        ...taskDoc.data()
+
+                    });
+
+                }
+            );
+
+
+            const todayTasks =
+                allTasks.filter(
+                    task =>
+                        task.date === TODAY
+                );
+
+
+            const tomorrowTasks =
+                allTasks.filter(
+                    task =>
+                        task.date === TOMORROW
+                );
+
+
+            renderTasks(
+                todayTasks,
+                taskList,
+                true
+            );
+
+
+            renderTasks(
+                tomorrowTasks,
+                tomorrowList,
+                true
+            );
+
+
+            updateProgress(
+                todayTasks
+            );
+
+
+            renderHistory(
+                allTasks
+            );
+
+
+            updateStreak(
+                allTasks
+            );
+
+        }
+    );
+
+}
+
+
+/* RENDER TASKS */
+
+function renderTasks(
+    tasks,
+    container,
+    allowDelete
+) {
+
+    container.innerHTML = "";
+
+
+    if (tasks.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="empty-task">
+
+                <div>
+                    ◈
+                </div>
+
+                No missions assigned.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    tasks.forEach(
+        task => {
+
+            const taskDiv =
+                document.createElement("div");
+
+
+            taskDiv.className =
+                "task-card";
+
+
+            if (task.completed) {
+
+                taskDiv.classList.add(
+                    "task-completed"
+                );
+
+            }
+
+
+            taskDiv.innerHTML = `
+
+                <div class="task-left">
+
+                    <button
+                        class="check-button"
+                    >
+
+                        ${
+                            task.completed
+                                ? "✓"
+                                : ""
+                        }
+
+                    </button>
+
+                    <div>
+
+                        <span class="task-name">
+
+                            ${escapeHtml(task.text)}
+
+                        </span>
+
+                        <small>
+
+                            ${
+                                task.completed
+                                    ? "MISSION COMPLETE"
+                                    : "MISSION PENDING"
+                            }
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="task-actions">
+
+                    <span class="status-badge">
+
+                        ${
+                            task.completed
+                                ? "ONLINE"
+                                : "PENDING"
+                        }
+
+                    </span>
+
+                    ${
+                        allowDelete
+                            ? `
+                                <button
+                                    class="delete-button"
+                                >
+                                    ×
+                                </button>
+                              `
+                            : ""
+                    }
+
+                </div>
+
+            `;
+
+
+            taskDiv
+                .querySelector(
+                    ".check-button"
+                )
+                .addEventListener(
+                    "click",
+                    async () => {
+
+                        await updateDoc(
+                            doc(
+                                db,
+                                "tasks",
+                                task.id
+                            ),
+                            {
+
+                                completed:
+                                    !task.completed
+
+                            }
+                        );
+
+                    }
+                );
+
+
+            if (allowDelete) {
+
+                taskDiv
+                    .querySelector(
+                        ".delete-button"
+                    )
+                    .addEventListener(
+                        "click",
+                        async () => {
+
+                            await deleteDoc(
+                                doc(
+                                    db,
+                                    "tasks",
+                                    task.id
+                                )
+                            );
+
+                        }
+                    );
+
+            }
+
+
+            container.appendChild(
+                taskDiv
+            );
+
+        }
+    );
+
+}
+
+
+/* PROGRESS */
+
+function updateProgress(tasks) {
+
+    const total =
+        tasks.length;
+
+
+    const completed =
+        tasks.filter(
+            task => task.completed
+        ).length;
+
+
+    let percentage = 0;
+
+
+    if (total > 0) {
+
+        percentage =
+            Math.round(
+                (completed / total) * 100
+            );
+
+    }
+
+
+    progress.textContent =
+        `PROGRESS: ${percentage}%`;
+
+
+    progressNumber.textContent =
+        `${percentage}%`;
+
+
+    completedCount.textContent =
+        completed;
+
+
+    totalCount.textContent =
+        total;
+
+
+    if (total === 0) {
+
+        progressText.textContent =
+            "Initialize your first mission.";
+
+    }
+
+    else if (percentage === 100) {
+
+        progressText.textContent =
+            "ALL SYSTEMS COMPLETE. 🔥";
+
+    }
+
+    else if (percentage >= 50) {
+
+        progressText.textContent =
+            "Armor is holding. Keep pushing.";
+
+    }
+
+    else {
+
+        progressText.textContent =
+            "Mission in progress. Stay focused.";
+
+    }
+
+
+    if (percentage === 100) {
+
+        progress.classList.add(
+            "complete-glow"
+        );
+
+    }
+
+    else {
+
+        progress.classList.remove(
+            "complete-glow"
+        );
+
+    }
+
+    updateCircle(
+        percentage
+    );
+
+}
+
+
+function updateCircle(percentage) {
+
+    const circle =
+        document.querySelector(
+            ".progress-circle"
+        );
+
+
+    const degrees =
+        percentage * 3.6;
+
+
+    circle.style.background =
+        `
+        conic-gradient(
+            #ff2b2b 0deg,
+            #ff2b2b ${degrees}deg,
+            #252525 ${degrees}deg,
+            #252525 360deg
+        )
+        `;
+
+}
+
+
+/* STREAK */
+
+function updateStreak(allTasks) {
+
+    const daily = {};
+
+
+    allTasks.forEach(
+        task => {
+
+            if (!task.date) {
 
                 return;
 
             }
 
 
-            try {
+            if (!daily[task.date]) {
 
-                await addDoc(collection(db, "tasks"), {
+                daily[task.date] = {
 
-                    text: taskText,
+                    total: 0,
 
-                    completed: false,
+                    completed: 0
 
-                    createdAt: serverTimestamp()
-
-                });
-
-                taskInput.value = "";
-
-                console.log("Task added!");
+                };
 
             }
 
-            catch (error) {
 
-                console.error("Error adding task:", error);
+            daily[task.date].total++;
 
-                alert("Task add avvaledu. Console check cheyyi.");
+
+            if (task.completed) {
+
+                daily[task.date].completed++;
 
             }
 
-        });
+        }
+    );
 
 
-        // Display tasks in real time
-
-        onSnapshot(collection(db, "tasks"), (snapshot) => {
-
-            taskList.innerHTML = "";
-
-            let totalTasks = 0;
-
-            let completedTasks = 0;
+    let streak = 0;
 
 
-            snapshot.forEach((taskDoc) => {
-
-                const task = taskDoc.data();
-
-                totalTasks++;
+    const date =
+        new Date();
 
 
-                if (task.completed) {
+    while (true) {
 
-                    completedTasks++;
-
-                }
-
-
-                const taskDiv = document.createElement("div");
-
-                taskDiv.className = "task";
+        const current =
+            getDateString(date);
 
 
-                taskDiv.innerHTML = `
-
-                    <span style="
-
-                        text-decoration: ${task.completed ? "line-through" : "none"};
-
-                    ">
-
-                        ${task.text}
-
-                    </span>
-
-                    <button class="completeButton">
-
-                        ${task.completed ? "Undo" : "Complete"}
-
-                    </button>
-
-                    <button class="deleteButton">
-
-                        Delete
-
-                    </button>
-
-                `;
+        const day =
+            daily[current];
 
 
-                // Complete / Undo
+        if (
+            !day ||
+            day.total === 0 ||
+            day.completed !== day.total
+        ) {
 
-                taskDiv.querySelector(".completeButton")
+            break;
 
-                    .addEventListener("click", async () => {
-
-                        await updateDoc(
-
-                            doc(db, "tasks", taskDoc.id),
-
-                            {
-
-                                completed: !task.completed
-
-                            }
-
-                        );
-
-                    });
+        }
 
 
-                // Delete
+        streak++;
 
-                taskDiv.querySelector(".deleteButton")
+        date.setDate(
+            date.getDate() - 1
+        );
 
-                    .addEventListener("click", async () => {
-
-                        await deleteDoc(
-
-                            doc(db, "tasks", taskDoc.id)
-
-                        );
-
-                    });
+    }
 
 
-                taskList.appendChild(taskDiv);
-
-            });
-
-
-            // Calculate progress
-
-            let percentage = 0;
+    streakNumber.textContent =
+        streak;
 
 
-            if (totalTasks > 0) {
+    if (streak === 0) {
 
-                percentage = Math.round(
+        streakMessage.textContent =
+            "Complete every mission today to start your streak.";
 
-                    (completedTasks / totalTasks) * 100
+    }
 
+    else if (streak === 1) {
+
+        streakMessage.textContent =
+            "First day complete. The armor is online. 🔥";
+
+    }
+
+    else {
+
+        streakMessage.textContent =
+            `${streak} days strong. Don't break the chain. 🔥`;
+
+    }
+
+
+    updateAchievements(
+        streak
+    );
+
+}
+
+
+function updateAchievements(streak) {
+
+    const first =
+        document.getElementById(
+            "achievement1"
+        );
+
+    const three =
+        document.getElementById(
+            "achievement3"
+        );
+
+    const seven =
+        document.getElementById(
+            "achievement7"
+        );
+
+    const thirty =
+        document.getElementById(
+            "achievement30"
+        );
+
+
+    if (streak >= 1) {
+
+        first.classList.remove(
+            "locked"
+        );
+
+        first.classList.add(
+            "unlocked"
+        );
+
+    }
+
+
+    if (streak >= 3) {
+
+        three.classList.remove(
+            "locked"
+        );
+
+        three.classList.add(
+            "unlocked"
+        );
+
+    }
+
+
+    if (streak >= 7) {
+
+        seven.classList.remove(
+            "locked"
+        );
+
+        seven.classList.add(
+            "unlocked"
+        );
+
+    }
+
+
+    if (streak >= 30) {
+
+        thirty.classList.remove(
+            "locked"
+        );
+
+        thirty.classList.add(
+            "unlocked"
+        );
+
+    }
+
+}
+
+
+/* HISTORY */
+
+function renderHistory(allTasks) {
+
+    const history = {};
+
+
+    allTasks.forEach(
+        task => {
+
+            if (!task.date) {
+
+                return;
+
+            }
+
+
+            if (!history[task.date]) {
+
+                history[task.date] = {
+
+                    total: 0,
+
+                    completed: 0
+
+                };
+
+            }
+
+
+            history[task.date].total++;
+
+
+            if (task.completed) {
+
+                history[task.date].completed++;
+
+            }
+
+        }
+    );
+
+
+    historyList.innerHTML = "";
+
+
+    const dates =
+        Object.keys(history)
+            .filter(
+                date =>
+                    date <= TODAY
+            )
+            .sort()
+            .reverse();
+
+
+    if (dates.length === 0) {
+
+        historyList.innerHTML = `
+
+            <div class="empty-task">
+
+                No mission history yet.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    dates.forEach(
+        date => {
+
+            const day =
+                history[date];
+
+
+            const percentage =
+                Math.round(
+                    (day.completed /
+                        day.total) * 100
                 );
 
-            }
+
+            const card =
+                document.createElement(
+                    "div"
+                );
 
 
-            progress.textContent =
-
-                `Progress: ${percentage}%`;
-
-        });
+            card.className =
+                "history-card";
 
 
-    </script>
+            card.innerHTML = `
+
+                <div class="history-top">
+
+                    <div>
+
+                        <span>
+                            MISSION DATE
+                        </span>
+
+                        <strong>
+                            ${prettyDate(date)}
+                        </strong>
+
+                    </div>
+
+                    <div class="history-percent">
+
+                        ${percentage}%
+
+                    </div>
+
+                </div>
+
+
+                <div class="history-bar">
+
+                    <div
+                        class="history-fill"
+                        style="width:${percentage}%"
+                    ></div>
+
+                </div>
+
+
+                <div class="history-bottom">
+
+                    <span>
+                        ${day.completed}
+                        /
+                        ${day.total}
+                        missions complete
+                    </span>
+
+                    <span>
+                        ${
+                            percentage === 100
+                                ? "🔥 PERFECT DAY"
+                                : "MISSION LOG"
+                        }
+                    </span>
+
+                </div>
+
+            `;
+
+
+            historyList.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* ESCAPE HTML */
+
+function escapeHtml(text) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        text;
+
+    return div.innerHTML;
+
+}
+
+</script>
 
 </body>
 </html>
