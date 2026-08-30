@@ -1,1011 +1,3039 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Lovely Sister ❤️</title>
 
-  <title>IRON MAN MODE</title>
+<style>
 
-  <link rel="stylesheet" href="style.css">
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --red:#ff2020;
+    --dark-red:#780000;
+    --gold:#ffb000;
+    --green:#00e65a;
+    --orange:#ff7500;
+    --bg:#020202;
+    --panel:#070707;
+    --border:#4d0b0b;
+    --text:#eeeeee;
+    --muted:#888;
+}
+
+body{
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(255,0,0,.10),
+            transparent 35%
+        ),
+        #020202;
+    color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+button,input{
+    font-family:inherit;
+}
+
+
+/* ================= LOGIN ================= */
+
+#loginPage{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.login-card{
+    width:380px;
+    max-width:92%;
+    background:#070707;
+    border:1px solid #690909;
+    border-radius:15px;
+    padding:35px;
+    text-align:center;
+    box-shadow:0 0 50px rgba(255,0,0,.15);
+}
+
+.reactor{
+    width:80px;
+    height:80px;
+    border:2px solid var(--red);
+    border-radius:50%;
+    margin:auto auto 18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:34px;
+    box-shadow:
+        0 0 25px rgba(255,0,0,.5),
+        inset 0 0 20px rgba(255,0,0,.2);
+}
+
+.login-card h1{
+    font-size:25px;
+}
+
+.login-card h1 span{
+    color:var(--red);
+}
+
+.login-card p{
+    color:#777;
+    font-size:11px;
+    line-height:1.7;
+    margin:10px 0 25px;
+}
+
+.login-input{
+    width:100%;
+    padding:13px;
+    margin-bottom:10px;
+    background:#030303;
+    color:white;
+    border:1px solid #333;
+    border-radius:7px;
+    outline:none;
+}
+
+.login-input:focus{
+    border-color:var(--red);
+}
+
+.login-button{
+    width:100%;
+    padding:13px;
+    background:#780000;
+    border:1px solid var(--red);
+    border-radius:7px;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#loginMessage{
+    color:#ff4444;
+    font-size:11px;
+    margin-top:10px;
+    min-height:15px;
+}
+
+
+/* ================= DASHBOARD ================= */
+
+#dashboard{
+    display:none;
+    min-height:100vh;
+}
+
+
+/* ================= HEADER ================= */
+
+.header{
+    min-height:82px;
+    padding:10px 22px;
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:20px;
+    border-bottom:1px solid #350707;
+}
+
+.header-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.header-reactor{
+    width:53px;
+    height:53px;
+    border:2px solid var(--red);
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:22px;
+    box-shadow:0 0 20px rgba(255,0,0,.45);
+}
+
+.header-title{
+    font-size:23px;
+    font-weight:bold;
+}
+
+.header-title span{
+    color:var(--red);
+}
+
+.header-sub{
+    color:var(--gold);
+    font-size:11px;
+    margin-top:4px;
+    letter-spacing:1px;
+}
+
+.header-center{
+    text-align:center;
+}
+
+.header-center h1{
+    color:var(--red);
+    border:1px solid var(--red);
+    padding:9px 35px;
+    font-size:22px;
+    letter-spacing:1px;
+    clip-path:polygon(
+        5% 0,
+        95% 0,
+        100% 50%,
+        95% 100%,
+        5% 100%,
+        0 50%
+    );
+}
+
+.header-right{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:10px;
+}
+
+.jarvis{
+    border:1px solid #075027;
+    color:#00ef7b;
+    padding:10px 14px;
+    border-radius:7px;
+    font-size:10px;
+    font-weight:bold;
+}
+
+.jarvis-dot{
+    display:inline-block;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#00ef7b;
+    box-shadow:0 0 10px #00ef7b;
+    margin-left:5px;
+}
+
+.logout{
+    background:#080808;
+    border:1px solid #411010;
+    color:#888;
+    padding:9px 12px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+
+/* ================= MAIN ================= */
+
+.main{
+    padding:12px 18px 20px;
+}
+
+
+/* ================= THREE DASHBOARDS ================= */
+
+.screens{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    max-width:1450px;
+    margin:auto;
+}
+
+.dashboard-card{
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,0,0,.045),
+            transparent 40%
+        ),
+        #050505;
+    border:1px solid #570909;
+    border-radius:12px;
+    overflow:hidden;
+    min-height:640px;
+    box-shadow:0 0 20px rgba(255,0,0,.05);
+}
+
+.card-header{
+    height:52px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 14px;
+    border-bottom:1px solid #301010;
+}
+
+.menu{
+    font-size:20px;
+    color:#aaa;
+}
+
+.card-name{
+    font-size:13px;
+    font-weight:bold;
+    color:var(--red);
+}
+
+.card-name.gold{
+    color:var(--gold);
+}
+
+.card-symbol{
+    color:var(--red);
+    font-size:18px;
+}
+
+.card-body{
+    padding:13px;
+}
+
+
+/* ================= WELCOME ================= */
+
+.welcome{
+    border:1px solid #5e1010;
+    border-radius:9px;
+    padding:14px;
+    margin-bottom:10px;
+    min-height:78px;
+}
+
+.welcome.gold{
+    border-color:#604500;
+}
+
+.welcome h2{
+    font-size:15px;
+    margin-bottom:6px;
+}
+
+.welcome p{
+    color:#888;
+    font-size:10px;
+}
+
+
+/* ================= DATE ================= */
+
+.date-box{
+    background:#170000;
+    border:1px solid #620909;
+    color:#ff3838;
+    border-radius:7px;
+    padding:8px 10px;
+    font-size:10px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.date-box.gold{
+    background:#171000;
+    border-color:#654700;
+    color:var(--gold);
+}
+
+
+/* ================= PROGRESS ================= */
+
+.progress-box{
+    border:1px solid #282828;
+    border-radius:9px;
+    padding:12px;
+    margin-bottom:12px;
+}
+
+.progress-title{
+    font-size:10px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.progress-content{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.circle{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    background:conic-gradient(
+        var(--red) 0deg,
+        var(--red) 0deg,
+        #333 0deg,
+        #333 360deg
+    );
+}
+
+.circle.gold{
+    background:conic-gradient(
+        var(--gold) 0deg,
+        var(--gold) 0deg,
+        #333 0deg,
+        #333 360deg
+    );
+}
+
+.circle:after{
+    content:"";
+    position:absolute;
+    width:78px;
+    height:78px;
+    background:#050505;
+    border-radius:50%;
+}
+
+.circle span{
+    position:relative;
+    z-index:2;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.stats{
+    line-height:2.1;
+    font-size:10px;
+}
+
+.stats b{
+    font-size:15px;
+    margin-right:4px;
+}
+
+.red{
+    color:var(--red);
+}
+
+.gold-text{
+    color:var(--gold);
+}
+
+.green{
+    color:var(--green);
+}
+
+
+/* ================= TASKS ================= */
+
+.section-title{
+    font-size:10px;
+    margin:10px 0 7px;
+    color:#ddd;
+}
+
+.task{
+    border:1px solid #252525;
+    border-radius:7px;
+    padding:9px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:5px;
+    background:#030303;
+}
+
+.task-left{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:10px;
+}
+
+.task-check{
+    font-size:16px;
+}
+
+.completed{
+    color:var(--green);
+}
+
+.pending{
+    color:var(--gold);
+}
+
+.task-status{
+    font-size:7px;
+    padding:4px 6px;
+    border-radius:4px;
+    background:#062c16;
+    color:var(--green);
+}
+
+.task-status.pending-status{
+    background:#291e00;
+    color:var(--gold);
+}
+
+
+/* ================= TOMORROW ================= */
+
+.tomorrow{
+    border:1px solid #650c0c;
+    border-radius:8px;
+    padding:10px;
+    margin-top:12px;
+}
+
+.tomorrow-title{
+    color:var(--red);
+    font-size:10px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.add-row{
+    display:flex;
+    gap:5px;
+}
+
+.add-row input{
+    flex:1;
+    min-width:0;
+    background:#030303;
+    color:white;
+    border:1px solid #333;
+    border-radius:5px;
+    padding:8px;
+    font-size:9px;
+    outline:none;
+}
+
+.add-row button{
+    background:#320900;
+    color:var(--gold);
+    border:1px solid #8a3500;
+    border-radius:5px;
+    padding:7px 9px;
+    font-size:8px;
+    cursor:pointer;
+}
+
+.tomorrow-task{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:7px;
+    font-size:9px;
+    color:#ccc;
+}
+
+.delete{
+    background:none;
+    border:none;
+    color:#d33;
+    cursor:pointer;
+    font-size:14px;
+}
+
+
+/* ================= QUOTE ================= */
+
+.quote{
+    border:1px solid #641010;
+    border-radius:8px;
+    margin-top:15px;
+    padding:18px;
+    text-align:center;
+    color:var(--gold);
+    font-size:11px;
+    line-height:1.7;
+}
+
+
+/* ================= HISTORY ================= */
+
+.history-card{
+    border:1px solid #272727;
+    border-radius:8px;
+    padding:11px;
+    margin-bottom:8px;
+}
+
+.history-top{
+    display:flex;
+    justify-content:space-between;
+    font-size:10px;
+    margin-bottom:5px;
+}
+
+.history-percent{
+    color:var(--green);
+    font-weight:bold;
+}
+
+.history-sub{
+    color:#777;
+    font-size:8px;
+    margin-bottom:7px;
+}
+
+.bar{
+    height:6px;
+    background:#222;
+    border-radius:6px;
+    overflow:hidden;
+}
+
+.bar-fill{
+    height:100%;
+    background:var(--green);
+}
+
+
+/* =====================================================
+JARVIS DAILY BRIEF
+===================================================== */
+
+.jarvis-brief{
+    border:1px solid #654700;
+    border-radius:9px;
+    padding:13px;
+    margin-top:10px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,176,0,.05),
+            transparent 55%
+        ),
+        #050505;
+}
+
+.jarvis-brief-title{
+    color:#ffb000;
+    font-size:12px;
+    font-weight:bold;
+    text-align:center;
+    letter-spacing:1px;
+    padding-bottom:9px;
+    border-bottom:1px solid #332600;
+    margin-bottom:10px;
+}
+
+.brief-item{
+    border:1px solid #252525;
+    border-radius:7px;
+    padding:10px;
+    margin-bottom:7px;
+    background:#030303;
+}
+
+.brief-item:last-child{
+    margin-bottom:0;
+}
+
+.brief-item strong{
+    display:block;
+    color:#ffb000;
+    font-size:9px;
+    margin-bottom:4px;
+}
+
+.brief-item span{
+    color:#888;
+    font-size:8px;
+    line-height:1.5;
+}
+
+.brief-streak{
+    text-align:center;
+    margin-top:10px;
+    padding:10px;
+    border:1px solid #421010;
+    border-radius:7px;
+}
+
+.brief-streak strong{
+    color:#ff7500;
+    font-size:18px;
+}
+
+.brief-streak span{
+    color:#777;
+    font-size:8px;
+    margin-left:4px;
+}
+
+.brief-quote{
+    text-align:center;
+    color:#aaa;
+    font-size:9px;
+    font-style:italic;
+    line-height:1.6;
+    margin-top:10px;
+}
+
+
+/* ================= BOTTOM ================= */
+
+.bottom{
+    max-width:1450px;
+    margin:15px auto 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.bottom-card{
+    background:#050505;
+    border:1px solid #570909;
+    border-radius:10px;
+    padding:13px;
+}
+
+.bottom-title{
+    text-align:center;
+    border:1px solid #5a0c0c;
+    padding:7px;
+    font-size:11px;
+    margin-bottom:12px;
+    color:#eee;
+}
+
+
+/* ================= STREAK ================= */
+
+.streak-content{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:30px;
+}
+
+.streak-circle{
+    width:125px;
+    height:125px;
+    border-radius:50%;
+    border:2px solid var(--orange);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 20px rgba(255,80,0,.15);
+}
+
+.streak-circle strong{
+    font-size:35px;
+}
+
+.streak-circle small{
+    color:var(--gold);
+    font-size:9px;
+}
+
+.streak-info{
+    font-size:10px;
+    line-height:2;
+}
+
+
+/* ================= ACHIEVEMENTS ================= */
+
+.achievements{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:7px;
+}
+
+.achievement{
+    min-height:105px;
+    border:1px solid #421010;
+    border-radius:7px;
+    text-align:center;
+    padding:7px 3px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+.achievement-icon{
+    font-size:24px;
+    margin-bottom:7px;
+}
+
+.achievement strong{
+    color:var(--gold);
+    font-size:7px;
+}
+
+.achievement small{
+    color:#777;
+    font-size:7px;
+    margin-top:4px;
+}
+
+
+/* ================= DAILY CYCLE ================= */
+
+.daily-cycle{
+    max-width:1450px;
+    margin:15px auto 0;
+    border:1px solid #570909;
+    background:#050505;
+    border-radius:10px;
+    padding:12px;
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
+
+.daily-heading{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:170px;
+}
+
+.daily-icon{
+    width:42px;
+    height:42px;
+    border:1px solid var(--red);
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:20px;
+}
+
+.daily-heading h2{
+    color:var(--red);
+    font-size:15px;
+}
+
+.cycle{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.cycle-item{
+    text-align:center;
+}
+
+.cycle-icon{
+    font-size:22px;
+}
+
+.cycle-item strong{
+    display:block;
+    color:var(--gold);
+    font-size:9px;
+    margin-top:3px;
+}
+
+.cycle-item span{
+    display:block;
+    color:#777;
+    font-size:7px;
+    margin-top:3px;
+}
+
+.arrow{
+    color:var(--gold);
+    font-size:18px;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1100px){
+
+    .screens{
+        grid-template-columns:1fr;
+        max-width:600px;
+    }
+
+    .dashboard-card{
+        min-height:auto;
+    }
+
+    .bottom{
+        grid-template-columns:1fr;
+    }
+
+    .header{
+        grid-template-columns:1fr;
+        text-align:center;
+    }
+
+    .header-left{
+        justify-content:center;
+    }
+
+    .header-right{
+        justify-content:center;
+    }
+
+}
+
+@media(max-width:650px){
+
+    .main{
+        padding:8px;
+    }
+
+    .header-title{
+        font-size:18px;
+    }
+
+    .header-center h1{
+        font-size:17px;
+    }
+
+    .cycle{
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:10px;
+    }
+
+    .daily-cycle{
+        flex-direction:column;
+    }
+
+    .daily-heading{
+        justify-content:center;
+    }
+
+    .achievements{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .streak-content{
+        flex-direction:column;
+    }
+
+}
+
+</style>
 </head>
+
 
 <body>
 
-  <!-- =========================
-       LOGIN PAGE
-  ========================== -->
 
-  <section id="loginBox" class="login-page">
+<!-- =====================================================
+LOGIN
+===================================================== -->
 
-    <div class="reactor-bg"></div>
+<div id="loginPage">
 
-    <div class="login-card hud-panel">
+    <div class="login-card">
 
-      <div class="arc-logo">◈</div>
+        <div class="reactor">
+            ✦
+        </div>
 
-      <div class="eyebrow">
-        PERSONAL ACCOUNTABILITY SYSTEM
-      </div>
+        <h1>
+            MY LOVELY <span>SISTER</span> ❤️
+        </h1>
 
-      <h1>
-        IRON MAN <span>MODE</span>
-      </h1>
+        <p>
+            ACCOUNTABILITY SYSTEM<br>
+            JARVIS READY
+        </p>
 
-      <p>
-        Build discipline.<br>
-        Complete your mission.
-      </p>
+        <input
+            id="email"
+            class="login-input"
+            type="email"
+            placeholder="Email"
+        >
 
-      <label>EMAIL</label>
+        <input
+            id="password"
+            class="login-input"
+            type="password"
+            placeholder="Password"
+        >
 
-      <input
-        id="email"
-        type="email"
-        placeholder="Enter your email"
-      >
+        <button
+            id="loginButton"
+            class="login-button"
+        >
+            ENTER SISTER SYSTEM →
+        </button>
 
-      <label>PASSWORD</label>
-
-      <input
-        id="password"
-        type="password"
-        placeholder="Enter your password"
-      >
-
-      <button
-        id="loginButton"
-        class="red-button"
-      >
-        INITIALIZE SYSTEM →
-      </button>
-
-      <div
-        id="loginMessage"
-        class="error-message"
-      ></div>
+        <div id="loginMessage"></div>
 
     </div>
 
-  </section>
+</div>
 
 
-  <!-- =========================
-       MAIN APP
-  ========================== -->
 
-  <section
-    id="app"
-    class="app-page hidden"
-  >
+<!-- =====================================================
+DASHBOARD
+===================================================== -->
 
-    <!-- TOP BAR -->
+<div id="dashboard">
 
-    <header class="topbar">
 
-      <div class="top-brand">
+<header class="header">
 
-        <div class="mini-arc">
-          ◈
+
+    <div class="header-left">
+
+        <div class="header-reactor">
+            ✦
         </div>
 
         <div>
 
-          <strong>
-            IRON MAN MODE
-          </strong>
+            <div class="header-title">
+                MY LOVELY SISTER ❤️
+            </div>
 
-          <span>
-            PERSONAL ACCOUNTABILITY SYSTEM
-          </span>
+            <div class="header-sub">
+                ACCOUNTABILITY • CONSISTENCY • GROWTH
+            </div>
 
         </div>
 
-      </div>
+    </div>
 
 
-      <div class="online">
+    <div class="header-center">
 
-        <i></i>
+        <h1>
+            SISTER ACCOUNTABILITY
+        </h1>
 
-        SYSTEM ONLINE
+    </div>
 
-      </div>
 
+    <div class="header-right">
 
-      <button
-        id="logoutButton"
-        class="logout"
-      >
-        LOGOUT
-      </button>
+        <div class="jarvis">
 
-    </header>
+            JARVIS ONLINE
 
+            <span class="jarvis-dot"></span>
 
-    <!-- =========================
-         WORKSPACE
-    ========================== -->
+        </div>
 
-    <main class="workspace">
+        <button
+            id="logoutButton"
+            class="logout"
+        >
+            LOGOUT
+        </button>
 
+    </div>
 
-      <!-- =========================
-           LEFT COLUMN
-      ========================== -->
 
-      <aside class="left-column">
+</header>
 
 
-        <!-- APP FLOW -->
 
-        <section class="info-card">
+<main class="main">
 
-          <div class="card-heading">
 
-            <span>01.</span>
+<!-- =====================================================
+THREE MAIN SCREENS
+===================================================== -->
 
-            APP FLOW (DAILY CYCLE)
+<div class="screens">
 
-          </div>
 
+<!-- =====================================================
+NIGHT
+===================================================== -->
 
-          <div class="flow-box">
+<div class="dashboard-card">
 
-            <div class="flow-icon moon">
-              ☾
-            </div>
 
-            <div>
+    <div class="card-header">
 
-              <b>NIGHT</b>
+        <span class="menu">
+            ☰
+        </span>
 
-              <strong>
-                Plan Tomorrow
-              </strong>
+        <span class="card-name">
+            MY LOVELY SISTER ❤️
+        </span>
 
-              <small>
-                Add tomorrow's missions
-              </small>
+        <span class="card-symbol">
+            ✦
+        </span>
 
-            </div>
+    </div>
 
-          </div>
 
+    <div class="card-body">
 
-          <div class="arrow">
-            ↓
-          </div>
 
+        <div class="welcome">
 
-          <div class="flow-box">
+            <h2>
+                Good Night, Sister 🌙
+            </h2>
 
-            <div class="flow-icon sun">
-              ☀
-            </div>
-
-            <div>
-
-              <b>NEXT DAY</b>
-
-              <strong>
-                Complete Today's Missions
-              </strong>
-
-              <small>
-                Track progress
-              </small>
-
-            </div>
-
-          </div>
-
-
-          <div class="arrow">
-            ↓
-          </div>
-
-
-          <div class="flow-box">
-
-            <div class="flow-icon moon">
-              ☾
-            </div>
-
-            <div>
-
-              <b>NIGHT</b>
-
-              <strong>
-                Review Results
-              </strong>
-
-              <small>
-                If 100% complete<br>
-                Streak +1
-              </small>
-
-            </div>
-
-          </div>
-
-
-          <div class="arrow">
-            ↓
-          </div>
-
-
-          <div class="flow-box repeat">
-
-            <div class="flow-icon">
-              ⟳
-            </div>
-
-            <div>
-
-              <b>REPEAT</b>
-
-              <strong>
-                Consistency is the key.
-              </strong>
-
-              <small>
-                Build the armor.
-              </small>
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        <!-- STREAK RULE -->
-
-        <section class="info-card">
-
-          <div class="card-heading">
-
-            <span>02.</span>
-
-            STREAK RULE
-
-          </div>
-
-
-          <div class="rule-box">
-
-            <div class="fire-symbol">
-              ♨
-            </div>
-
-            <div>
-
-              <strong>
-                All missions 100% complete
-              </strong>
-
-              <span>
-                = Streak +1
-              </span>
-
-              <strong>
-                Even 1 mission left
-              </strong>
-
-              <span>
-                = Streak breaks.
-              </span>
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        <!-- KEY FEATURES -->
-
-        <section class="info-card">
-
-          <div class="card-heading">
-
-            <span>03.</span>
-
-            KEY FEATURES
-
-          </div>
-
-
-          <ul class="feature-list">
-
-            <li>
-              ◉ Today's Missions
-            </li>
-
-            <li>
-              ✓ Progress Tracking
-            </li>
-
-            <li>
-              ♨ Streak System
-            </li>
-
-            <li>
-              ▣ Tomorrow's Plan
-            </li>
-
-            <li>
-              ▥ Daily Stats
-            </li>
-
-            <li>
-              ♜ Achievements
-            </li>
-
-            <li>
-              ✚ Motivational Quotes
-            </li>
-
-          </ul>
-
-        </section>
-
-
-        <!-- QUOTE -->
-
-        <section class="quote-card">
-
-          <div class="iron-suit">
-            ◈
-          </div>
-
-          <p>
-            “I am not a hero<br>
-            because I was born.<br>
-            I am a hero because<br>
-            I choose to be one.”
-          </p>
-
-          <span>
-            — Tony Stark
-          </span>
-
-        </section>
-
-
-      </aside>
-
-
-      <!-- =========================
-           CENTER COLUMN
-      ========================== -->
-
-      <section class="phone-column">
-
-
-        <div class="mobile-shell">
-
-
-          <!-- MOBILE HEADER -->
-
-          <div class="mobile-top">
-
-            <span class="hamburger">
-              ☰
-            </span>
-
-            <h1>
-              IRON MAN MODE
-            </h1>
-
-            <span class="profile-arc">
-              ◈
-            </span>
-
-          </div>
-
-
-          <!-- CURRENT STREAK -->
-
-          <section class="streak-hero hud-panel">
-
-            <div class="target-icon">
-              ◉
-            </div>
-
-            <div class="eyebrow">
-              CURRENT STREAK
-            </div>
-
-            <div class="big-streak">
-
-              <span id="streakNumber">
-                0
-              </span>
-
-              <small>
-                DAYS
-              </small>
-
-            </div>
-
-            <p id="streakMessage">
-              Keep the armor strong.
+            <p>
+                Plan tomorrow. Win the day.
             </p>
 
-          </section>
+        </div>
 
 
-          <!-- TODAY'S MISSIONS -->
+        <div
+            class="date-box"
+            id="nightDate"
+        >
+            TONIGHT
+        </div>
 
-          <section class="today-card hud-panel">
 
-            <div class="section-header">
+        <div class="progress-box">
 
-              <h2>
-                ◉ TODAY'S MISSIONS
-              </h2>
+            <div class="progress-title">
+                Today's Progress
+            </div>
 
-              <span id="todayDate">
-                --
-              </span>
+
+            <div class="progress-content">
+
+
+                <div
+                    class="circle"
+                    id="nightCircle"
+                >
+
+                    <span id="nightPercent">
+                        0%
+                    </span>
+
+                </div>
+
+
+                <div class="stats">
+
+                    <div>
+
+                        <b
+                            id="nightCompleted"
+                            class="red"
+                        >
+                            0
+                        </b>
+
+                        Completed
+
+                    </div>
+
+
+                    <div>
+
+                        <b id="nightPending">
+                            0
+                        </b>
+
+                        Pending
+
+                    </div>
+
+
+                    <div>
+
+                        <b id="nightTotal">
+                            0
+                        </b>
+
+                        Total
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <div class="section-title">
+            Today's Work
+        </div>
+
+
+        <div id="nightTasks"></div>
+
+
+
+        <div class="tomorrow">
+
+
+            <div class="tomorrow-title">
+                PLAN FOR TOMORROW
+            </div>
+
+
+            <div class="add-row">
+
+                <input
+                    id="tomorrowInput"
+                    placeholder="Enter tomorrow's task..."
+                >
+
+                <button id="addTomorrow">
+                    + ADD
+                </button>
 
             </div>
 
 
-            <div
-              id="taskList"
-              class="task-list"
-            ></div>
+            <div id="tomorrowTasks"></div>
 
 
-            <div class="progress-line">
+        </div>
 
-              <div
-                id="barFill"
-                class="bar-fill"
-              ></div>
+
+
+        <div class="quote">
+
+            Keep going, Sister. ❤️
+
+            <br>
+
+            Tomorrow is another chance to win.
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+MORNING
+===================================================== -->
+
+<div class="dashboard-card">
+
+
+    <div class="card-header">
+
+        <span class="menu">
+            ☰
+        </span>
+
+        <span class="card-name gold">
+            MY LOVELY SISTER ❤️
+        </span>
+
+        <span
+            class="card-symbol"
+            style="color:#ffb000"
+        >
+            ✦
+        </span>
+
+    </div>
+
+
+
+    <div class="card-body">
+
+
+        <div class="welcome gold">
+
+            <h2>
+                Good Morning, Sister ☀️
+            </h2>
+
+            <p>
+                Let's make today legendary.
+            </p>
+
+        </div>
+
+
+
+        <div
+            class="date-box gold"
+            id="morningDate"
+        >
+            TODAY
+        </div>
+
+
+
+        <div class="progress-box">
+
+
+            <div class="progress-title">
+                Today's Progress
+            </div>
+
+
+            <div class="progress-content">
+
+
+                <div
+                    class="circle gold"
+                    id="morningCircle"
+                >
+
+                    <span id="morningPercent">
+                        0%
+                    </span>
+
+                </div>
+
+
+                <div class="stats">
+
+
+                    <div>
+
+                        <b
+                            id="morningCompleted"
+                            class="gold-text"
+                        >
+                            0
+                        </b>
+
+                        Completed
+
+                    </div>
+
+
+                    <div>
+
+                        <b id="morningPending">
+                            0
+                        </b>
+
+                        Pending
+
+                    </div>
+
+
+                    <div>
+
+                        <b id="morningTotal">
+                            0
+                        </b>
+
+                        Total
+
+                    </div>
+
+
+                </div>
+
 
             </div>
 
 
-            <div class="progress-row">
+        </div>
 
-              <strong id="completedSummary">
-                0 / 0 MISSIONS COMPLETED
-              </strong>
 
-              <b id="progressPercent">
-                0%
-              </b>
 
+        <!-- =================================================
+        JARVIS DAILY BRIEF
+        ================================================= -->
+
+        <div class="section-title">
+            JARVIS DAILY BRIEF
+        </div>
+
+
+        <div class="jarvis-brief">
+
+
+            <div class="jarvis-brief-title">
+                🤖 JARVIS DAILY BRIEF
             </div>
 
-          </section>
 
+            <div class="brief-item">
 
-          <!-- TODAY'S PROGRESS -->
-
-          <section
-            class="progress-card hud-panel"
-            id="statsSection"
-          >
-
-            <div
-              class="ring"
-              id="progressRing"
-            >
-
-              <div>
-
-                <strong id="ringPercent">
-                  0%
+                <strong>
+                    🎯 TODAY'S MISSION
                 </strong>
 
                 <span>
-                  COMPLETE
+                    Complete your planned tasks
+                    and make today count.
                 </span>
-
-              </div>
 
             </div>
 
 
-            <div class="stats-numbers">
+            <div class="brief-item">
 
-              <h3>
-                TODAY'S PROGRESS
-              </h3>
-
-
-              <div>
-
-                <b id="completedCount">
-                  0
-                </b>
+                <strong>
+                    🔥 PROTECT YOUR STREAK
+                </strong>
 
                 <span>
-                  COMPLETED
+                    Stay consistent today and
+                    keep your winning streak alive.
                 </span>
-
-              </div>
-
-
-              <div>
-
-                <b id="pendingCount">
-                  0
-                </b>
-
-                <span>
-                  PENDING
-                </span>
-
-              </div>
-
-
-              <div>
-
-                <b id="totalCount">
-                  0
-                </b>
-
-                <span>
-                  TOTAL MISSIONS
-                </span>
-
-              </div>
-
-            </div>
-
-          </section>
-
-
-          <!-- ACHIEVEMENTS -->
-
-          <section
-            class="achievements-card hud-panel"
-            id="achievementsSection"
-          >
-
-            <div class="section-header">
-
-              <h2>
-                ♨ ACHIEVEMENTS
-              </h2>
-
-              <button
-                class="plain-button"
-              >
-                VIEW ALL ›
-              </button>
 
             </div>
 
 
-            <div class="achievement-row">
+            <div class="brief-item">
 
-
-              <div
-                id="achievement1"
-                class="achievement"
-              >
+                <strong>
+                    ⏱ STAY CONSISTENT
+                </strong>
 
                 <span>
-                  ♨
+                    Small progress every day
+                    becomes something great.
                 </span>
-
-                <b>
-                  FIRST DAY
-                </b>
-
-                <small>
-                  LOCKED
-                </small>
-
-              </div>
-
-
-              <div
-                id="achievement3"
-                class="achievement locked"
-              >
-
-                <span>
-                  ♨
-                </span>
-
-                <b>
-                  3 DAY STREAK
-                </b>
-
-                <small>
-                  LOCKED
-                </small>
-
-              </div>
-
-
-              <div
-                id="achievement7"
-                class="achievement locked"
-              >
-
-                <span>
-                  ♨
-                </span>
-
-                <b>
-                  7 DAY STREAK
-                </b>
-
-                <small>
-                  LOCKED
-                </small>
-
-              </div>
-
-
-              <div
-                id="achievement30"
-                class="achievement locked"
-              >
-
-                <span>
-                  ♙
-                </span>
-
-                <b>
-                  30 DAY STREAK
-                </b>
-
-                <small>
-                  LOCKED
-                </small>
-
-              </div>
-
-
-              <div class="achievement locked">
-
-                <span>
-                  ♙
-                </span>
-
-                <b>
-                  PERFECT WEEK
-                </b>
-
-                <small>
-                  LOCKED
-                </small>
-
-              </div>
-
 
             </div>
 
-          </section>
+
+            <div class="brief-streak">
+
+                <strong id="briefStreak">
+                    0
+                </strong>
+
+                <span>
+                    DAYS CURRENT STREAK 🔥
+                </span>
+
+            </div>
 
 
-          <!-- BOTTOM NAVIGATION -->
+            <div class="brief-quote">
 
-          <nav class="bottom-nav">
+                "Small progress every day
+                becomes success."
 
-            <button class="active">
-
-              ♨
-
-              <span>
-                HOME
-              </span>
-
-            </button>
-
-
-            <button
-              onclick="
-                document
-                .getElementById('statsSection')
-                .scrollIntoView()
-              "
-            >
-
-              ▥
-
-              <span>
-                STATS
-              </span>
-
-            </button>
-
-
-            <button class="center-nav">
-              ◈
-            </button>
-
-
-            <button
-              onclick="
-                document
-                .getElementById('planSection')
-                .scrollIntoView()
-              "
-            >
-
-              ▣
-
-              <span>
-                PLAN
-              </span>
-
-            </button>
-
-
-            <button
-              onclick="
-                document
-                .getElementById('achievementsSection')
-                .scrollIntoView()
-              "
-            >
-
-              ♜
-
-              <span>
-                ACHIEVEMENTS
-              </span>
-
-            </button>
-
-          </nav>
+            </div>
 
 
         </div>
 
-      </section>
 
 
-      <!-- =========================
-           RIGHT COLUMN
-      ========================== -->
+        <div class="quote">
 
-      <aside class="right-column">
+            ✦
 
+            <br>
 
-        <!-- JARVIS STATUS -->
+            "One day or day one."
 
-        <section class="info-card jarvis-card">
+            <br>
 
-          <div class="card-heading">
-
-            <span>06.</span>
-
-            JARVIS STATUS
-
-          </div>
-
-
-          <div class="jarvis-core">
-
-            <div class="jarvis-circle">
-              ◈
-            </div>
-
-            <div>
-
-              <strong>
-                JARVIS
-              </strong>
-
-              <span>
-                SYSTEM ASSISTANT
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <div class="jarvis-status-line">
-
-            <i></i>
-
-            <span id="jarvisSystemStatus">
-              SYSTEM: AWAITING MISSIONS
+            <span style="color:#ff3333">
+                You decide.
             </span>
 
-          </div>
+        </div>
 
 
-          <div class="jarvis-progress">
+    </div>
 
-            <div class="jarvis-progress-top">
-
-              <span>
-                TODAY'S COMPLETION
-              </span>
-
-              <b id="jarvisPercent">
-                0%
-              </b>
-
-            </div>
+</div>
 
 
-            <div class="jarvis-bar">
 
-              <i id="jarvisBar"></i>
+<!-- =====================================================
+HISTORY
+===================================================== -->
 
-            </div>
-
-          </div>
+<div class="dashboard-card">
 
 
-          <div class="jarvis-message">
+    <div class="card-header">
 
-            <div class="jarvis-label">
-              JARVIS MESSAGE
-            </div>
+        <span class="menu">
+            ☰
+        </span>
 
-            <p id="jarvisMessage">
-              Good evening. Your missions are waiting.
+        <span class="card-name">
+            MY LOVELY SISTER ❤️
+        </span>
+
+        <span class="card-symbol">
+            📅
+        </span>
+
+    </div>
+
+
+
+    <div class="card-body">
+
+
+        <div class="welcome">
+
+            <h2>
+                Daily History 📅
+            </h2>
+
+            <p>
+                A look at your consistency.
             </p>
 
-          </div>
+        </div>
 
 
-          <div class="jarvis-objective">
 
-            <span>
-              NEXT OBJECTIVE
-            </span>
+        <div class="section-title">
+            YOUR DAILY PERFORMANCE
+        </div>
 
-            <strong id="jarvisObjective">
-              Add today's first mission.
+
+        <div id="phoneHistory"></div>
+
+
+
+        <div class="quote">
+
+            🔥
+
+            <br>
+
+            Every completed day
+            makes you stronger.
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+STREAK + ACHIEVEMENTS
+===================================================== -->
+
+<div class="bottom">
+
+
+<!-- =====================================================
+STREAK
+===================================================== -->
+
+<div class="bottom-card">
+
+
+    <div class="bottom-title">
+        🔥 CURRENT STREAK
+    </div>
+
+
+    <div class="streak-content">
+
+
+        <div class="streak-circle">
+
+            <strong id="bigStreak">
+                0
             </strong>
 
-          </div>
+            <small>
+                DAYS
+            </small>
+
+        </div>
 
 
-          <div class="jarvis-signature">
-            — JARVIS
-          </div>
+        <div class="streak-info">
 
-        </section>
-
-
-        <!-- TOMORROW'S PLAN -->
-
-        <section
-          id="planSection"
-          class="info-card"
-        >
-
-          <div class="card-heading">
-            TOMORROW'S PLAN
-          </div>
-
-
-          <div class="tomorrow-input">
-
-            <input
-              id="tomorrowInput"
-              placeholder="What will you do tomorrow?"
-            >
-
-            <button id="tomorrowAddButton">
-              + ADD
-            </button>
-
-          </div>
-
-
-          <div
-            id="tomorrowList"
-            class="tomorrow-list"
-          ></div>
-
-        </section>
-
-
-        <!-- STREAK CARD -->
-
-        <section class="info-card">
-
-          <div class="card-heading">
-            STREAK CARD
-          </div>
-
-
-          <div class="right-streak">
-
-            <div class="fire-large">
-              ♨
+            <div class="green">
+                ✓ 100% day = Streak +1
             </div>
 
-            <small>
-              CURRENT STREAK
-            </small>
+            <div class="red">
+                ✕ Incomplete day = Streak breaks
+            </div>
+
+            <br>
+
+            Keep the streak alive, Sister! 🔥
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+ACHIEVEMENTS
+===================================================== -->
+
+<div class="bottom-card">
+
+
+    <div class="bottom-title">
+        🏆 STREAK ACHIEVEMENTS
+    </div>
+
+
+    <div class="achievements">
+
+
+        <div class="achievement">
+
+            <div class="achievement-icon">
+                ✦
+            </div>
 
             <strong>
-
-              <span id="rightStreak">
-                0
-              </span>
-
-              DAYS
-
+                FIRST DAY
             </strong>
 
-            <em>
-              “Keep the armor strong.”
-            </em>
-
-          </div>
-
-        </section>
-
-
-        <!-- DAILY HISTORY -->
-
-        <section class="info-card">
-
-          <div class="card-heading">
-
-            DAILY HISTORY
-
             <small>
-              (HISTORY PAGE)
+                1 day
             </small>
 
-          </div>
+        </div>
 
 
-          <div
-            id="historyList"
-            class="history-list"
-          ></div>
+        <div class="achievement">
 
-        </section>
+            <div class="achievement-icon">
+                🔥
+            </div>
+
+            <strong>
+                3 DAY
+            </strong>
+
+            <small>
+                3 days
+            </small>
+
+        </div>
 
 
-        <!-- ADD TODAY'S MISSION -->
+        <div class="achievement">
 
-        <section class="info-card add-mission-card">
+            <div class="achievement-icon">
+                🦾
+            </div>
 
-          <div class="card-heading">
-            ADD TODAY'S MISSION
-          </div>
+            <strong>
+                7 DAY
+            </strong>
+
+            <small>
+                7 days
+            </small>
+
+        </div>
 
 
-          <div class="today-input">
+        <div class="achievement">
 
-            <input
-              id="taskInput"
-              placeholder="Enter today's mission..."
+            <div class="achievement-icon">
+                🦾
+            </div>
+
+            <strong>
+                30 DAY
+            </strong>
+
+            <small>
+                30 days
+            </small>
+
+        </div>
+
+
+        <div class="achievement">
+
+            <div class="achievement-icon">
+                ❤️
+            </div>
+
+            <strong>
+                PERFECT
+            </strong>
+
+            <small>
+                Week
+            </small>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+DAILY CYCLE
+===================================================== -->
+
+<div class="daily-cycle">
+
+
+    <div class="daily-heading">
+
+
+        <div class="daily-icon">
+            📅
+        </div>
+
+
+        <h2>
+
+            DAILY CYCLE
+
+            <br>
+
+            SUMMARY
+
+        </h2>
+
+
+    </div>
+
+
+
+    <div class="cycle">
+
+
+        <div class="cycle-item">
+
+            <div class="cycle-icon">
+                🌙
+            </div>
+
+            <strong>
+                Night
+            </strong>
+
+            <span>
+                Plan Tomorrow
+            </span>
+
+        </div>
+
+
+        <div class="arrow">
+            →
+        </div>
+
+
+        <div class="cycle-item">
+
+            <div class="cycle-icon">
+                ☀️
+            </div>
+
+            <strong>
+                Morning
+            </strong>
+
+            <span>
+                Tasks Become Today
+            </span>
+
+        </div>
+
+
+        <div class="arrow">
+            →
+        </div>
+
+
+        <div class="cycle-item">
+
+            <div class="cycle-icon">
+                🎯
+            </div>
+
+            <strong>
+                Daily
+            </strong>
+
+            <span>
+                Complete Missions
+            </span>
+
+        </div>
+
+
+        <div class="arrow">
+            →
+        </div>
+
+
+        <div class="cycle-item">
+
+            <div class="cycle-icon">
+                🌙
+            </div>
+
+            <strong>
+                Night
+            </strong>
+
+            <span>
+                Results → History
+            </span>
+
+        </div>
+
+
+        <div class="arrow">
+            →
+        </div>
+
+
+        <div class="cycle-item">
+
+            <div class="cycle-icon">
+                ❤️
+            </div>
+
+            <strong>
+                Consistency
+            </strong>
+
+            <span>
+                Builds a Better You
+            </span>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+</main>
+
+</div>
+
+
+
+<!-- =====================================================
+FIREBASE
+===================================================== -->
+
+<script type="module">
+
+import {
+    initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+
+import {
+    getFirestore,
+    collection,
+    query,
+    where,
+    onSnapshot,
+    addDoc,
+    deleteDoc,
+    doc,
+    serverTimestamp
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+
+const firebaseConfig = {
+
+    apiKey:
+    "AIzaSyCoM00m6KgrWHOn_UB9_Qf9MAowGtovZSA",
+
+    authDomain:
+    "sister-accountability-app.firebaseapp.com",
+
+    projectId:
+    "sister-accountability-app",
+
+    storageBucket:
+    "sister-accountability-app.firebasestorage.app",
+
+    messagingSenderId:
+    "311794164387",
+
+    appId:
+    "1:311794164387:web:ccb0dbc236fe8111d51516",
+
+    measurementId:
+    "G-S95T59VWRJ"
+
+};
+
+
+
+const app =
+    initializeApp(firebaseConfig);
+
+
+const auth =
+    getAuth(app);
+
+
+const db =
+    getFirestore(app);
+
+
+
+/* ================= ELEMENTS ================= */
+
+const loginPage =
+    document.getElementById(
+        "loginPage"
+    );
+
+
+const dashboard =
+    document.getElementById(
+        "dashboard"
+    );
+
+
+const email =
+    document.getElementById(
+        "email"
+    );
+
+
+const password =
+    document.getElementById(
+        "password"
+    );
+
+
+const loginButton =
+    document.getElementById(
+        "loginButton"
+    );
+
+
+const loginMessage =
+    document.getElementById(
+        "loginMessage"
+    );
+
+
+const logoutButton =
+    document.getElementById(
+        "logoutButton"
+    );
+
+
+
+/* ================= DATE ================= */
+
+function getToday(){
+
+    return new Date()
+        .toLocaleDateString(
+            "en-CA",
+            {
+                timeZone:"Asia/Kolkata"
+            }
+        );
+
+}
+
+
+
+function getTomorrow(){
+
+    const d =
+        new Date();
+
+    d.setDate(
+        d.getDate()+1
+    );
+
+    return d.toLocaleDateString(
+        "en-CA",
+        {
+            timeZone:"Asia/Kolkata"
+        }
+    );
+
+}
+
+
+
+function prettyDate(date){
+
+    return new Date(
+        date+"T00:00:00"
+    ).toLocaleDateString(
+        "en-IN",
+        {
+            day:"2-digit",
+            month:"short",
+            year:"numeric"
+        }
+    );
+
+}
+
+
+
+const TODAY =
+    getToday();
+
+
+const TOMORROW =
+    getTomorrow();
+
+
+
+document.getElementById(
+    "nightDate"
+).textContent =
+    "TONIGHT • "+prettyDate(TODAY);
+
+
+
+document.getElementById(
+    "morningDate"
+).textContent =
+    "TODAY • "+prettyDate(TODAY);
+
+
+
+/* ================= LOGIN ================= */
+
+loginButton.addEventListener(
+    "click",
+    async()=>{
+
+        const e =
+            email.value.trim();
+
+        const p =
+            password.value;
+
+
+        if(!e || !p){
+
+            loginMessage.textContent =
+                "Enter email and password.";
+
+            return;
+
+        }
+
+
+
+        try{
+
+            await signInWithEmailAndPassword(
+                auth,
+                e,
+                p
+            );
+
+            loginMessage.textContent="";
+
+        }
+        catch(error){
+
+            console.error(error);
+
+            loginMessage.textContent =
+                "Login failed. Check your details.";
+
+        }
+
+    }
+);
+
+
+
+password.addEventListener(
+    "keydown",
+    e=>{
+
+        if(e.key==="Enter"){
+
+            loginButton.click();
+
+        }
+
+    }
+);
+
+
+
+/* ================= LOGOUT ================= */
+
+logoutButton.addEventListener(
+    "click",
+    ()=>{
+
+        signOut(auth);
+
+    }
+);
+
+
+
+/* ================= AUTH ================= */
+
+onAuthStateChanged(
+    auth,
+    user=>{
+
+        if(user){
+
+            loginPage.style.display =
+                "none";
+
+            dashboard.style.display =
+                "block";
+
+            loadTasks(
+                user.uid
+            );
+
+        }
+        else{
+
+            loginPage.style.display =
+                "flex";
+
+            dashboard.style.display =
+                "none";
+
+        }
+
+    }
+);
+
+
+
+/* ================= LOAD TASKS ================= */
+
+function loadTasks(userId){
+
+    const q =
+        query(
+            collection(
+                db,
+                "tasks"
+            ),
+
+            where(
+                "userId",
+                "==",
+                userId
+            )
+        );
+
+
+    onSnapshot(
+        q,
+        snapshot=>{
+
+            const tasks=[];
+
+
+            snapshot.forEach(
+                item=>{
+
+                    tasks.push({
+
+                        id:item.id,
+
+                        ...item.data()
+
+                    });
+
+                }
+            );
+
+
+
+            const todayTasks =
+                tasks.filter(
+                    task=>
+                        task.date===TODAY
+                );
+
+
+
+            const tomorrowTasks =
+                tasks.filter(
+                    task=>
+                        task.date===TOMORROW
+                );
+
+
+
+            updateDashboard(
+                todayTasks,
+                tomorrowTasks,
+                tasks
+            );
+
+        }
+    );
+
+}
+
+
+
+/* ================= UPDATE ================= */
+
+function updateDashboard(
+    todayTasks,
+    tomorrowTasks,
+    allTasks
+){
+
+    const total =
+        todayTasks.length;
+
+
+    const completed =
+        todayTasks.filter(
+            task=>task.completed
+        ).length;
+
+
+    const pending =
+        total-completed;
+
+
+    const percentage =
+        total===0
+        ?0
+        :Math.round(
+            completed/total*100
+        );
+
+
+
+    document.getElementById(
+        "nightPercent"
+    ).textContent =
+        percentage+"%";
+
+
+    document.getElementById(
+        "nightCompleted"
+    ).textContent =
+        completed;
+
+
+    document.getElementById(
+        "nightPending"
+    ).textContent =
+        pending;
+
+
+    document.getElementById(
+        "nightTotal"
+    ).textContent =
+        total;
+
+
+
+    document.getElementById(
+        "morningPercent"
+    ).textContent =
+        percentage+"%";
+
+
+    document.getElementById(
+        "morningCompleted"
+    ).textContent =
+        completed;
+
+
+    document.getElementById(
+        "morningPending"
+    ).textContent =
+        pending;
+
+
+    document.getElementById(
+        "morningTotal"
+    ).textContent =
+        total;
+
+
+
+    setCircle(
+        "nightCircle",
+        percentage,
+        "#ff2020"
+    );
+
+
+    setCircle(
+        "morningCircle",
+        percentage,
+        "#ffb000"
+    );
+
+
+
+    renderTasks(
+        todayTasks
+    );
+
+
+    renderTomorrow(
+        tomorrowTasks
+    );
+
+
+    renderHistory(
+        allTasks
+    );
+
+
+    calculateStreak(
+        allTasks
+    );
+
+}
+
+
+
+/* ================= CIRCLE ================= */
+
+function setCircle(
+    id,
+    percentage,
+    color
+){
+
+    const circle =
+        document.getElementById(
+            id
+        );
+
+
+    const degree =
+        percentage*3.6;
+
+
+    circle.style.background =
+        `
+        conic-gradient(
+            ${color} 0deg,
+            ${color} ${degree}deg,
+            #333 ${degree}deg,
+            #333 360deg
+        )
+        `;
+
+}
+
+
+
+/* ================= TASK RENDER ================= */
+
+function renderTasks(tasks){
+
+    const night =
+        document.getElementById(
+            "nightTasks"
+        );
+
+
+    night.innerHTML="";
+
+
+    if(tasks.length===0){
+
+        night.innerHTML=`
+
+            <div
+                style="
+                color:#666;
+                text-align:center;
+                padding:15px;
+                font-size:9px;
+                "
             >
+                No tasks for today.
+            </div>
 
-            <button id="addButton">
-              + ADD
-            </button>
+        `;
 
-          </div>
+        return;
 
-        </section>
-
-
-      </aside>
-
-    </main>
-
-  </section>
+    }
 
 
-  <script
-    type="module"
-    src="app.js"
-  ></script>
+
+    tasks.forEach(
+        task=>{
+
+            const html=`
+
+                <div class="task">
+
+                    <div class="task-left">
+
+                        <span
+                            class="
+                            task-check
+                            ${
+                                task.completed
+                                ?"completed"
+                                :"pending"
+                            }
+                            "
+                        >
+
+                            ${
+                                task.completed
+                                ?"✓"
+                                :"○"
+                            }
+
+                        </span>
+
+
+                        <span>
+
+                            ${escapeHtml(
+                                task.text
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+
+                    <span
+                        class="
+                        task-status
+                        ${
+                            task.completed
+                            ?""
+                            :"pending-status"
+                        }
+                        "
+                    >
+
+                        ${
+                            task.completed
+                            ?"COMPLETED"
+                            :"PENDING"
+                        }
+
+                    </span>
+
+                </div>
+
+            `;
+
+
+            night.insertAdjacentHTML(
+                "beforeend",
+                html
+            );
+
+        }
+    );
+
+}
+
+
+
+/* ================= TOMORROW ================= */
+
+function renderTomorrow(tasks){
+
+    const container =
+        document.getElementById(
+            "tomorrowTasks"
+        );
+
+
+    container.innerHTML="";
+
+
+    if(tasks.length===0){
+
+        container.innerHTML=`
+
+            <div
+                style="
+                color:#666;
+                font-size:8px;
+                margin-top:7px;
+                "
+            >
+                No tomorrow tasks yet.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+
+    tasks.forEach(
+        task=>{
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "tomorrow-task";
+
+
+            row.innerHTML=`
+
+                <span>
+
+                    ○ ${escapeHtml(
+                        task.text
+                    )}
+
+                </span>
+
+
+                <button
+                    class="delete"
+                    onclick="
+                        deleteTask('${task.id}')
+                    "
+                >
+
+                    ×
+
+                </button>
+
+            `;
+
+
+            container.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+
+/* ================= ADD TOMORROW ================= */
+
+document.getElementById(
+    "addTomorrow"
+).addEventListener(
+    "click",
+    addTomorrow
+);
+
+
+
+document.getElementById(
+    "tomorrowInput"
+).addEventListener(
+    "keydown",
+    e=>{
+
+        if(e.key==="Enter"){
+
+            addTomorrow();
+
+        }
+
+    }
+);
+
+
+
+async function addTomorrow(){
+
+    const input =
+        document.getElementById(
+            "tomorrowInput"
+        );
+
+
+    const text =
+        input.value.trim();
+
+
+    if(!text){
+
+        return;
+
+    }
+
+
+
+    const user =
+        auth.currentUser;
+
+
+    if(!user){
+
+        return;
+
+    }
+
+
+
+    try{
+
+        await addDoc(
+            collection(
+                db,
+                "tasks"
+            ),
+            {
+
+                text:text,
+
+                completed:false,
+
+                date:TOMORROW,
+
+                userId:user.uid,
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        input.value="";
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "Could not add task."
+        );
+
+    }
+
+}
+
+
+
+/* ================= DELETE ================= */
+
+window.deleteTask =
+async function(id){
+
+    try{
+
+        await deleteDoc(
+            doc(
+                db,
+                "tasks",
+                id
+            )
+        );
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "Could not delete task."
+        );
+
+    }
+
+};
+
+
+
+/* ================= HISTORY ================= */
+
+function renderHistory(tasks){
+
+    const history={};
+
+
+    tasks.forEach(
+        task=>{
+
+            if(
+                !task.date ||
+                task.date>TODAY
+            ){
+
+                return;
+
+            }
+
+
+
+            if(!history[task.date]){
+
+                history[task.date]={
+
+                    total:0,
+
+                    completed:0
+
+                };
+
+            }
+
+
+
+            history[
+                task.date
+            ].total++;
+
+
+
+            if(task.completed){
+
+                history[
+                    task.date
+                ].completed++;
+
+            }
+
+        }
+    );
+
+
+
+    const container =
+        document.getElementById(
+            "phoneHistory"
+        );
+
+
+    container.innerHTML="";
+
+
+
+    const dates =
+        Object.keys(history)
+        .sort()
+        .reverse();
+
+
+
+    if(dates.length===0){
+
+        container.innerHTML=`
+
+            <div
+                style="
+                color:#666;
+                text-align:center;
+                padding:30px;
+                font-size:9px;
+                "
+            >
+                No history yet.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+
+    dates.forEach(
+        date=>{
+
+            const item =
+                history[date];
+
+
+            const percent =
+                Math.round(
+                    item.completed /
+                    item.total *
+                    100
+                );
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "history-card";
+
+
+            card.innerHTML=`
+
+                <div class="history-top">
+
+                    <span>
+                        ${prettyDate(date)}
+                    </span>
+
+                    <span
+                        class="history-percent"
+                    >
+                        ${percent}%
+                    </span>
+
+                </div>
+
+
+                <div class="history-sub">
+
+                    ${item.completed}
+                    /
+                    ${item.total}
+                    Completed
+
+                </div>
+
+
+                <div class="bar">
+
+                    <div
+                        class="bar-fill"
+                        style="
+                        width:${percent}%
+                        "
+                    ></div>
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+
+/* ================= STREAK ================= */
+
+function calculateStreak(tasks){
+
+    const days={};
+
+
+    tasks.forEach(
+        task=>{
+
+            if(!task.date){
+
+                return;
+
+            }
+
+
+
+            if(!days[task.date]){
+
+                days[task.date]={
+
+                    total:0,
+
+                    completed:0
+
+                };
+
+            }
+
+
+
+            days[
+                task.date
+            ].total++;
+
+
+
+            if(task.completed){
+
+                days[
+                    task.date
+                ].completed++;
+
+            }
+
+        }
+    );
+
+
+
+    let streak=0;
+
+
+    const date =
+        new Date();
+
+
+
+    while(true){
+
+        const current =
+            date.toLocaleDateString(
+                "en-CA",
+                {
+                    timeZone:
+                        "Asia/Kolkata"
+                }
+            );
+
+
+        const day =
+            days[current];
+
+
+        if(
+            !day ||
+            day.total===0 ||
+            day.completed!==day.total
+        ){
+
+            break;
+
+        }
+
+
+        streak++;
+
+
+        date.setDate(
+            date.getDate()-1
+        );
+
+    }
+
+
+
+    document.getElementById(
+        "bigStreak"
+    ).textContent =
+        streak;
+
+
+
+    /* JARVIS BRIEF STREAK */
+
+    document.getElementById(
+        "briefStreak"
+    ).textContent =
+        streak;
+
+}
+
+
+
+/* ================= ESCAPE ================= */
+
+function escapeHtml(text){
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+</script>
 
 </body>
 </html>
