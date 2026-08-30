@@ -1,1460 +1,3039 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>My Lovely Sister ❤️</title>
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background:
-                linear-gradient(135deg, #eef6ff, #f8f1ff, #fff5f8);
-            min-height: 100vh;
-            color: #202431;
-        }
-
-        /* LOGIN */
-
-        .login-page {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .login-card {
-            width: 100%;
-            max-width: 430px;
-            background: rgba(255,255,255,0.94);
-            padding: 45px 35px;
-            border-radius: 28px;
-            text-align: center;
-            box-shadow: 0 25px 70px rgba(50,70,120,0.12);
-        }
-
-        .heart-logo {
-            width: 75px;
-            height: 75px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #eef5ff;
-            font-size: 36px;
-        }
-
-        .login-card h1 {
-            font-size: 30px;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            color: #7d8290;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .input {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid #e0e5ef;
-            border-radius: 13px;
-            background: #fafcff;
-            font-size: 15px;
-            outline: none;
-        }
-
-        .input:focus {
-            border-color: #7ca8e8;
-        }
-
-        .login-button {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 13px;
-            background: #477fc9;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        #loginMessage {
-            color: #e05260;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        /* DASHBOARD */
-
-        #dashboard {
-            display: none;
-        }
-
-        .topbar {
-            height: 75px;
-            background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #e7eaf2;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 7%;
-        }
-
-        .brand {
-            font-size: 19px;
-            font-weight: bold;
-        }
-
-        .logout {
-            border: none;
-            padding: 10px 17px;
-            border-radius: 10px;
-            background: #f0f3f8;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .container {
-            width: 92%;
-            max-width: 950px;
-            margin: auto;
-            padding: 55px 0 60px;
-        }
-
-        /* HERO */
-
-        .hero {
-            text-align: center;
-            margin-bottom: 35px;
-        }
-
-        .hero .flower {
-            font-size: 38px;
-            margin-bottom: 12px;
-        }
-
-        .hero h1 {
-            font-size: 42px;
-            margin-bottom: 12px;
-        }
-
-        .hero h1 span {
-            color: #477fc9;
-        }
-
-        .hero p {
-            color: #747a89;
-            font-size: 16px;
-            line-height: 1.7;
-        }
-
-        /* PROUD */
-
-        .proud-card {
-            background: linear-gradient(135deg, #ffffff, #f4f8ff);
-            border: 1px solid #e1e8f4;
-            border-radius: 25px;
-            padding: 30px;
-            margin-bottom: 25px;
-            text-align: center;
-            box-shadow: 0 15px 40px rgba(50,80,130,0.07);
-        }
-
-        .proud-card h2 {
-            font-size: 27px;
-            margin-bottom: 10px;
-        }
-
-        .proud-card p {
-            color: #737987;
-            line-height: 1.7;
-        }
-
-        /* PROGRESS */
-
-        .progress-card {
-            background: white;
-            border-radius: 25px;
-            padding: 32px;
-            border: 1px solid #e6eaf1;
-            margin-bottom: 35px;
-            box-shadow: 0 12px 35px rgba(40,50,80,0.05);
-        }
-
-        .progress-title {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .progress-title small {
-            color: #8a90a0;
-            font-weight: bold;
-            letter-spacing: 1.5px;
-        }
-
-        .progress-title h2 {
-            margin-top: 8px;
-            font-size: 27px;
-        }
-
-        .progress-circle {
-            width: 145px;
-            height: 145px;
-            border-radius: 50%;
-            margin: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background:
-                conic-gradient(
-                    #5b8fd4 0deg,
-                    #5b8fd4 0deg,
-                    #e9edf4 0deg,
-                    #e9edf4 360deg
-                );
-            position: relative;
-        }
-
-        .progress-circle::after {
-            content: "";
-            width: 115px;
-            height: 115px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-        }
-
-        .progress-circle span {
-            position: relative;
-            z-index: 2;
-            font-size: 30px;
-            font-weight: bold;
-            color: #477fc9;
-        }
-
-        .progress-message {
-            text-align: center;
-            margin-top: 20px;
-            color: #777e8d;
-        }
-
-        /* CELEBRATION */
-
-        .celebration {
-            display: none;
-            text-align: center;
-            background: white;
-            border-radius: 25px;
-            padding: 35px;
-            margin-bottom: 25px;
-            border: 1px solid #e5e8ef;
-        }
-
-        .celebration .emoji {
-            font-size: 45px;
-        }
-
-        .celebration h2 {
-            font-size: 30px;
-            margin: 10px 0;
-        }
-
-        .celebration p {
-            color: #777e8d;
-        }
-
-        /* TASKS */
-
-        .tasks-section {
-            margin-bottom: 35px;
-        }
-
-        .section-heading {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .section-heading h2 {
-            font-size: 27px;
-        }
-
-        .section-heading p {
-            color: #858b99;
-            margin-top: 7px;
-        }
-
-        .task-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .task {
-            background: rgba(255,255,255,0.95);
-            border: 1px solid #e4e8ef;
-            padding: 19px 20px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 7px 20px rgba(30,40,70,0.04);
-        }
-
-        .task-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .task-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #f0f5fc;
-        }
-
-        .task-name {
-            font-weight: bold;
-        }
-
-        .completed .task-name {
-            text-decoration: line-through;
-            color: #9297a2;
-        }
-
-        .status {
-            padding: 7px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .done {
-            background: #edf7f0;
-            color: #4c9a63;
-        }
-
-        .pending {
-            background: #fff5e8;
-            color: #c38335;
-        }
-
-        /* HISTORY */
-
-        .history-section {
-            margin-top: 45px;
-            margin-bottom: 35px;
-        }
-
-        .history-heading {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .history-heading h2 {
-            font-size: 27px;
-        }
-
-        .history-heading p {
-            color: #858b99;
-            margin-top: 7px;
-        }
-
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .history-card {
-            background: white;
-            border: 1px solid #e4e8ef;
-            border-radius: 18px;
-            padding: 18px 20px;
-            box-shadow: 0 7px 20px rgba(30,40,70,0.04);
-        }
-
-        .history-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .history-date {
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .history-result {
-            color: #777e8d;
-            font-size: 13px;
-        }
-
-        .history-bar {
-            height: 10px;
-            background: #edf0f5;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .history-fill {
-            height: 100%;
-            background: #5b8fd4;
-            border-radius: 20px;
-            transition: width 0.5s ease;
-        }
-
-        .history-bottom {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            color: #777e8d;
-            font-size: 13px;
-        }
-
-        .history-empty {
-            background: white;
-            padding: 25px;
-            border-radius: 18px;
-            text-align: center;
-            color: #777e8d;
-        }
-
-        /* MESSAGE */
-
-        .message-card {
-            background: linear-gradient(135deg, #f7faff, #fff5fa);
-            border: 1px solid #e8e6ee;
-            border-radius: 25px;
-            padding: 35px 30px;
-            text-align: center;
-            margin-top: 35px;
-        }
-
-        .message-card .icon {
-            font-size: 32px;
-            margin-bottom: 15px;
-        }
-
-        .message-card h2 {
-            margin-bottom: 15px;
-        }
-
-        .message-card p {
-            max-width: 650px;
-            margin: auto;
-            color: #737987;
-            line-height: 1.9;
-            font-style: italic;
-        }
-
-        .signature {
-            margin-top: 20px;
-            font-weight: bold;
-            color: #477fc9;
-        }
-
-        /* MOBILE */
-
-        @media (max-width: 650px) {
-
-            .topbar {
-                padding: 0 20px;
-            }
-
-            .container {
-                width: 92%;
-                padding-top: 40px;
-            }
-
-            .hero h1 {
-                font-size: 31px;
-            }
-
-            .hero p {
-                font-size: 14px;
-            }
-
-            .progress-card {
-                padding: 25px 15px;
-            }
-
-            .task {
-                padding: 15px;
-            }
-
-            .task-left {
-                gap: 10px;
-            }
-
-            .task-name {
-                font-size: 14px;
-            }
-
-            .status {
-                font-size: 10px;
-                padding: 6px 8px;
-            }
-
-            .message-card {
-                padding: 28px 20px;
-            }
-        }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Lovely Sister ❤️</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --red:#ff2020;
+    --dark-red:#780000;
+    --gold:#ffb000;
+    --green:#00e65a;
+    --orange:#ff7500;
+    --bg:#020202;
+    --panel:#070707;
+    --border:#4d0b0b;
+    --text:#eeeeee;
+    --muted:#888;
+}
+
+body{
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(255,0,0,.10),
+            transparent 35%
+        ),
+        #020202;
+    color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+button,input{
+    font-family:inherit;
+}
+
+
+/* ================= LOGIN ================= */
+
+#loginPage{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.login-card{
+    width:380px;
+    max-width:92%;
+    background:#070707;
+    border:1px solid #690909;
+    border-radius:15px;
+    padding:35px;
+    text-align:center;
+    box-shadow:0 0 50px rgba(255,0,0,.15);
+}
+
+.reactor{
+    width:80px;
+    height:80px;
+    border:2px solid var(--red);
+    border-radius:50%;
+    margin:auto auto 18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:34px;
+    box-shadow:
+        0 0 25px rgba(255,0,0,.5),
+        inset 0 0 20px rgba(255,0,0,.2);
+}
+
+.login-card h1{
+    font-size:25px;
+}
+
+.login-card h1 span{
+    color:var(--red);
+}
+
+.login-card p{
+    color:#777;
+    font-size:11px;
+    line-height:1.7;
+    margin:10px 0 25px;
+}
+
+.login-input{
+    width:100%;
+    padding:13px;
+    margin-bottom:10px;
+    background:#030303;
+    color:white;
+    border:1px solid #333;
+    border-radius:7px;
+    outline:none;
+}
+
+.login-input:focus{
+    border-color:var(--red);
+}
+
+.login-button{
+    width:100%;
+    padding:13px;
+    background:#780000;
+    border:1px solid var(--red);
+    border-radius:7px;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#loginMessage{
+    color:#ff4444;
+    font-size:11px;
+    margin-top:10px;
+    min-height:15px;
+}
+
+
+/* ================= DASHBOARD ================= */
+
+#dashboard{
+    display:none;
+    min-height:100vh;
+}
+
+
+/* ================= HEADER ================= */
+
+.header{
+    min-height:82px;
+    padding:10px 22px;
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:20px;
+    border-bottom:1px solid #350707;
+}
+
+.header-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.header-reactor{
+    width:53px;
+    height:53px;
+    border:2px solid var(--red);
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:22px;
+    box-shadow:0 0 20px rgba(255,0,0,.45);
+}
+
+.header-title{
+    font-size:23px;
+    font-weight:bold;
+}
+
+.header-title span{
+    color:var(--red);
+}
+
+.header-sub{
+    color:var(--gold);
+    font-size:11px;
+    margin-top:4px;
+    letter-spacing:1px;
+}
+
+.header-center{
+    text-align:center;
+}
+
+.header-center h1{
+    color:var(--red);
+    border:1px solid var(--red);
+    padding:9px 35px;
+    font-size:22px;
+    letter-spacing:1px;
+    clip-path:polygon(
+        5% 0,
+        95% 0,
+        100% 50%,
+        95% 100%,
+        5% 100%,
+        0 50%
+    );
+}
+
+.header-right{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:10px;
+}
+
+.jarvis{
+    border:1px solid #075027;
+    color:#00ef7b;
+    padding:10px 14px;
+    border-radius:7px;
+    font-size:10px;
+    font-weight:bold;
+}
+
+.jarvis-dot{
+    display:inline-block;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#00ef7b;
+    box-shadow:0 0 10px #00ef7b;
+    margin-left:5px;
+}
+
+.logout{
+    background:#080808;
+    border:1px solid #411010;
+    color:#888;
+    padding:9px 12px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+
+/* ================= MAIN ================= */
+
+.main{
+    padding:12px 18px 20px;
+}
+
+
+/* ================= THREE DASHBOARDS ================= */
+
+.screens{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    max-width:1450px;
+    margin:auto;
+}
+
+.dashboard-card{
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,0,0,.045),
+            transparent 40%
+        ),
+        #050505;
+    border:1px solid #570909;
+    border-radius:12px;
+    overflow:hidden;
+    min-height:640px;
+    box-shadow:0 0 20px rgba(255,0,0,.05);
+}
+
+.card-header{
+    height:52px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 14px;
+    border-bottom:1px solid #301010;
+}
+
+.menu{
+    font-size:20px;
+    color:#aaa;
+}
+
+.card-name{
+    font-size:13px;
+    font-weight:bold;
+    color:var(--red);
+}
+
+.card-name.gold{
+    color:var(--gold);
+}
+
+.card-symbol{
+    color:var(--red);
+    font-size:18px;
+}
+
+.card-body{
+    padding:13px;
+}
+
+
+/* ================= WELCOME ================= */
+
+.welcome{
+    border:1px solid #5e1010;
+    border-radius:9px;
+    padding:14px;
+    margin-bottom:10px;
+    min-height:78px;
+}
+
+.welcome.gold{
+    border-color:#604500;
+}
+
+.welcome h2{
+    font-size:15px;
+    margin-bottom:6px;
+}
+
+.welcome p{
+    color:#888;
+    font-size:10px;
+}
+
+
+/* ================= DATE ================= */
+
+.date-box{
+    background:#170000;
+    border:1px solid #620909;
+    color:#ff3838;
+    border-radius:7px;
+    padding:8px 10px;
+    font-size:10px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.date-box.gold{
+    background:#171000;
+    border-color:#654700;
+    color:var(--gold);
+}
+
+
+/* ================= PROGRESS ================= */
+
+.progress-box{
+    border:1px solid #282828;
+    border-radius:9px;
+    padding:12px;
+    margin-bottom:12px;
+}
+
+.progress-title{
+    font-size:10px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.progress-content{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.circle{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    background:conic-gradient(
+        var(--red) 0deg,
+        var(--red) 0deg,
+        #333 0deg,
+        #333 360deg
+    );
+}
+
+.circle.gold{
+    background:conic-gradient(
+        var(--gold) 0deg,
+        var(--gold) 0deg,
+        #333 0deg,
+        #333 360deg
+    );
+}
+
+.circle:after{
+    content:"";
+    position:absolute;
+    width:78px;
+    height:78px;
+    background:#050505;
+    border-radius:50%;
+}
+
+.circle span{
+    position:relative;
+    z-index:2;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.stats{
+    line-height:2.1;
+    font-size:10px;
+}
+
+.stats b{
+    font-size:15px;
+    margin-right:4px;
+}
+
+.red{
+    color:var(--red);
+}
+
+.gold-text{
+    color:var(--gold);
+}
+
+.green{
+    color:var(--green);
+}
+
+
+/* ================= TASKS ================= */
+
+.section-title{
+    font-size:10px;
+    margin:10px 0 7px;
+    color:#ddd;
+}
+
+.task{
+    border:1px solid #252525;
+    border-radius:7px;
+    padding:9px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:5px;
+    background:#030303;
+}
+
+.task-left{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:10px;
+}
+
+.task-check{
+    font-size:16px;
+}
+
+.completed{
+    color:var(--green);
+}
+
+.pending{
+    color:var(--gold);
+}
+
+.task-status{
+    font-size:7px;
+    padding:4px 6px;
+    border-radius:4px;
+    background:#062c16;
+    color:var(--green);
+}
+
+.task-status.pending-status{
+    background:#291e00;
+    color:var(--gold);
+}
+
+
+/* ================= TOMORROW ================= */
+
+.tomorrow{
+    border:1px solid #650c0c;
+    border-radius:8px;
+    padding:10px;
+    margin-top:12px;
+}
+
+.tomorrow-title{
+    color:var(--red);
+    font-size:10px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.add-row{
+    display:flex;
+    gap:5px;
+}
+
+.add-row input{
+    flex:1;
+    min-width:0;
+    background:#030303;
+    color:white;
+    border:1px solid #333;
+    border-radius:5px;
+    padding:8px;
+    font-size:9px;
+    outline:none;
+}
+
+.add-row button{
+    background:#320900;
+    color:var(--gold);
+    border:1px solid #8a3500;
+    border-radius:5px;
+    padding:7px 9px;
+    font-size:8px;
+    cursor:pointer;
+}
+
+.tomorrow-task{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:7px;
+    font-size:9px;
+    color:#ccc;
+}
+
+.delete{
+    background:none;
+    border:none;
+    color:#d33;
+    cursor:pointer;
+    font-size:14px;
+}
+
+
+/* ================= QUOTE ================= */
+
+.quote{
+    border:1px solid #641010;
+    border-radius:8px;
+    margin-top:15px;
+    padding:18px;
+    text-align:center;
+    color:var(--gold);
+    font-size:11px;
+    line-height:1.7;
+}
+
+
+/* ================= HISTORY ================= */
+
+.history-card{
+    border:1px solid #272727;
+    border-radius:8px;
+    padding:11px;
+    margin-bottom:8px;
+}
+
+.history-top{
+    display:flex;
+    justify-content:space-between;
+    font-size:10px;
+    margin-bottom:5px;
+}
+
+.history-percent{
+    color:var(--green);
+    font-weight:bold;
+}
+
+.history-sub{
+    color:#777;
+    font-size:8px;
+    margin-bottom:7px;
+}
+
+.bar{
+    height:6px;
+    background:#222;
+    border-radius:6px;
+    overflow:hidden;
+}
+
+.bar-fill{
+    height:100%;
+    background:var(--green);
+}
+
+
+/* =====================================================
+JARVIS DAILY BRIEF
+===================================================== */
+
+.jarvis-brief{
+    border:1px solid #654700;
+    border-radius:9px;
+    padding:13px;
+    margin-top:10px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,176,0,.05),
+            transparent 55%
+        ),
+        #050505;
+}
+
+.jarvis-brief-title{
+    color:#ffb000;
+    font-size:12px;
+    font-weight:bold;
+    text-align:center;
+    letter-spacing:1px;
+    padding-bottom:9px;
+    border-bottom:1px solid #332600;
+    margin-bottom:10px;
+}
+
+.brief-item{
+    border:1px solid #252525;
+    border-radius:7px;
+    padding:10px;
+    margin-bottom:7px;
+    background:#030303;
+}
+
+.brief-item:last-child{
+    margin-bottom:0;
+}
+
+.brief-item strong{
+    display:block;
+    color:#ffb000;
+    font-size:9px;
+    margin-bottom:4px;
+}
+
+.brief-item span{
+    color:#888;
+    font-size:8px;
+    line-height:1.5;
+}
+
+.brief-streak{
+    text-align:center;
+    margin-top:10px;
+    padding:10px;
+    border:1px solid #421010;
+    border-radius:7px;
+}
+
+.brief-streak strong{
+    color:#ff7500;
+    font-size:18px;
+}
+
+.brief-streak span{
+    color:#777;
+    font-size:8px;
+    margin-left:4px;
+}
+
+.brief-quote{
+    text-align:center;
+    color:#aaa;
+    font-size:9px;
+    font-style:italic;
+    line-height:1.6;
+    margin-top:10px;
+}
+
+
+/* ================= BOTTOM ================= */
+
+.bottom{
+    max-width:1450px;
+    margin:15px auto 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.bottom-card{
+    background:#050505;
+    border:1px solid #570909;
+    border-radius:10px;
+    padding:13px;
+}
+
+.bottom-title{
+    text-align:center;
+    border:1px solid #5a0c0c;
+    padding:7px;
+    font-size:11px;
+    margin-bottom:12px;
+    color:#eee;
+}
+
+
+/* ================= STREAK ================= */
+
+.streak-content{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:30px;
+}
+
+.streak-circle{
+    width:125px;
+    height:125px;
+    border-radius:50%;
+    border:2px solid var(--orange);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 20px rgba(255,80,0,.15);
+}
+
+.streak-circle strong{
+    font-size:35px;
+}
+
+.streak-circle small{
+    color:var(--gold);
+    font-size:9px;
+}
+
+.streak-info{
+    font-size:10px;
+    line-height:2;
+}
+
+
+/* ================= ACHIEVEMENTS ================= */
+
+.achievements{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:7px;
+}
+
+.achievement{
+    min-height:105px;
+    border:1px solid #421010;
+    border-radius:7px;
+    text-align:center;
+    padding:7px 3px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+.achievement-icon{
+    font-size:24px;
+    margin-bottom:7px;
+}
+
+.achievement strong{
+    color:var(--gold);
+    font-size:7px;
+}
+
+.achievement small{
+    color:#777;
+    font-size:7px;
+    margin-top:4px;
+}
+
+
+/* ================= DAILY CYCLE ================= */
+
+.daily-cycle{
+    max-width:1450px;
+    margin:15px auto 0;
+    border:1px solid #570909;
+    background:#050505;
+    border-radius:10px;
+    padding:12px;
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
+
+.daily-heading{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:170px;
+}
+
+.daily-icon{
+    width:42px;
+    height:42px;
+    border:1px solid var(--red);
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:20px;
+}
+
+.daily-heading h2{
+    color:var(--red);
+    font-size:15px;
+}
+
+.cycle{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.cycle-item{
+    text-align:center;
+}
+
+.cycle-icon{
+    font-size:22px;
+}
+
+.cycle-item strong{
+    display:block;
+    color:var(--gold);
+    font-size:9px;
+    margin-top:3px;
+}
+
+.cycle-item span{
+    display:block;
+    color:#777;
+    font-size:7px;
+    margin-top:3px;
+}
+
+.arrow{
+    color:var(--gold);
+    font-size:18px;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1100px){
+
+    .screens{
+        grid-template-columns:1fr;
+        max-width:600px;
+    }
+
+    .dashboard-card{
+        min-height:auto;
+    }
+
+    .bottom{
+        grid-template-columns:1fr;
+    }
+
+    .header{
+        grid-template-columns:1fr;
+        text-align:center;
+    }
+
+    .header-left{
+        justify-content:center;
+    }
+
+    .header-right{
+        justify-content:center;
+    }
+
+}
+
+@media(max-width:650px){
+
+    .main{
+        padding:8px;
+    }
+
+    .header-title{
+        font-size:18px;
+    }
+
+    .header-center h1{
+        font-size:17px;
+    }
+
+    .cycle{
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:10px;
+    }
+
+    .daily-cycle{
+        flex-direction:column;
+    }
+
+    .daily-heading{
+        justify-content:center;
+    }
+
+    .achievements{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .streak-content{
+        flex-direction:column;
+    }
+
+}
+
+</style>
 </head>
 
 
 <body>
 
 
-    <!-- LOGIN PAGE -->
+<!-- =====================================================
+LOGIN
+===================================================== -->
 
-    <section id="loginPage" class="login-page">
+<div id="loginPage">
 
-        <div class="login-card">
+    <div class="login-card">
 
-            <div class="heart-logo">
-                🌷
+        <div class="reactor">
+            ✦
+        </div>
+
+        <h1>
+            MY LOVELY <span>SISTER</span> ❤️
+        </h1>
+
+        <p>
+            ACCOUNTABILITY SYSTEM<br>
+            JARVIS READY
+        </p>
+
+        <input
+            id="email"
+            class="login-input"
+            type="email"
+            placeholder="Email"
+        >
+
+        <input
+            id="password"
+            class="login-input"
+            type="password"
+            placeholder="Password"
+        >
+
+        <button
+            id="loginButton"
+            class="login-button"
+        >
+            ENTER SISTER SYSTEM →
+        </button>
+
+        <div id="loginMessage"></div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+DASHBOARD
+===================================================== -->
+
+<div id="dashboard">
+
+
+<header class="header">
+
+
+    <div class="header-left">
+
+        <div class="header-reactor">
+            ✦
+        </div>
+
+        <div>
+
+            <div class="header-title">
+                MY LOVELY SISTER ❤️
             </div>
 
-            <h1>
-                My Lovely Sister ❤️
-            </h1>
-
-            <p class="subtitle">
-                A little place to see my progress
-                and keep me motivated.
-            </p>
-
-            <input
-                class="input"
-                type="email"
-                id="email"
-                placeholder="Your email"
-            >
-
-            <input
-                class="input"
-                type="password"
-                id="password"
-                placeholder="Your password"
-            >
-
-            <button
-                class="login-button"
-                id="loginButton"
-            >
-                Enter With Love ❤️
-            </button>
-
-            <p id="loginMessage"></p>
+            <div class="header-sub">
+                ACCOUNTABILITY • CONSISTENCY • GROWTH
+            </div>
 
         </div>
 
-    </section>
+    </div>
 
 
-    <!-- DASHBOARD -->
+    <div class="header-center">
 
-    <section id="dashboard">
+        <h1>
+            SISTER ACCOUNTABILITY
+        </h1>
 
-        <header class="topbar">
+    </div>
 
-            <div class="brand">
-                🌷 My Lovely Sister
+
+    <div class="header-right">
+
+        <div class="jarvis">
+
+            JARVIS ONLINE
+
+            <span class="jarvis-dot"></span>
+
+        </div>
+
+        <button
+            id="logoutButton"
+            class="logout"
+        >
+            LOGOUT
+        </button>
+
+    </div>
+
+
+</header>
+
+
+
+<main class="main">
+
+
+<!-- =====================================================
+THREE MAIN SCREENS
+===================================================== -->
+
+<div class="screens">
+
+
+<!-- =====================================================
+NIGHT
+===================================================== -->
+
+<div class="dashboard-card">
+
+
+    <div class="card-header">
+
+        <span class="menu">
+            ☰
+        </span>
+
+        <span class="card-name">
+            MY LOVELY SISTER ❤️
+        </span>
+
+        <span class="card-symbol">
+            ✦
+        </span>
+
+    </div>
+
+
+    <div class="card-body">
+
+
+        <div class="welcome">
+
+            <h2>
+                Good Night, Sister 🌙
+            </h2>
+
+            <p>
+                Plan tomorrow. Win the day.
+            </p>
+
+        </div>
+
+
+        <div
+            class="date-box"
+            id="nightDate"
+        >
+            TONIGHT
+        </div>
+
+
+        <div class="progress-box">
+
+            <div class="progress-title">
+                Today's Progress
             </div>
 
-            <button
-                class="logout"
-                id="logoutButton"
-            >
-                Logout
-            </button>
 
-        </header>
-
-
-        <main class="container">
-
-
-            <!-- HERO -->
-
-            <section class="hero">
-
-                <div class="flower">
-                    🌷
-                </div>
-
-                <h1>
-                    My Lovely Sister <span>❤️</span>
-                </h1>
-
-                <p>
-                    No matter how far you are,
-                    your support is always with me.
-                </p>
-
-            </section>
-
-
-            <!-- PROUD MESSAGE -->
-
-            <section class="proud-card">
-
-                <h2>
-                    I'm Proud of You, Varma 🫶
-                </h2>
-
-                <p>
-                    You don't have to be perfect.
-                    Just keep showing up,
-                    one day at a time.
-                </p>
-
-            </section>
-
-
-            <!-- TODAY'S PROGRESS -->
-
-            <section class="progress-card">
-
-                <div class="progress-title">
-
-                    <small>
-                        TODAY'S PROGRESS
-                    </small>
-
-                    <h2 id="progress">
-                        Progress: 0%
-                    </h2>
-
-                </div>
+            <div class="progress-content">
 
 
                 <div
-                    class="progress-circle"
-                    id="progressCircle"
+                    class="circle"
+                    id="nightCircle"
                 >
 
-                    <span id="progressNumber">
+                    <span id="nightPercent">
                         0%
                     </span>
 
                 </div>
 
 
-                <p
-                    class="progress-message"
-                    id="progressMessage"
+                <div class="stats">
+
+                    <div>
+
+                        <b
+                            id="nightCompleted"
+                            class="red"
+                        >
+                            0
+                        </b>
+
+                        Completed
+
+                    </div>
+
+
+                    <div>
+
+                        <b id="nightPending">
+                            0
+                        </b>
+
+                        Pending
+
+                    </div>
+
+
+                    <div>
+
+                        <b id="nightTotal">
+                            0
+                        </b>
+
+                        Total
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <div class="section-title">
+            Today's Work
+        </div>
+
+
+        <div id="nightTasks"></div>
+
+
+
+        <div class="tomorrow">
+
+
+            <div class="tomorrow-title">
+                PLAN FOR TOMORROW
+            </div>
+
+
+            <div class="add-row">
+
+                <input
+                    id="tomorrowInput"
+                    placeholder="Enter tomorrow's task..."
                 >
-                    Let's complete the first task! 💪
-                </p>
 
-            </section>
+                <button id="addTomorrow">
+                    + ADD
+                </button>
 
-
-            <!-- CELEBRATION -->
-
-            <section
-                class="celebration"
-                id="celebration"
-            >
-
-                <div class="emoji">
-                    🎉
-                </div>
-
-                <h2>
-                    You Did It! ❤️
-                </h2>
-
-                <p>
-                    I'm so proud of you.
-                    You kept your promise to yourself today.
-                </p>
-
-            </section>
+            </div>
 
 
-            <!-- TODAY'S TASKS -->
+            <div id="tomorrowTasks"></div>
 
-            <section class="tasks-section">
 
-                <div class="section-heading">
+        </div>
 
-                    <h2>
-                        📋 Today's Work
-                    </h2>
 
-                    <p>
-                        Here is how the day is going.
-                    </p>
 
-                </div>
+        <div class="quote">
+
+            Keep going, Sister. ❤️
+
+            <br>
+
+            Tomorrow is another chance to win.
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+MORNING
+===================================================== -->
+
+<div class="dashboard-card">
+
+
+    <div class="card-header">
+
+        <span class="menu">
+            ☰
+        </span>
+
+        <span class="card-name gold">
+            MY LOVELY SISTER ❤️
+        </span>
+
+        <span
+            class="card-symbol"
+            style="color:#ffb000"
+        >
+            ✦
+        </span>
+
+    </div>
+
+
+
+    <div class="card-body">
+
+
+        <div class="welcome gold">
+
+            <h2>
+                Good Morning, Sister ☀️
+            </h2>
+
+            <p>
+                Let's make today legendary.
+            </p>
+
+        </div>
+
+
+
+        <div
+            class="date-box gold"
+            id="morningDate"
+        >
+            TODAY
+        </div>
+
+
+
+        <div class="progress-box">
+
+
+            <div class="progress-title">
+                Today's Progress
+            </div>
+
+
+            <div class="progress-content">
 
 
                 <div
-                    id="taskList"
-                    class="task-list"
+                    class="circle gold"
+                    id="morningCircle"
                 >
-                    Loading tasks...
-                </div>
 
-            </section>
-
-
-            <!-- DAILY HISTORY -->
-
-            <section class="history-section">
-
-                <div class="history-heading">
-
-                    <h2>
-                        📅 Daily History
-                    </h2>
-
-                    <p>
-                        A little look at your consistency ❤️
-                    </p>
+                    <span id="morningPercent">
+                        0%
+                    </span>
 
                 </div>
 
 
-                <div
-                    id="historyList"
-                    class="history-list"
-                >
-                    Loading history...
+                <div class="stats">
+
+
+                    <div>
+
+                        <b
+                            id="morningCompleted"
+                            class="gold-text"
+                        >
+                            0
+                        </b>
+
+                        Completed
+
+                    </div>
+
+
+                    <div>
+
+                        <b id="morningPending">
+                            0
+                        </b>
+
+                        Pending
+
+                    </div>
+
+
+                    <div>
+
+                        <b id="morningTotal">
+                            0
+                        </b>
+
+                        Total
+
+                    </div>
+
+
                 </div>
 
-            </section>
 
+            </div>
 
-            <!-- MESSAGE -->
 
-            <section class="message-card">
+        </div>
 
-                <div class="icon">
-                    💌
-                </div>
 
-                <h2>
-                    A Little Message From Your Brother
-                </h2>
 
-                <p>
-                    "No matter how far I am,
-                    I'm always cheering for you.
-                    Keep going. I believe in you,
-                    even on the days when you don't
-                    believe in yourself."
-                </p>
+        <!-- =================================================
+        JARVIS DAILY BRIEF
+        ================================================= -->
 
-                <div class="signature">
-                    With Love, Your Brother ❤️
-                </div>
+        <div class="section-title">
+            JARVIS DAILY BRIEF
+        </div>
 
-            </section>
 
+        <div class="jarvis-brief">
 
-        </main>
 
-    </section>
+            <div class="jarvis-brief-title">
+                🤖 JARVIS DAILY BRIEF
+            </div>
 
 
-    <!-- FIREBASE -->
+            <div class="brief-item">
 
-    <script type="module">
+                <strong>
+                    🎯 TODAY'S MISSION
+                </strong>
 
-        import {
-            initializeApp
-        }
-        from
-        "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+                <span>
+                    Complete your planned tasks
+                    and make today count.
+                </span>
 
+            </div>
 
-        import {
-            getAuth,
-            signInWithEmailAndPassword,
-            onAuthStateChanged,
-            signOut
-        }
-        from
-        "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
+            <div class="brief-item">
 
-        import {
-            getFirestore,
-            collection,
-            onSnapshot,
-            query,
-            where
-        }
-        from
-        "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+                <strong>
+                    🔥 PROTECT YOUR STREAK
+                </strong>
 
+                <span>
+                    Stay consistent today and
+                    keep your winning streak alive.
+                </span>
 
-        const firebaseConfig = {
+            </div>
 
-            apiKey:
-                "AIzaSyCoM00m6KgrWHOn_UB9_Qf9MAowGtovZSA",
 
-            authDomain:
-                "sister-accountability-app.firebaseapp.com",
+            <div class="brief-item">
 
-            projectId:
-                "sister-accountability-app",
+                <strong>
+                    ⏱ STAY CONSISTENT
+                </strong>
 
-            storageBucket:
-                "sister-accountability-app.firebasestorage.app",
+                <span>
+                    Small progress every day
+                    becomes something great.
+                </span>
 
-            messagingSenderId:
-                "311794164387",
+            </div>
 
-            appId:
-                "1:311794164387:web:ccb0dbc236fe8111d51516",
 
-            measurementId:
-                "G-S95T59VWRJ"
+            <div class="brief-streak">
 
-        };
+                <strong id="briefStreak">
+                    0
+                </strong>
 
+                <span>
+                    DAYS CURRENT STREAK 🔥
+                </span>
 
-        const app =
-            initializeApp(firebaseConfig);
+            </div>
 
 
-        const auth =
-            getAuth(app);
+            <div class="brief-quote">
 
+                "Small progress every day
+                becomes success."
 
-        const db =
-            getFirestore(app);
+            </div>
 
 
-        /* ELEMENTS */
+        </div>
 
-        const loginPage =
-            document.getElementById("loginPage");
 
 
-        const dashboard =
-            document.getElementById("dashboard");
+        <div class="quote">
 
+            ✦
 
-        const email =
-            document.getElementById("email");
+            <br>
 
+            "One day or day one."
 
-        const password =
-            document.getElementById("password");
+            <br>
 
+            <span style="color:#ff3333">
+                You decide.
+            </span>
 
-        const loginButton =
-            document.getElementById("loginButton");
+        </div>
 
 
-        const loginMessage =
-            document.getElementById("loginMessage");
+    </div>
 
+</div>
 
-        const logoutButton =
-            document.getElementById("logoutButton");
 
 
-        const taskList =
-            document.getElementById("taskList");
+<!-- =====================================================
+HISTORY
+===================================================== -->
 
+<div class="dashboard-card">
 
-        const progress =
-            document.getElementById("progress");
 
+    <div class="card-header">
 
-        const progressNumber =
-            document.getElementById("progressNumber");
+        <span class="menu">
+            ☰
+        </span>
 
+        <span class="card-name">
+            MY LOVELY SISTER ❤️
+        </span>
 
-        const progressMessage =
-            document.getElementById("progressMessage");
+        <span class="card-symbol">
+            📅
+        </span>
 
+    </div>
 
-        const progressCircle =
-            document.getElementById("progressCircle");
 
 
-        const celebration =
-            document.getElementById("celebration");
+    <div class="card-body">
 
 
-        const historyList =
-            document.getElementById("historyList");
+        <div class="welcome">
 
+            <h2>
+                Daily History 📅
+            </h2>
 
-        /* TODAY */
+            <p>
+                A look at your consistency.
+            </p>
 
-        function getTodayDate() {
+        </div>
 
-            return new Date()
-                .toISOString()
-                .split("T")[0];
 
-        }
 
+        <div class="section-title">
+            YOUR DAILY PERFORMANCE
+        </div>
 
-        /* LOGIN */
 
-        loginButton.addEventListener(
-            "click",
-            async () => {
+        <div id="phoneHistory"></div>
 
-                const userEmail =
-                    email.value.trim();
 
 
-                const userPassword =
-                    password.value;
+        <div class="quote">
 
+            🔥
 
-                if (
-                    !userEmail ||
-                    !userPassword
-                ) {
+            <br>
 
-                    loginMessage.textContent =
-                        "Please enter your email and password.";
+            Every completed day
+            makes you stronger.
 
-                    return;
+        </div>
 
-                }
 
+    </div>
 
-                try {
+</div>
 
-                    await signInWithEmailAndPassword(
-                        auth,
-                        userEmail,
-                        userPassword
-                    );
 
+</div>
 
-                    loginMessage.textContent =
-                        "";
 
-                }
 
-                catch (error) {
+<!-- =====================================================
+STREAK + ACHIEVEMENTS
+===================================================== -->
 
-                    console.error(error);
+<div class="bottom">
 
-                    loginMessage.textContent =
-                        "Login failed. Please check your details.";
 
-                }
+<!-- =====================================================
+STREAK
+===================================================== -->
 
+<div class="bottom-card">
+
+
+    <div class="bottom-title">
+        🔥 CURRENT STREAK
+    </div>
+
+
+    <div class="streak-content">
+
+
+        <div class="streak-circle">
+
+            <strong id="bigStreak">
+                0
+            </strong>
+
+            <small>
+                DAYS
+            </small>
+
+        </div>
+
+
+        <div class="streak-info">
+
+            <div class="green">
+                ✓ 100% day = Streak +1
+            </div>
+
+            <div class="red">
+                ✕ Incomplete day = Streak breaks
+            </div>
+
+            <br>
+
+            Keep the streak alive, Sister! 🔥
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+ACHIEVEMENTS
+===================================================== -->
+
+<div class="bottom-card">
+
+
+    <div class="bottom-title">
+        🏆 STREAK ACHIEVEMENTS
+    </div>
+
+
+    <div class="achievements">
+
+
+        <div class="achievement">
+
+            <div class="achievement-icon">
+                ✦
+            </div>
+
+            <strong>
+                FIRST DAY
+            </strong>
+
+            <small>
+                1 day
+            </small>
+
+        </div>
+
+
+        <div class="achievement">
+
+            <div class="achievement-icon">
+                🔥
+            </div>
+
+            <strong>
+                3 DAY
+            </strong>
+
+            <small>
+                3 days
+            </small>
+
+        </div>
+
+
+        <div class="achievement">
+
+            <div class="achievement-icon">
+                🦾
+            </div>
+
+            <strong>
+                7 DAY
+            </strong>
+
+            <small>
+                7 days
+            </small>
+
+        </div>
+
+
+        <div class="achievement">
+
+            <div class="achievement-icon">
+                🦾
+            </div>
+
+            <strong>
+                30 DAY
+            </strong>
+
+            <small>
+                30 days
+            </small>
+
+        </div>
+
+
+        <div class="achievement">
+
+            <div class="achievement-icon">
+                ❤️
+            </div>
+
+            <strong>
+                PERFECT
+            </strong>
+
+            <small>
+                Week
+            </small>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+DAILY CYCLE
+===================================================== -->
+
+<div class="daily-cycle">
+
+
+    <div class="daily-heading">
+
+
+        <div class="daily-icon">
+            📅
+        </div>
+
+
+        <h2>
+
+            DAILY CYCLE
+
+            <br>
+
+            SUMMARY
+
+        </h2>
+
+
+    </div>
+
+
+
+    <div class="cycle">
+
+
+        <div class="cycle-item">
+
+            <div class="cycle-icon">
+                🌙
+            </div>
+
+            <strong>
+                Night
+            </strong>
+
+            <span>
+                Plan Tomorrow
+            </span>
+
+        </div>
+
+
+        <div class="arrow">
+            →
+        </div>
+
+
+        <div class="cycle-item">
+
+            <div class="cycle-icon">
+                ☀️
+            </div>
+
+            <strong>
+                Morning
+            </strong>
+
+            <span>
+                Tasks Become Today
+            </span>
+
+        </div>
+
+
+        <div class="arrow">
+            →
+        </div>
+
+
+        <div class="cycle-item">
+
+            <div class="cycle-icon">
+                🎯
+            </div>
+
+            <strong>
+                Daily
+            </strong>
+
+            <span>
+                Complete Missions
+            </span>
+
+        </div>
+
+
+        <div class="arrow">
+            →
+        </div>
+
+
+        <div class="cycle-item">
+
+            <div class="cycle-icon">
+                🌙
+            </div>
+
+            <strong>
+                Night
+            </strong>
+
+            <span>
+                Results → History
+            </span>
+
+        </div>
+
+
+        <div class="arrow">
+            →
+        </div>
+
+
+        <div class="cycle-item">
+
+            <div class="cycle-icon">
+                ❤️
+            </div>
+
+            <strong>
+                Consistency
+            </strong>
+
+            <span>
+                Builds a Better You
+            </span>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+</main>
+
+</div>
+
+
+
+<!-- =====================================================
+FIREBASE
+===================================================== -->
+
+<script type="module">
+
+import {
+    initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+
+import {
+    getFirestore,
+    collection,
+    query,
+    where,
+    onSnapshot,
+    addDoc,
+    deleteDoc,
+    doc,
+    serverTimestamp
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+
+const firebaseConfig = {
+
+    apiKey:
+    "AIzaSyCoM00m6KgrWHOn_UB9_Qf9MAowGtovZSA",
+
+    authDomain:
+    "sister-accountability-app.firebaseapp.com",
+
+    projectId:
+    "sister-accountability-app",
+
+    storageBucket:
+    "sister-accountability-app.firebasestorage.app",
+
+    messagingSenderId:
+    "311794164387",
+
+    appId:
+    "1:311794164387:web:ccb0dbc236fe8111d51516",
+
+    measurementId:
+    "G-S95T59VWRJ"
+
+};
+
+
+
+const app =
+    initializeApp(firebaseConfig);
+
+
+const auth =
+    getAuth(app);
+
+
+const db =
+    getFirestore(app);
+
+
+
+/* ================= ELEMENTS ================= */
+
+const loginPage =
+    document.getElementById(
+        "loginPage"
+    );
+
+
+const dashboard =
+    document.getElementById(
+        "dashboard"
+    );
+
+
+const email =
+    document.getElementById(
+        "email"
+    );
+
+
+const password =
+    document.getElementById(
+        "password"
+    );
+
+
+const loginButton =
+    document.getElementById(
+        "loginButton"
+    );
+
+
+const loginMessage =
+    document.getElementById(
+        "loginMessage"
+    );
+
+
+const logoutButton =
+    document.getElementById(
+        "logoutButton"
+    );
+
+
+
+/* ================= DATE ================= */
+
+function getToday(){
+
+    return new Date()
+        .toLocaleDateString(
+            "en-CA",
+            {
+                timeZone:"Asia/Kolkata"
             }
         );
 
+}
 
-        /* LOGOUT */
 
-        logoutButton.addEventListener(
-            "click",
-            async () => {
 
-                await signOut(auth);
+function getTomorrow(){
 
-            }
+    const d =
+        new Date();
+
+    d.setDate(
+        d.getDate()+1
+    );
+
+    return d.toLocaleDateString(
+        "en-CA",
+        {
+            timeZone:"Asia/Kolkata"
+        }
+    );
+
+}
+
+
+
+function prettyDate(date){
+
+    return new Date(
+        date+"T00:00:00"
+    ).toLocaleDateString(
+        "en-IN",
+        {
+            day:"2-digit",
+            month:"short",
+            year:"numeric"
+        }
+    );
+
+}
+
+
+
+const TODAY =
+    getToday();
+
+
+const TOMORROW =
+    getTomorrow();
+
+
+
+document.getElementById(
+    "nightDate"
+).textContent =
+    "TONIGHT • "+prettyDate(TODAY);
+
+
+
+document.getElementById(
+    "morningDate"
+).textContent =
+    "TODAY • "+prettyDate(TODAY);
+
+
+
+/* ================= LOGIN ================= */
+
+loginButton.addEventListener(
+    "click",
+    async()=>{
+
+        const e =
+            email.value.trim();
+
+        const p =
+            password.value;
+
+
+        if(!e || !p){
+
+            loginMessage.textContent =
+                "Enter email and password.";
+
+            return;
+
+        }
+
+
+
+        try{
+
+            await signInWithEmailAndPassword(
+                auth,
+                e,
+                p
+            );
+
+            loginMessage.textContent="";
+
+        }
+        catch(error){
+
+            console.error(error);
+
+            loginMessage.textContent =
+                "Login failed. Check your details.";
+
+        }
+
+    }
+);
+
+
+
+password.addEventListener(
+    "keydown",
+    e=>{
+
+        if(e.key==="Enter"){
+
+            loginButton.click();
+
+        }
+
+    }
+);
+
+
+
+/* ================= LOGOUT ================= */
+
+logoutButton.addEventListener(
+    "click",
+    ()=>{
+
+        signOut(auth);
+
+    }
+);
+
+
+
+/* ================= AUTH ================= */
+
+onAuthStateChanged(
+    auth,
+    user=>{
+
+        if(user){
+
+            loginPage.style.display =
+                "none";
+
+            dashboard.style.display =
+                "block";
+
+            loadTasks(
+                user.uid
+            );
+
+        }
+        else{
+
+            loginPage.style.display =
+                "flex";
+
+            dashboard.style.display =
+                "none";
+
+        }
+
+    }
+);
+
+
+
+/* ================= LOAD TASKS ================= */
+
+function loadTasks(userId){
+
+    const q =
+        query(
+            collection(
+                db,
+                "tasks"
+            ),
+
+            where(
+                "userId",
+                "==",
+                userId
+            )
         );
 
 
-        /* AUTH */
+    onSnapshot(
+        q,
+        snapshot=>{
 
-        onAuthStateChanged(
-            auth,
-            (user) => {
+            const tasks=[];
 
-                if (user) {
 
-                    loginPage.style.display =
-                        "none";
+            snapshot.forEach(
+                item=>{
 
-                    dashboard.style.display =
-                        "block";
+                    tasks.push({
 
-                    loadTasks(user.uid);
+                        id:item.id,
 
-                }
+                        ...item.data()
 
-                else {
-
-                    loginPage.style.display =
-                        "flex";
-
-                    dashboard.style.display =
-                        "none";
-
-                }
-
-            }
-        );
-
-
-        /* LOAD ALL TASKS */
-
-        function loadTasks(userId) {
-
-            const tasksQuery =
-                query(
-                    collection(
-                        db,
-                        "tasks"
-                    ),
-
-                    where(
-                        "userId",
-                        "==",
-                        userId
-                    )
-                );
-
-
-            onSnapshot(
-                tasksQuery,
-                (snapshot) => {
-
-                    const today =
-                        getTodayDate();
-
-
-                    let total =
-                        0;
-
-
-                    let completed =
-                        0;
-
-
-                    const history = {};
-
-
-                    taskList.innerHTML =
-                        "";
-
-
-                    snapshot.forEach(
-                        (taskDoc) => {
-
-                            const task =
-                                taskDoc.data();
-
-
-                            /* HISTORY */
-
-                            if (task.date) {
-
-                                if (!history[task.date]) {
-
-                                    history[task.date] = {
-
-                                        total: 0,
-
-                                        completed: 0
-
-                                    };
-
-                                }
-
-
-                                history[task.date].total++;
-
-
-                                if (task.completed) {
-
-                                    history[task.date].completed++;
-
-                                }
-
-                            }
-
-
-                            /* TODAY */
-
-                            if (
-                                task.date !== today
-                            ) {
-
-                                return;
-
-                            }
-
-
-                            total++;
-
-
-                            if (task.completed) {
-
-                                completed++;
-
-                            }
-
-
-                            const taskDiv =
-                                document.createElement(
-                                    "div"
-                                );
-
-
-                            taskDiv.className =
-                                "task";
-
-
-                            if (task.completed) {
-
-                                taskDiv.classList.add(
-                                    "completed"
-                                );
-
-                            }
-
-
-                            const left =
-                                document.createElement(
-                                    "div"
-                                );
-
-
-                            left.className =
-                                "task-left";
-
-
-                            const icon =
-                                document.createElement(
-                                    "div"
-                                );
-
-
-                            icon.className =
-                                "task-icon";
-
-
-                            icon.textContent =
-                                task.completed
-                                    ? "✓"
-                                    : "⏳";
-
-
-                            const name =
-                                document.createElement(
-                                    "span"
-                                );
-
-
-                            name.className =
-                                "task-name";
-
-
-                            name.textContent =
-                                task.text;
-
-
-                            left.appendChild(
-                                icon
-                            );
-
-
-                            left.appendChild(
-                                name
-                            );
-
-
-                            const status =
-                                document.createElement(
-                                    "span"
-                                );
-
-
-                            status.className =
-                                "status";
-
-
-                            if (task.completed) {
-
-                                status.classList.add(
-                                    "done"
-                                );
-
-                                status.textContent =
-                                    "COMPLETED";
-
-                            }
-
-                            else {
-
-                                status.classList.add(
-                                    "pending"
-                                );
-
-                                status.textContent =
-                                    "PENDING";
-
-                            }
-
-
-                            taskDiv.appendChild(
-                                left
-                            );
-
-
-                            taskDiv.appendChild(
-                                status
-                            );
-
-
-                            taskList.appendChild(
-                                taskDiv
-                            );
-
-                        }
-                    );
-
-
-                    /* PROGRESS */
-
-                    let percentage =
-                        0;
-
-
-                    if (total > 0) {
-
-                        percentage =
-                            Math.round(
-                                (
-                                    completed /
-                                    total
-                                ) * 100
-                            );
-
-                    }
-
-
-                    progress.textContent =
-                        `Progress: ${percentage}%`;
-
-
-                    progressNumber.textContent =
-                        `${percentage}%`;
-
-
-                    const degree =
-                        percentage * 3.6;
-
-
-                    progressCircle.style.background =
-                        `conic-gradient(
-                            #5b8fd4 0deg,
-                            #5b8fd4 ${degree}deg,
-                            #e9edf4 ${degree}deg,
-                            #e9edf4 360deg
-                        )`;
-
-
-                    if (total === 0) {
-
-                        progressMessage.textContent =
-                            "No tasks for today yet. ❤️";
-
-                        celebration.style.display =
-                            "none";
-
-                    }
-
-                    else if (
-                        percentage === 100
-                    ) {
-
-                        progressMessage.textContent =
-                            "You completed everything today! 🎉";
-
-                        celebration.style.display =
-                            "block";
-
-                    }
-
-                    else if (
-                        percentage >= 50
-                    ) {
-
-                        progressMessage.textContent =
-                            "You're doing great! Keep going! 💪";
-
-                        celebration.style.display =
-                            "none";
-
-                    }
-
-                    else {
-
-                        progressMessage.textContent =
-                            "One task at a time. You've got this! ❤️";
-
-                        celebration.style.display =
-                            "none";
-
-                    }
-
-
-                    /* HISTORY */
-
-                    displayHistory(
-                        history
-                    );
+                    });
 
                 }
             );
 
+
+
+            const todayTasks =
+                tasks.filter(
+                    task=>
+                        task.date===TODAY
+                );
+
+
+
+            const tomorrowTasks =
+                tasks.filter(
+                    task=>
+                        task.date===TOMORROW
+                );
+
+
+
+            updateDashboard(
+                todayTasks,
+                tomorrowTasks,
+                tasks
+            );
+
+        }
+    );
+
+}
+
+
+
+/* ================= UPDATE ================= */
+
+function updateDashboard(
+    todayTasks,
+    tomorrowTasks,
+    allTasks
+){
+
+    const total =
+        todayTasks.length;
+
+
+    const completed =
+        todayTasks.filter(
+            task=>task.completed
+        ).length;
+
+
+    const pending =
+        total-completed;
+
+
+    const percentage =
+        total===0
+        ?0
+        :Math.round(
+            completed/total*100
+        );
+
+
+
+    document.getElementById(
+        "nightPercent"
+    ).textContent =
+        percentage+"%";
+
+
+    document.getElementById(
+        "nightCompleted"
+    ).textContent =
+        completed;
+
+
+    document.getElementById(
+        "nightPending"
+    ).textContent =
+        pending;
+
+
+    document.getElementById(
+        "nightTotal"
+    ).textContent =
+        total;
+
+
+
+    document.getElementById(
+        "morningPercent"
+    ).textContent =
+        percentage+"%";
+
+
+    document.getElementById(
+        "morningCompleted"
+    ).textContent =
+        completed;
+
+
+    document.getElementById(
+        "morningPending"
+    ).textContent =
+        pending;
+
+
+    document.getElementById(
+        "morningTotal"
+    ).textContent =
+        total;
+
+
+
+    setCircle(
+        "nightCircle",
+        percentage,
+        "#ff2020"
+    );
+
+
+    setCircle(
+        "morningCircle",
+        percentage,
+        "#ffb000"
+    );
+
+
+
+    renderTasks(
+        todayTasks
+    );
+
+
+    renderTomorrow(
+        tomorrowTasks
+    );
+
+
+    renderHistory(
+        allTasks
+    );
+
+
+    calculateStreak(
+        allTasks
+    );
+
+}
+
+
+
+/* ================= CIRCLE ================= */
+
+function setCircle(
+    id,
+    percentage,
+    color
+){
+
+    const circle =
+        document.getElementById(
+            id
+        );
+
+
+    const degree =
+        percentage*3.6;
+
+
+    circle.style.background =
+        `
+        conic-gradient(
+            ${color} 0deg,
+            ${color} ${degree}deg,
+            #333 ${degree}deg,
+            #333 360deg
+        )
+        `;
+
+}
+
+
+
+/* ================= TASK RENDER ================= */
+
+function renderTasks(tasks){
+
+    const night =
+        document.getElementById(
+            "nightTasks"
+        );
+
+
+    night.innerHTML="";
+
+
+    if(tasks.length===0){
+
+        night.innerHTML=`
+
+            <div
+                style="
+                color:#666;
+                text-align:center;
+                padding:15px;
+                font-size:9px;
+                "
+            >
+                No tasks for today.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+
+    tasks.forEach(
+        task=>{
+
+            const html=`
+
+                <div class="task">
+
+                    <div class="task-left">
+
+                        <span
+                            class="
+                            task-check
+                            ${
+                                task.completed
+                                ?"completed"
+                                :"pending"
+                            }
+                            "
+                        >
+
+                            ${
+                                task.completed
+                                ?"✓"
+                                :"○"
+                            }
+
+                        </span>
+
+
+                        <span>
+
+                            ${escapeHtml(
+                                task.text
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+
+                    <span
+                        class="
+                        task-status
+                        ${
+                            task.completed
+                            ?""
+                            :"pending-status"
+                        }
+                        "
+                    >
+
+                        ${
+                            task.completed
+                            ?"COMPLETED"
+                            :"PENDING"
+                        }
+
+                    </span>
+
+                </div>
+
+            `;
+
+
+            night.insertAdjacentHTML(
+                "beforeend",
+                html
+            );
+
+        }
+    );
+
+}
+
+
+
+/* ================= TOMORROW ================= */
+
+function renderTomorrow(tasks){
+
+    const container =
+        document.getElementById(
+            "tomorrowTasks"
+        );
+
+
+    container.innerHTML="";
+
+
+    if(tasks.length===0){
+
+        container.innerHTML=`
+
+            <div
+                style="
+                color:#666;
+                font-size:8px;
+                margin-top:7px;
+                "
+            >
+                No tomorrow tasks yet.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+
+    tasks.forEach(
+        task=>{
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "tomorrow-task";
+
+
+            row.innerHTML=`
+
+                <span>
+
+                    ○ ${escapeHtml(
+                        task.text
+                    )}
+
+                </span>
+
+
+                <button
+                    class="delete"
+                    onclick="
+                        deleteTask('${task.id}')
+                    "
+                >
+
+                    ×
+
+                </button>
+
+            `;
+
+
+            container.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+
+/* ================= ADD TOMORROW ================= */
+
+document.getElementById(
+    "addTomorrow"
+).addEventListener(
+    "click",
+    addTomorrow
+);
+
+
+
+document.getElementById(
+    "tomorrowInput"
+).addEventListener(
+    "keydown",
+    e=>{
+
+        if(e.key==="Enter"){
+
+            addTomorrow();
+
         }
 
-
-        /* DISPLAY HISTORY */
-
-        function displayHistory(history) {
-
-            historyList.innerHTML =
-                "";
+    }
+);
 
 
-            const dates =
-                Object.keys(history)
-                    .sort()
-                    .reverse();
+
+async function addTomorrow(){
+
+    const input =
+        document.getElementById(
+            "tomorrowInput"
+        );
 
 
-            if (dates.length === 0) {
+    const text =
+        input.value.trim();
 
-                historyList.innerHTML = `
-                    <div class="history-empty">
-                        No history yet. Keep going! 💪
-                    </div>
-                `;
+
+    if(!text){
+
+        return;
+
+    }
+
+
+
+    const user =
+        auth.currentUser;
+
+
+    if(!user){
+
+        return;
+
+    }
+
+
+
+    try{
+
+        await addDoc(
+            collection(
+                db,
+                "tasks"
+            ),
+            {
+
+                text:text,
+
+                completed:false,
+
+                date:TOMORROW,
+
+                userId:user.uid,
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        input.value="";
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "Could not add task."
+        );
+
+    }
+
+}
+
+
+
+/* ================= DELETE ================= */
+
+window.deleteTask =
+async function(id){
+
+    try{
+
+        await deleteDoc(
+            doc(
+                db,
+                "tasks",
+                id
+            )
+        );
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "Could not delete task."
+        );
+
+    }
+
+};
+
+
+
+/* ================= HISTORY ================= */
+
+function renderHistory(tasks){
+
+    const history={};
+
+
+    tasks.forEach(
+        task=>{
+
+            if(
+                !task.date ||
+                task.date>TODAY
+            ){
 
                 return;
 
             }
 
 
-            dates.forEach(
-                (date) => {
 
-                    const data =
-                        history[date];
+            if(!history[task.date]){
 
+                history[task.date]={
 
-                    const percentage =
-                        Math.round(
-                            (
-                                data.completed /
-                                data.total
-                            ) * 100
-                        );
+                    total:0,
+
+                    completed:0
+
+                };
+
+            }
 
 
-                    const card =
-                        document.createElement(
-                            "div"
-                        );
+
+            history[
+                task.date
+            ].total++;
 
 
-                    card.className =
-                        "history-card";
+
+            if(task.completed){
+
+                history[
+                    task.date
+                ].completed++;
+
+            }
+
+        }
+    );
 
 
-                    const formattedDate =
-                        new Date(
-                            date + "T00:00:00"
-                        ).toLocaleDateString(
-                            "en-IN",
-                            {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric"
-                            }
-                        );
+
+    const container =
+        document.getElementById(
+            "phoneHistory"
+        );
 
 
-                    card.innerHTML = `
-
-                        <div class="history-top">
-
-                            <span class="history-date">
-                                📅 ${formattedDate}
-                            </span>
-
-                            <span class="history-result">
-                                ${data.completed} /
-                                ${data.total} completed
-                            </span>
-
-                        </div>
+    container.innerHTML="";
 
 
-                        <div class="history-bar">
 
-                            <div
-                                class="history-fill"
-                                style="width: ${percentage}%"
-                            ></div>
-
-                        </div>
+    const dates =
+        Object.keys(history)
+        .sort()
+        .reverse();
 
 
-                        <div class="history-bottom">
 
-                            <span>
-                                Daily Progress
-                            </span>
+    if(dates.length===0){
 
-                            <strong>
-                                ${percentage}%
-                            </strong>
+        container.innerHTML=`
 
-                        </div>
+            <div
+                style="
+                color:#666;
+                text-align:center;
+                padding:30px;
+                font-size:9px;
+                "
+            >
+                No history yet.
+            </div>
 
-                    `;
+        `;
+
+        return;
+
+    }
 
 
-                    historyList.appendChild(
-                        card
-                    );
 
-                }
+    dates.forEach(
+        date=>{
+
+            const item =
+                history[date];
+
+
+            const percent =
+                Math.round(
+                    item.completed /
+                    item.total *
+                    100
+                );
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "history-card";
+
+
+            card.innerHTML=`
+
+                <div class="history-top">
+
+                    <span>
+                        ${prettyDate(date)}
+                    </span>
+
+                    <span
+                        class="history-percent"
+                    >
+                        ${percent}%
+                    </span>
+
+                </div>
+
+
+                <div class="history-sub">
+
+                    ${item.completed}
+                    /
+                    ${item.total}
+                    Completed
+
+                </div>
+
+
+                <div class="bar">
+
+                    <div
+                        class="bar-fill"
+                        style="
+                        width:${percent}%
+                        "
+                    ></div>
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                card
             );
 
         }
+    );
 
-    </script>
+}
+
+
+
+/* ================= STREAK ================= */
+
+function calculateStreak(tasks){
+
+    const days={};
+
+
+    tasks.forEach(
+        task=>{
+
+            if(!task.date){
+
+                return;
+
+            }
+
+
+
+            if(!days[task.date]){
+
+                days[task.date]={
+
+                    total:0,
+
+                    completed:0
+
+                };
+
+            }
+
+
+
+            days[
+                task.date
+            ].total++;
+
+
+
+            if(task.completed){
+
+                days[
+                    task.date
+                ].completed++;
+
+            }
+
+        }
+    );
+
+
+
+    let streak=0;
+
+
+    const date =
+        new Date();
+
+
+
+    while(true){
+
+        const current =
+            date.toLocaleDateString(
+                "en-CA",
+                {
+                    timeZone:
+                        "Asia/Kolkata"
+                }
+            );
+
+
+        const day =
+            days[current];
+
+
+        if(
+            !day ||
+            day.total===0 ||
+            day.completed!==day.total
+        ){
+
+            break;
+
+        }
+
+
+        streak++;
+
+
+        date.setDate(
+            date.getDate()-1
+        );
+
+    }
+
+
+
+    document.getElementById(
+        "bigStreak"
+    ).textContent =
+        streak;
+
+
+
+    /* JARVIS BRIEF STREAK */
+
+    document.getElementById(
+        "briefStreak"
+    ).textContent =
+        streak;
+
+}
+
+
+
+/* ================= ESCAPE ================= */
+
+function escapeHtml(text){
+
+    return String(text)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+</script>
 
 </body>
-
 </html>
