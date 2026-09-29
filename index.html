@@ -1,73 +1,151 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0b0d12"><title>JARVIS • Personal Career OS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050505">
+  <title>JARVIS Accountability System</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Small compatibility layer for the task engine */
+    #dashboard{display:none}
+    .engine-card{margin:0 0 14px;padding:16px;border:1px solid #34231e;background:#0b0d0e;border-radius:14px}
+    .engine-card h2{font-size:12px;color:#eee;margin-bottom:8px}
+    .engine-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .engine-actions button{padding:9px 12px;border:1px solid #394047;background:#0c1012;color:#fff;border-radius:8px;font-size:10px}
+  </style>
 </head>
 <body>
-<div class="bg-glow one"></div><div class="bg-glow two"></div>
-<section id="loginBox" class="login-screen">
-  <div class="login-wrap">
-    <div class="brand-mark">J</div>
-    <div class="eyebrow">PERSONAL CAREER OS</div>
-    <h1>JARVIS<span>.</span></h1>
-    <p class="tagline">Your goals. Your roadmap. Your next move.</p>
-    <div class="login-card">
-      <div class="login-head"><h2>Welcome back</h2><p>Sign in to continue your plan.</p></div>
-      <label>Email<input id="email" type="email" placeholder="you@example.com" autocomplete="email"></label>
-      <label>Password<input id="password" type="password" placeholder="Enter password" autocomplete="current-password"></label>
-      <button id="loginButton" class="primary full">Sign in <span>→</span></button>
-      <div class="auth-links"><button id="signupButton" class="link-btn">Create account</button><button id="resetButton" class="link-btn">Forgot password?</button></div>
-      <p id="loginMessage" class="login-message"></p>
-    </div>
-    <div class="login-meta"><span>FEB 12, 2027 TARGET</span><span>04:30 AM CHECKPOINT</span><span>ADAPTIVE ROADMAP</span></div>
+
+<section id="loginPage" class="login-page">
+  <div class="reactor-bg"></div>
+  <div class="login-card hud-panel">
+    <div class="arc-logo">⚡</div>
+    <div class="eyebrow">JARVIS ACCOUNTABILITY SYSTEM</div>
+    <h1>WELCOME <span>BACK</span></h1>
+    <p>One system. One roadmap. One mission at a time.</p>
+
+    <label for="email">EMAIL</label>
+    <input id="email" type="email" autocomplete="email" placeholder="Enter your email">
+
+    <label for="password">PASSWORD</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="Enter your password">
+
+    <button id="loginButton" class="red-button">ENTER SYSTEM →</button>
+    <p id="loginMessage" class="error-message"></p>
   </div>
 </section>
 
-<section id="app" class="hidden">
-<header class="topbar">
-  <a class="brand" href="#today"><span class="brand-mini">J</span><span><b>JARVIS</b><small>PERSONAL CAREER OS</small></span></a>
-  <nav><a class="active" href="#today">Today</a><a href="#goals">Goals</a><a href="#roadmap">Roadmap</a><a href="#activity">History</a></nav>
-  <div class="top-actions"><span class="online"><i></i> ONLINE</span><button id="addTaskTop" class="secondary small">+ Add task</button><button id="logoutButton" class="ghost small">Sign out</button></div>
-</header>
-<main class="shell" id="today">
-  <section class="welcome-row">
-    <div><div class="eyebrow">GOOD TO SEE YOU</div><h1>Make today count.</h1><p>JARVIS turns your long-term goals into a small set of high-value actions.</p></div>
-    <div class="deadline"><span>TARGET</span><strong>FEB 12, 2027</strong><small id="daysLeft">— days remaining</small><div class="target-bar"><i id="targetBar"></i></div><b id="targetProgress">0% journey</b></div>
-  </section>
-  <section class="stats-grid">
-    <article class="stat"><span>04:30 AM CHECKPOINT</span><div class="stat-line"><strong id="attendanceStatus">CHECKING</strong><button id="attendanceButton" class="primary tiny">Mark attendance</button></div><p id="attendanceText">Daily attendance status</p><small id="checkpointDetail">Your first checkpoint of the day.</small></article>
-    <article class="stat"><span>STREAK</span><strong class="metric" id="streakNumber">0</strong><p>consecutive days</p></article>
-    <article class="stat"><span>TODAY</span><strong class="metric" id="progressPercent">0%</strong><p id="completedSummary">0 / 0 tasks complete</p></article>
-    <article class="stat"><span>ACCOUNTABILITY</span><strong class="metric" id="accountabilityScore">0</strong><p>execution score</p></article>
-  </section>
-
-  <section class="content-grid" id="missions">
-    <div class="main-col">
-      <article class="panel tasks-panel">
-        <div class="section-head"><div><div class="eyebrow">TODAY'S PLAN</div><h2>Focus list</h2><p>Do these in order. Everything else can wait.</p></div><div class="head-actions"><span id="missionCount" class="pill">0 tasks</span><button id="addTaskMission" class="secondary small">+ Add task</button></div></div>
-        <div class="priority-key"><span><i class="critical"></i> Critical</span><span><i class="important"></i> Important</span><span><i class="supporting"></i> Supporting</span></div>
-        <div id="taskList" class="task-list"></div>
-        <div class="progress"><div><span>Today's completion</span><b id="progressPercentBottom">0%</b></div><div class="track"><i id="barFill"></i></div></div>
-      </article>
-      <article id="goals" class="panel"><div class="section-head"><div><div class="eyebrow">YOUR GOALS</div><h2>Everything you're building</h2><p>JARVIS chooses what deserves attention today.</p></div><span class="pill">12 goals</span></div><div id="goalGrid" class="goal-grid"></div></article>
-      <article id="roadmap" class="panel"><div class="section-head"><div><div class="eyebrow">MASTER ROADMAP</div><h2>From foundations to GenAI</h2><p>Core → build → prove, with the Feb 12 target always visible.</p></div><span class="pill">FEB 12</span></div><div id="roadmapList" class="roadmap-list"></div></article>
-      <article id="sundayReviewCard" class="panel sunday hidden"><div class="section-head"><div><div class="eyebrow">WEEKLY REVIEW</div><h2>Sunday reset</h2><p>Missed work is reviewed and rescheduled — never hidden.</p></div><span id="missedCount" class="pill">0 missed</span></div><div id="missedList" class="missed-list"></div></article>
+<section id="dashboard">
+  <header class="topbar">
+    <div class="top-brand">
+      <div class="mini-arc">⚡</div>
+      <div><strong>JARVIS</strong><span>PERSONAL CAREER SYSTEM</span></div>
     </div>
-    <aside class="side-col">
-      <article class="panel advisor"><div class="advisor-head"><div class="avatar">J</div><div><div class="eyebrow">AI ADVISOR</div><h2>JARVIS</h2></div><span class="active-dot">ACTIVE</span></div><div class="advice"><span>RIGHT NOW</span><p id="jarvisMessage">Preparing your plan…</p></div><div class="next"><span>NEXT MOVE</span><strong id="jarvisObjective">—</strong></div><div class="advisor-foot"><span>Priority <b id="jarvisPriority">—</b></span><span>Journey <b id="jarvisPercent">0%</b></span></div></article>
-      <article class="panel score"><div class="section-head"><div><div class="eyebrow">EXECUTION</div><h2>Today at a glance</h2></div></div><div class="ring"><div><b id="ringPercent">0%</b><span>DONE</span></div></div><div class="score-grid"><div><b id="completedCount">0</b><span>Done</span></div><div><b id="pendingCount">0</b><span>Pending</span></div><div><b id="totalCount">0</b><span>Total</span></div></div></article>
-      <article id="activity" class="panel"><div class="section-head"><div><div class="eyebrow">HISTORY</div><h2>Recent wins</h2></div></div><div id="historyList" class="history-list"></div></article>
-      <article class="panel principle"><span class="quote-mark">“</span><h3>Small consistent wins compound.</h3><p>Don't chase everything. Finish the next important thing.</p></article>
+    <div class="online"><i></i>SYSTEM ONLINE</div>
+    <button id="logoutButton" class="logout">LOGOUT</button>
+  </header>
+
+  <main class="workspace">
+    <aside class="left-column">
+      <section class="info-card">
+        <div class="card-heading"><span>01</span> MASTER ROADMAP</div>
+        <div class="flow-box"><div class="flow-icon">◎</div><div><b>FOUNDATION</b><strong>Programming + CS</strong><small>Build the base before advanced topics.</small></div></div>
+        <div class="arrow">↓</div>
+        <div class="flow-box"><div class="flow-icon sun">◉</div><div><b>AI ENGINEERING</b><strong>ML → DL → LLM → RAG</strong><small>Learn, practice, test, apply.</small></div></div>
+        <div class="arrow">↓</div>
+        <div class="flow-box"><div class="flow-icon">◆</div><div><b>PROOF</b><strong>Projects + Internship + GSoC</strong><small>Every important skill produces evidence.</small></div></div>
+      </section>
+      <section class="info-card">
+        <div class="card-heading"><span>02</span> HARD RULES</div>
+        <div class="rule-box"><div class="fire-symbol">🔥</div><div><strong>04:30 AM ATTENDANCE</strong><span>Exact-time check-in is recorded.</span></div></div>
+        <div class="rule-box"><div class="fire-symbol">◆</div><div><strong>FEB 12, 2027 DEADLINE</strong><span>Engine reverse-plans toward the deadline.</span></div></div>
+        <div class="rule-box"><div class="fire-symbol">✓</div><div><strong>NO FAKE COMPLETION</strong><span>Important missions can require proof.</span></div></div>
+      </section>
     </aside>
-  </section>
-</main>
-<footer><span>JARVIS • PERSONAL CAREER OS</span><span>Learn · Build · Ship · Communicate</span></footer>
+
+    <section class="phone-column">
+      <div class="mobile-shell">
+        <div class="mobile-top">
+          <h1>JARVIS</h1><div class="online"><i></i>ONLINE</div><div class="profile-arc">⚡</div>
+        </div>
+
+        <div class="streak-hero hud-panel">
+          <div class="target-icon">🎯</div>
+          <div class="big-streak" id="streakNumber">0<small>DAYS STREAK</small></div>
+          <p>Consistency creates the result.</p>
+        </div>
+
+        <section class="today-card hud-panel">
+          <div class="section-header"><h2>🎯 TODAY'S MISSIONS</h2><span id="todayDate">TODAY</span></div>
+          <div id="taskList" class="task-list"><div class="empty">Loading missions...</div></div>
+        </section>
+
+        <section class="progress-card hud-panel">
+          <div class="ring" id="progressCircle"><div><strong id="progressNumber">0%</strong><span>TODAY</span></div></div>
+          <div class="stats-numbers">
+            <h3>MISSION PROGRESS</h3>
+            <div><b id="completedCount">0</b><span>COMPLETED</span></div>
+            <div><b id="pendingCount">0</b><span>PENDING</span></div>
+            <div><b id="totalCount">0</b><span>TOTAL</span></div>
+            <div><b id="progressText">0%</b><span>PROGRESS</span></div>
+          </div>
+        </section>
+
+        <section class="achievements-card hud-panel">
+          <div class="section-header"><h2>🏆 ACHIEVEMENTS</h2><span>STREAK</span></div>
+          <div class="achievement-row">
+            <div class="achievement" id="achievement1"><span>🔥</span><b>FIRST DAY</b><small>LOCKED</small></div>
+            <div class="achievement" id="achievement3"><span>🔥</span><b>3 DAYS</b><small>LOCKED</small></div>
+            <div class="achievement" id="achievement7"><span>⚡</span><b>7 DAYS</b><small>LOCKED</small></div>
+            <div class="achievement" id="achievement30"><span>🛡️</span><b>30 DAYS</b><small>LOCKED</small></div>
+            <div class="achievement"><span>◆</span><b>PROOF</b><small>BUILD</small></div>
+          </div>
+        </section>
+
+        <section class="info-card">
+          <div class="card-heading"><span>MISSION LOG</span> — HISTORY</div>
+          <div id="historyList" class="history-list"><div class="empty">No history yet.</div></div>
+        </section>
+
+        <div class="bottom-nav">
+          <button class="active">⌂<span>TODAY</span></button>
+          <button>✓<span>WORK</span></button>
+          <button class="center-nav">⚡</button>
+          <button>◷<span>HISTORY</span></button>
+          <button>⚙<span>SYSTEM</span></button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="right-column">
+      <section class="info-card" id="enginePanel">
+        <div class="card-heading"><span>03</span> ENGINE STATUS</div>
+        <div id="engineText" style="color:#aeb5ba;font-size:11px;line-height:1.7">Initializing adaptive roadmap...</div>
+        <div class="engine-actions">
+          <button id="addManualTask">+ REAL-LIFE TASK</button>
+          <button id="checkIn430">04:30 CHECK-IN</button>
+        </div>
+      </section>
+      <section class="right-streak">
+        <div class="fire-large">🔥</div><small>CURRENT STREAK</small><strong id="rightStreak">SYNCED</strong><em>Keep showing up.</em>
+      </section>
+      <section class="info-card">
+        <div class="card-heading"><span>04</span> SYSTEM LOGIC</div>
+        <ul class="feature-list">
+          <li>Prerequisites before advanced topics</li>
+          <li>Priority changes with deadlines and performance</li>
+          <li>3–5 meaningful missions per day</li>
+          <li>Missed work is recorded for review</li>
+          <li>Important work can require proof</li>
+          <li>Daily progress updates the roadmap</li>
+        </ul>
+      </section>
+    </aside>
+  </main>
 </section>
 
-<div id="taskModal" class="modal hidden"><div class="modal-card"><div class="section-head"><div><div class="eyebrow">PERSONAL TASK</div><h2>Add a task</h2><p>For college work, urgent items or anything JARVIS cannot know.</p></div><button id="closeTaskModal" class="x">×</button></div><form id="taskForm"><label>Task<input id="taskTitle" maxlength="140" required placeholder="e.g. Finish 2 DSA problems"></label><div class="form-grid"><label>Goal<select id="taskGoal"></select></label><label>Priority<select id="taskPriority"><option value="CRITICAL">Critical</option><option value="IMPORTANT" selected>Important</option><option value="SUPPORTING">Supporting</option></select></label><label>Date<input id="taskDate" type="date" required></label><label>Area<input id="taskSkill" maxlength="60" placeholder="DSA, GATE, College…"></label></div><div class="modal-actions"><button type="button" id="cancelTask" class="ghost">Cancel</button><button class="primary" type="submit">Add task</button></div><p id="taskFormMessage" class="login-message"></p></form></div></div>
 <script type="module" src="app.js"></script>
-</body></html>
+</body>
+</html>
