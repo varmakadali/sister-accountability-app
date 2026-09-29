@@ -588,6 +588,20 @@ function modal(title,kicker,html){
   m.querySelector(".workspace-modal-backdrop")?.addEventListener("click",()=>m.classList.add("hidden"));
 }
 
+async function showWeeklyReview(){
+ const q=query(collection(db,"weeklyReviews"),where("userId","==",currentUser.uid));const snap=await getDocs(q);
+ const reviews=snap.docs.map(d=>d.data()).sort((a,b)=>String(b.weekStart||"").localeCompare(String(a.weekStart||""))).slice(0,8);
+ const health=await getRoadmapHealth(currentUser.uid);
+ const completed=allTasks.filter(t=>t.completed).length, missed=allTasks.filter(t=>t.status==="missed").length;
+ modal("Weekly command center","REVIEW",`<div class="roadmap-summary"><div><span>ROADMAP</span><b>${health.status}</b></div><div><span>EVIDENCE</span><b>${health.progress}%</b></div><div><span>COMPLETED</span><b>${completed}</b></div><div><span>MISSED</span><b>${missed}</b></div></div><div class="review-insight"><b>Current bottleneck</b><p>${esc(health.bottleneck)}</p><b>Adaptive rule</b><p>${health.status==="BEHIND"?"Reduce low-value work and attack the bottleneck first.":health.status==="AT RISK"?"Protect core missions and increase proof/test quality.":"Keep prerequisites moving and convert learning into evidence."}</p></div><h3 class="modal-section-title">Recent reviews</h3><div class="modal-list">${reviews.map(x=>`<div class="modal-row"><div><b>${esc(x.weekStart||"Week")}</b><small>Progress ${x.roadmapProgress||0}% · ${x.completed||0} completed · ${x.missed||0} missed</small></div><span class="stage-chip">${esc(x.roadmapStatus||"REVIEW")}</span></div>`).join("")||'<div class="empty">Your first Sunday review will appear here.</div>'}</div>`);
+}
+async function showAnalytics(){
+ const tasks=allTasks.filter(t=>!t.deleted);const done=tasks.filter(t=>t.completed).length, missed=tasks.filter(t=>t.status==="missed").length;
+ const proof=tasks.filter(t=>t.completed&&t.proofRequired).length;const tests=tasks.filter(t=>t.type==="test"||t.level==="TEST"||t.level==="RETEST").length;
+ const rate=tasks.length?Math.round(done/tasks.length*100):0;
+ const health=await getRoadmapHealth(currentUser.uid);
+ modal("Execution analytics","ANALYTICS",`<div class="roadmap-summary"><div><span>COMPLETION</span><b>${rate}%</b></div><div><span>PROOF</span><b>${proof}</b></div><div><span>TESTS</span><b>${tests}</b></div><div><span>ROADMAP</span><b>${health.progress}%</b></div></div><div class="analytics-bars"><div><span>Completed</span><i style="width:${Math.min(100,rate)}%"></i></div><div><span>Proof quality</span><i style="width:${done?Math.min(100,Math.round(proof/done*100)):0}%"></i></div><div><span>Roadmap evidence</span><i style="width:${health.progress}%"></i></div></div><div class="review-insight"><b>System diagnosis</b><p>${missed>done?"Execution is the immediate bottleneck.":"Keep increasing evidence quality instead of simply increasing task count."}</p></div>`);
+}
 async function showCareerTracker(){
  const snap=await getDoc(doc(db,"users",currentUser.uid)); const p=snap.exists()?snap.data():{};
  const c=p.careerTracker||{internship:{applications:0,interviews:0,offers:0},gsoc:{repos:0,prs:0,issues:0},gate:{questions:0,tests:0,avgScore:0},projects:{shipped:0,commits:0,demos:0}};
