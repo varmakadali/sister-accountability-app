@@ -588,6 +588,13 @@ function modal(title,kicker,html){
   m.querySelector(".workspace-modal-backdrop")?.addEventListener("click",()=>m.classList.add("hidden"));
 }
 
+async function showCareerTracker(){
+ const snap=await getDoc(doc(db,"users",currentUser.uid)); const p=snap.exists()?snap.data():{};
+ const c=p.careerTracker||{internship:{applications:0,interviews:0,offers:0},gsoc:{repos:0,prs:0,issues:0},gate:{questions:0,tests:0,avgScore:0},projects:{shipped:0,commits:0,demos:0}};
+ const section=(name,obj)=>Object.entries(obj).map(([k,v])=>`<label>${k.toUpperCase()} <input class="tracker-field" data-section="${name}" data-key="${k}" type="number" min="0" value="${Number(v)||0}"></label>`).join("");
+ modal("Career execution tracker","EXECUTION",`<div class="tracker-block"><h3>November Internship</h3><div class="allocation-grid">${section("internship",c.internship)}</div></div><div class="tracker-block"><h3>GSoC</h3><div class="allocation-grid">${section("gsoc",c.gsoc)}</div></div><div class="tracker-block"><h3>GATE</h3><div class="allocation-grid">${section("gate",c.gate)}</div></div><div class="tracker-block"><h3>Projects / GitHub</h3><div class="allocation-grid">${section("projects",c.projects)}</div></div><button id="saveCareerTracker" class="primary-button">Save execution data →</button>`);
+ $("saveCareerTracker").onclick=async()=>{const out={internship:{...c.internship},gsoc:{...c.gsoc},gate:{...c.gate},projects:{...c.projects}};document.querySelectorAll(".tracker-field").forEach(x=>{out[x.dataset.section][x.dataset.key]=Number(x.value)||0});await saveProfile(currentUser.uid,{careerTracker:out});$("workspaceModal").classList.add("hidden");await loadTasks(currentUser.uid);};
+}
 async function showProfileView(){
   const p=await getProfile(currentUser.uid), pref=p.preferences||{}, g=p.goals||{}, a=normalizeAllocation(pref.allocation);
   modal("Career OS Profile","PROFILE",`
@@ -643,7 +650,7 @@ function setupWorkspaceNavigation(){
     if(v==="history")await showHistoryView();
     if(v==="roadmap")await showRoadmapView();
   });
-  const enginePanel=document.querySelector(".engine-panel");if(enginePanel){const b=document.createElement("button");b.className="secondary-button";b.textContent="✦ Ask JARVIS";b.onclick=showMentorChat;enginePanel.querySelector(".engine-actions")?.prepend(b);}const profile=document.querySelector(".profile-panel"); if(profile){profile.style.cursor="pointer";profile.onclick=showProfileView;}
+  const enginePanel=document.querySelector(".engine-panel");if(enginePanel){const b=document.createElement("button");b.className="secondary-button";b.textContent="▣ Career Tracker";b.onclick=showCareerTracker;enginePanel.querySelector(".engine-actions")?.prepend(b);}if(enginePanel){const b=document.createElement("button");b.className="secondary-button";b.textContent="✦ Ask JARVIS";b.onclick=showMentorChat;enginePanel.querySelector(".engine-actions")?.prepend(b);}const profile=document.querySelector(".profile-panel"); if(profile){profile.style.cursor="pointer";profile.onclick=showProfileView;}
 }
 \nensureEnginePanel();\nsetupWorkspaceNavigation();
 if($("todayDate"))$("todayDate").textContent=pretty(dateStr());
