@@ -357,7 +357,8 @@ async function createTestRecord(task,score,mistakes){
 
 async function generateDailyMissions(uid, force=false){
   const {skills,tasks}=await loadState(uid);
-  const profile=await getProfile(uid);\n  const settings={...await getSettings(uid),...profile.preferences};
+  const profile=await getProfile(uid);
+  const settings={...await getSettings(uid),...profile.preferences};
   const today=dateStr();
   const existing=tasks.filter(t=>t.date===today);
   if(existing.some(t=>t.source==="engine") && !force) return existing;
@@ -367,7 +368,8 @@ async function generateDailyMissions(uid, force=false){
   const chosen=[];
   const used=new Set(todayTasks.map(t=>t.skillId).filter(Boolean));
   const candidates=[...modules.values()].map(m=>({m,score:scoreModule(m,skills,{},todayTasks,settings)})).filter(x=>Number.isFinite(x.score)).sort((a,b)=>b.score-a.score);
-  const timeCap=Math.max(1,Math.floor((Number(settings.availableMinutes)||120)/25));\n  const capacity=Math.min(settings.collegeLoad==="high"?Math.max(1,settings.dailyCapacity-1):settings.dailyCapacity,timeCap);
+  const timeCap=Math.max(1,Math.floor((Number(settings.availableMinutes)||120)/25));
+  const capacity=Math.min(settings.collegeLoad==="high"?Math.max(1,settings.dailyCapacity-1):settings.dailyCapacity,timeCap);
 
   // One core learning task, one DSA/GATE task, one GenAI/engineering task, one career/proof task, one non-negotiable.
   const buckets=[
@@ -411,7 +413,8 @@ async function completeTask(task){
  if(task.completed)return;
  if(task.proofRequired){
    const type=proofTypeFor(task);
-   const value=prompt("PROOF REQUIRED — "+type.toUpperCase()+"\nPaste code, result, score, URL, commit, or actual output:");
+   const value=prompt("PROOF REQUIRED — "+type.toUpperCase()+"
+Paste code, result, score, URL, commit, or actual output:");
    const check=validateProof(type,value);
    if(!check.ok){alert(check.msg);return;}
    await updateDoc(doc(db,"tasks",task.id),{completed:true,status:"completed",proof:value,proofType:type,proofStatus:"submitted",completedAt:serverTimestamp()});
@@ -778,7 +781,8 @@ async function createTestRecord(task,score,mistakes){
 
 async function generateDailyMissions(uid, force=false){
   const {skills,tasks}=await loadState(uid);
-  const profile=await getProfile(uid);\n  const settings={...await getSettings(uid),...profile.preferences};
+  const profile=await getProfile(uid);
+  const settings={...await getSettings(uid),...profile.preferences};
   const today=dateStr();
   const existing=tasks.filter(t=>t.date===today);
   if(existing.some(t=>t.source==="engine") && !force) return existing;
@@ -788,7 +792,8 @@ async function generateDailyMissions(uid, force=false){
   const chosen=[];
   const used=new Set(todayTasks.map(t=>t.skillId).filter(Boolean));
   const candidates=[...modules.values()].map(m=>({m,score:scoreModule(m,skills,{},todayTasks,settings)})).filter(x=>Number.isFinite(x.score)).sort((a,b)=>b.score-a.score);
-  const timeCap=Math.max(1,Math.floor((Number(settings.availableMinutes)||120)/25));\n  const capacity=Math.min(settings.collegeLoad==="high"?Math.max(1,settings.dailyCapacity-1):settings.dailyCapacity,timeCap);
+  const timeCap=Math.max(1,Math.floor((Number(settings.availableMinutes)||120)/25));
+  const capacity=Math.min(settings.collegeLoad==="high"?Math.max(1,settings.dailyCapacity-1):settings.dailyCapacity,timeCap);
 
   // One core learning task, one DSA/GATE task, one GenAI/engineering task, one career/proof task, one non-negotiable.
   const buckets=[
@@ -1087,8 +1092,11 @@ async function showMissionsView(){
 }
 
 async function askMentor(message){const call=httpsCallable(functions,"mentorChat");const result=await call({message});return result.data?.answer||"No response.";}
-function showMentorChat(){modal("Ask JARVIS","AI MENTOR",'<div id="mentorMessages" class="mentor-messages"><div class="mentor-bubble"><b>JARVIS</b><br>Ask about your plan, weak skills, GATE, internship, or what to study next.</div></div><div class="mentor-input-row"><textarea id="mentorInput" rows="3" placeholder="What should I study today?"></textarea><button id="mentorSend" class="primary-button">Ask JARVIS →</button></div>');const send=async()=>{const input=$("mentorInput"),box=$("mentorMessages"),m=input.value.trim();if(!m)return;box.insertAdjacentHTML("beforeend",'<div class="user-bubble">'+esc(m)+'</div>');input.value="";$("mentorSend").disabled=true;try{const a=await askMentor(m);box.insertAdjacentHTML("beforeend",'<div class="mentor-bubble"><b>JARVIS</b><br>'+esc(a).replace(/\n/g,"<br>")+'</div>')}catch(e){box.insertAdjacentHTML("beforeend",'<div class="mentor-bubble"><b>JARVIS</b><br>AI mentor is not configured yet.</div>')}$("mentorSend").disabled=false};$("mentorSend").onclick=send;}
-function setupReviewAnalytics(){const r=$("weeklyReviewButton"),a=$("analyticsButton"),e=$("evidenceButton");if(r)r.onclick=showWeeklyReview;if(a)a.onclick=showAnalytics;if(e)e.onclick=showEvidenceView;}\nfunction setupCareerTrackerButton(){const b=$("careerTrackerButton");if(b)b.onclick=showCareerTracker;}\nfunction setupWorkspaceNavigation(){
+function showMentorChat(){modal("Ask JARVIS","AI MENTOR",'<div id="mentorMessages" class="mentor-messages"><div class="mentor-bubble"><b>JARVIS</b><br>Ask about your plan, weak skills, GATE, internship, or what to study next.</div></div><div class="mentor-input-row"><textarea id="mentorInput" rows="3" placeholder="What should I study today?"></textarea><button id="mentorSend" class="primary-button">Ask JARVIS →</button></div>');const send=async()=>{const input=$("mentorInput"),box=$("mentorMessages"),m=input.value.trim();if(!m)return;box.insertAdjacentHTML("beforeend",'<div class="user-bubble">'+esc(m)+'</div>');input.value="";$("mentorSend").disabled=true;try{const a=await askMentor(m);box.insertAdjacentHTML("beforeend",'<div class="mentor-bubble"><b>JARVIS</b><br>'+esc(a).replace(/
+/g,"<br>")+'</div>')}catch(e){box.insertAdjacentHTML("beforeend",'<div class="mentor-bubble"><b>JARVIS</b><br>AI mentor is not configured yet.</div>')}$("mentorSend").disabled=false};$("mentorSend").onclick=send;}
+function setupReviewAnalytics(){const r=$("weeklyReviewButton"),a=$("analyticsButton"),e=$("evidenceButton");if(r)r.onclick=showWeeklyReview;if(a)a.onclick=showAnalytics;if(e)e.onclick=showEvidenceView;}
+function setupCareerTrackerButton(){const b=$("careerTrackerButton");if(b)b.onclick=showCareerTracker;}
+function setupWorkspaceNavigation(){
   document.querySelectorAll(".nav-item[data-view]").forEach(btn=>btn.onclick=async()=>{
     document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
     const v=btn.dataset.view;
@@ -1097,9 +1105,13 @@ function setupReviewAnalytics(){const r=$("weeklyReviewButton"),a=$("analyticsBu
     if(v==="history")await showHistoryView();
     if(v==="roadmap")await showRoadmapView();
   });
-  const enginePanel=document.querySelector(".engine-panel");if(enginePanel){const b=document.createElement("button");b.className="secondary-button";b.textContent="▣ Career Tracker";b.onclick=showCareerTracker;enginePanel.querySelector(".engine-actions")?.prepend(b);}if(enginePanel){const b=document.createElement("button");b.className="secondary-button";b.textContent="✦ Ask JARVIS";b.onclick=showMentorChat;enginePanel.querySelector(".engine-actions")?.prepend(b);}const profile=document.querySelector(".profile-panel"); if(profile){profile.style.cursor="pointer";profile.onclick=showProfileView;}
+  const enginePanel=document.querySelector("#enginePanel");if(enginePanel){const actions=enginePanel.querySelector(".engine-actions");if(actions){const b=document.createElement("button");b.className="secondary-button";b.textContent="✦ Ask JARVIS";b.onclick=showMentorChat;actions.prepend(b);}}const profile=document.querySelector(".profile-panel"); if(profile){profile.style.cursor="pointer";profile.onclick=showProfileView;}
 }
-\nensureEnginePanel();\nsetupWorkspaceNavigation();\nsetupCareerTrackerButton();\nsetupReviewAnalytics();
+
+ensureEnginePanel();
+setupWorkspaceNavigation();
+setupCareerTrackerButton();
+setupReviewAnalytics();
 if($("todayDate"))$("todayDate").textContent=pretty(dateStr());
 
 function setupAuthExtras(){
@@ -1158,7 +1170,7 @@ onAuthStateChanged(auth,user=>{
   if(user){
     if(loginPage)loginPage.style.display="none";
     if(dashboard)dashboard.style.display="block";
-    initializeUser(user.uid).then(()=>loadTasks(user.uid)).catch(err=>{console.error(err);if($("engineText"))$("engineText").textContent="Unable to initialize your workspace. Please refresh.";});
+    initializeUser(user.uid).then(async()=>{const profile=await getProfile(user.uid);if(!profile.preferences?.onboarded) await showOnboarding();await loadTasks(user.uid);}).catch(err=>{console.error(err);if($("engineText"))$("engineText").textContent="Unable to initialize your workspace. Please refresh.";});
   }else{
     if(loginPage)loginPage.style.display="flex";
     if(dashboard)dashboard.style.display="none";
