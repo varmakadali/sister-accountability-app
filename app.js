@@ -204,7 +204,14 @@ function buildMission(m, skills){
   const action=(PHRASES[m.category]||PHRASES.foundation)[s.status==="practicing"?1:0];
   const level=s.status||"not_started";
   const text=`${m.name}: ${action}`;
-  return {text,skillId:m.id,category:m.category,priority:m.weight>=4?"critical":m.weight>=2?"important":"supporting",difficulty:Math.min(5,(s.difficulty||1)+ (s.status==="failed"?0:1)),proofRequired:m.weight>=4||["project","career","gate"].includes(m.category),level};
+  const why = m.category==="career"||m.category==="project" ? "Direct career proof" :
+    m.category==="gate" ? "GATE preparation" :
+    m.category==="genai" ? "GenAI Engineer roadmap" : "Prerequisite / skill progression";
+  const output = m.category==="dsa"||m.category==="gate" ? "Solved questions + mistakes" :
+    m.category==="project"||m.category==="career" ? "GitHub/output proof" : "Working example or written test";
+  return {text,skillId:m.id,category:m.category,priority:m.weight>=4?"critical":m.weight>=2?"important":"supporting",
+    difficulty:Math.min(5,(s.difficulty||1)+(s.status==="failed"?0:1)),proofRequired:m.weight>=4||["project","career","gate"].includes(m.category),
+    level,why,output,effort:m.weight>=4?"45-60 min":m.weight>=2?"30-45 min":"15-30 min"};
 }
 
 async function loadState(uid){
@@ -254,7 +261,8 @@ async function generateDailyMissions(uid, force=false){
   const created=[];
   for(const x of chosen.slice(0,MAX_DAILY)){
     const m=x.m, mission=buildMission(m,skills);
-    const ref={text:mission.text, userId:uid,date:today,completed:false,source:"engine",goalId:goalFor(m),skillId:m.id,category:m.category,priority:mission.priority,difficulty:mission.difficulty,proofRequired:mission.proofRequired,deadline:DEADLINE,createdAt:serverTimestamp()};
+    const ref={text:mission.text, userId:uid,date:today,completed:false,source:"engine",goalId:goalFor(m),skillId:m.id,category:m.category,priority:mission.priority,difficulty:mission.difficulty,proofRequired:mission.proofRequired,deadline:DEADLINE,
+      why:mission.why,output:mission.output,effort:mission.effort,createdAt:serverTimestamp()};
     const refDoc=await addDoc(collection(db,"tasks"),ref); created.push({id:refDoc.id,...ref});
   }
   await setDoc(doc(db,"users",uid),{userId:uid,deadline:DEADLINE,engineVersion:2,lastGeneratedDate:today,updatedAt:serverTimestamp()},{merge:true});
@@ -297,7 +305,8 @@ function renderToday(tasks){
   tasks.sort((a,b)=>({critical:0,important:1,supporting:2}[a.priority]??3)-({critical:0,important:1,supporting:2}[b.priority]??3));
   for(const t of tasks){
     const row=document.createElement("div"); row.className=`task ${t.completed?"completed":""}`;
-    row.innerHTML=`<div class="task-left"><button class="task-check">${t.completed?"✓":""}</button><div><div class="task-name">${esc(t.text)}</div><small style="color:#7d858b">${esc(t.priority||"supporting").toUpperCase()} • ${esc(t.source==="manual"?"REAL-LIFE":"JARVIS")}${t.proofRequired&&!t.completed?" • PROOF":""}</small></div></div><span class="badge ${t.completed?"done":"pending"}">${t.completed?"DONE":"PENDING"}</span>`;
+    row.innerHTML=`<div class="task-left"><button class="task-check">${t.completed?"✓":""}</button><div><div class="task-name">${esc(t.text)}</div><small style="color:#7d858b">${esc(t.priority||"supporting").toUpperCase()} • ${esc(t.source==="manual"?"REAL-LIFE":"JARVIS")}${t.proofRequired&&!t.completed?" • PROOF":""}</small>
+      ${t.source==="engine"||t.source==="sunday-review"?`<div style="margin-top:7px;color:#9da5aa;font-size:12px">WHY: ${esc(t.why||"Roadmap progression")} • OUTPUT: ${esc(t.output||"Proof of work")} • EFFORT: ${esc(t.effort||"30-45 min")}</div>`:""}</div></div><span class="badge ${t.completed?"done":"pending"}">${t.completed?"DONE":"PENDING"}</span>`;
     row.querySelector(".task-check").onclick=()=>completeTask(t);
     list.appendChild(row);
   }
@@ -356,7 +365,25 @@ async function sundayReview(uid,tasks){
   const day=new Date().getDay(); if(day!==0)return;
   const missed=tasks.filter(t=>t.status==="missed"&&!t.reviewedSunday);
   if(!missed.length)return;
-  await setDoc(doc(db,"weeklyReviews",`${uid}_${dateStr()}`),{userId:uid,date:dateStr(),missedCount:missed.length,missedSkillIds:missed.map(t=>t.skillId).filter(Boolean),createdAt:serverTimestamp()},{merge:true});
+  const today=dateStr();
+  await setDoc(doc(db,"weeklyReviews",uid+"_"+today),{
+    userId:uid,date:today,missedCount:missed.length,
+    missedSkillIds:missed.map(t=>t.skillId).filter(Boolean),
+    action:"review_and_replan",createdAt:serverTimestamp()
+  },{merge:true});
+  const existing=tasks.filter(t=>t.date===today&&t.source==="sunday-review");
+  const existingKeys=new Set(existing.map(t=>t.reviewOf).filter(Boolean));
+  for(const t of missed){
+    if(existingKeys.has(t.id))continue;
+    await addDoc(collection(db,"tasks"),{
+      text:"SUNDAY REVIEW: "+t.text,
+      userId:uid,date:today,completed:false,source:"sunday-review",
+      reviewOf:t.id,skillId:t.skillId,goalId:t.goalId||"Weekly Review",
+      category:t.category||"review",priority:"critical",proofRequired:true,
+      why:"Review missed work and remove the bottleneck",output:"Reason + corrected attempt + proof",effort:"30-45 min",
+      createdAt:serverTimestamp()
+    });
+  }
   await Promise.all(missed.map(t=>updateDoc(doc(db,"tasks",t.id),{reviewedSunday:true})));
 }
 
