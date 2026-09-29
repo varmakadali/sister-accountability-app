@@ -1011,6 +1011,11 @@ function modal(title,kicker,html){
   m.querySelector(".workspace-modal-backdrop")?.addEventListener("click",()=>m.classList.add("hidden"));
 }
 
+async function showEvidenceView(){
+ const proof=allTasks.filter(t=>t.completed&&t.proofRequired);
+ const verified=proof.filter(t=>t.proofStatus==="verified");
+ modal("Evidence audit","PROOF",`<div class="roadmap-summary"><div><span>REQUIRED</span><b>${proof.length}</b></div><div><span>SUBMITTED</span><b>${proof.filter(t=>t.proofStatus==="submitted").length}</b></div><div><span>VERIFIED</span><b>${verified.length}</b></div><div><span>QUALITY</span><b>${proof.length?Math.round(verified.length/proof.length*100):0}%</b></div></div><div class="modal-list">${proof.slice(0,40).map(t=>`<div class="modal-row"><div><b>${esc(t.text)}</b><small>${esc(t.proofType||"general")} · ${t.proofStatus==="verified"?"Verified":"Submitted"}</small></div><span class="stage-chip">${t.proofStatus==="verified"?"VERIFIED":"REVIEW"}</span></div>`).join("")||'<div class="empty">No proof submissions yet.</div>'}</div>`);
+}
 async function showWeeklyReview(){
  const q=query(collection(db,"weeklyReviews"),where("userId","==",currentUser.uid));const snap=await getDocs(q);
  const reviews=snap.docs.map(d=>d.data()).sort((a,b)=>String(b.weekStart||"").localeCompare(String(a.weekStart||""))).slice(0,8);
