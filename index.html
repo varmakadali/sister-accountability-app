@@ -3,152 +3,212 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#050505">
-  <title>JARVIS Accountability System</title>
+  <meta name="theme-color" content="#080b12">
+  <title>JARVIS — Personal Career OS</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* Small compatibility layer for the task engine */
-    #dashboard{display:none}
-    .engine-card{margin:0 0 14px;padding:16px;border:1px solid #34231e;background:#0b0d0e;border-radius:14px}
-    .engine-card h2{font-size:12px;color:#eee;margin-bottom:8px}
-    .engine-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .engine-actions button{padding:9px 12px;border:1px solid #394047;background:#0c1012;color:#fff;border-radius:8px;font-size:10px}
-  </style>
 </head>
 <body>
+  <section id="loginPage" class="login-page">
+    <div class="login-glow"></div>
+    <div class="login-card">
+      <div class="brand-mark">J</div>
+      <div class="eyebrow">PERSONAL CAREER OS</div>
+      <h1>Build your future.<br><span>One mission at a time.</span></h1>
+      <p class="login-copy">Your adaptive learning, career and accountability system.</p>
 
-<section id="loginPage" class="login-page">
-  <div class="reactor-bg"></div>
-  <div class="login-card hud-panel">
-    <div class="arc-logo">⚡</div>
-    <div class="eyebrow">JARVIS ACCOUNTABILITY SYSTEM</div>
-    <h1>WELCOME <span>BACK</span></h1>
-    <p>One system. One roadmap. One mission at a time.</p>
+      <label for="email">EMAIL ADDRESS</label>
+      <input id="email" type="email" autocomplete="email" placeholder="you@example.com">
 
-    <label for="email">EMAIL</label>
-    <input id="email" type="email" autocomplete="email" placeholder="Enter your email">
+      <label for="password">PASSWORD</label>
+      <input id="password" type="password" autocomplete="current-password" placeholder="••••••••">
 
-    <label for="password">PASSWORD</label>
-    <input id="password" type="password" autocomplete="current-password" placeholder="Enter your password">
-
-    <button id="loginButton" class="red-button">ENTER SYSTEM →</button>
-    <p id="loginMessage" class="error-message"></p>
-  </div>
-</section>
-
-<section id="dashboard">
-  <header class="topbar">
-    <div class="top-brand">
-      <div class="mini-arc">⚡</div>
-      <div><strong>JARVIS</strong><span>PERSONAL CAREER SYSTEM</span></div>
+      <button id="loginButton" class="primary-button">Enter workspace <span>→</span></button>
+      <p id="loginMessage" class="error-message"></p>
     </div>
-    <div class="online"><i></i>SYSTEM ONLINE</div>
-    <button id="logoutButton" class="logout">LOGOUT</button>
-  </header>
+    <div class="login-foot">PRIVATE WORKSPACE · FIREBASE SECURED</div>
+  </section>
 
-  <main class="workspace">
-    <aside class="left-column">
-      <section class="info-card">
-        <div class="card-heading"><span>01</span> MASTER ROADMAP</div>
-        <div class="flow-box"><div class="flow-icon">◎</div><div><b>FOUNDATION</b><strong>Programming + CS</strong><small>Build the base before advanced topics.</small></div></div>
-        <div class="arrow">↓</div>
-        <div class="flow-box"><div class="flow-icon sun">◉</div><div><b>AI ENGINEERING</b><strong>ML → DL → LLM → RAG</strong><small>Learn, practice, test, apply.</small></div></div>
-        <div class="arrow">↓</div>
-        <div class="flow-box"><div class="flow-icon">◆</div><div><b>PROOF</b><strong>Projects + Internship + GSoC</strong><small>Every important skill produces evidence.</small></div></div>
-      </section>
-      <section class="info-card">
-        <div class="card-heading"><span>02</span> HARD RULES</div>
-        <div class="rule-box"><div class="fire-symbol">🔥</div><div><strong>04:30 AM ATTENDANCE</strong><span>Exact-time check-in is recorded.</span></div></div>
-        <div class="rule-box"><div class="fire-symbol">◆</div><div><strong>FEB 12, 2027 DEADLINE</strong><span>Engine reverse-plans toward the deadline.</span></div></div>
-        <div class="rule-box"><div class="fire-symbol">✓</div><div><strong>NO FAKE COMPLETION</strong><span>Important missions can require proof.</span></div></div>
-      </section>
-    </aside>
-
-    <section class="phone-column">
-      <div class="mobile-shell">
-        <div class="mobile-top">
-          <h1>JARVIS</h1><div class="online"><i></i>ONLINE</div><div class="profile-arc">⚡</div>
-        </div>
-
-        <div class="streak-hero hud-panel">
-          <div class="target-icon">🎯</div>
-          <div class="big-streak" id="streakNumber">0<small>DAYS STREAK</small></div>
-          <p>Consistency creates the result.</p>
-        </div>
-
-        <section class="today-card hud-panel">
-          <div class="section-header"><h2>🎯 TODAY'S MISSIONS</h2><span id="todayDate">TODAY</span></div>
-          <div id="taskList" class="task-list"><div class="empty">Loading missions...</div></div>
-        </section>
-
-        <section class="progress-card hud-panel">
-          <div class="ring" id="progressCircle"><div><strong id="progressNumber">0%</strong><span>TODAY</span></div></div>
-          <div class="stats-numbers">
-            <h3>MISSION PROGRESS</h3>
-            <div><b id="completedCount">0</b><span>COMPLETED</span></div>
-            <div><b id="pendingCount">0</b><span>PENDING</span></div>
-            <div><b id="totalCount">0</b><span>TOTAL</span></div>
-            <div><b id="progressText">0%</b><span>PROGRESS</span></div>
-          </div>
-        </section>
-
-        <section class="achievements-card hud-panel">
-          <div class="section-header"><h2>🏆 ACHIEVEMENTS</h2><span>STREAK</span></div>
-          <div class="achievement-row">
-            <div class="achievement" id="achievement1"><span>🔥</span><b>FIRST DAY</b><small>LOCKED</small></div>
-            <div class="achievement" id="achievement3"><span>🔥</span><b>3 DAYS</b><small>LOCKED</small></div>
-            <div class="achievement" id="achievement7"><span>⚡</span><b>7 DAYS</b><small>LOCKED</small></div>
-            <div class="achievement" id="achievement30"><span>🛡️</span><b>30 DAYS</b><small>LOCKED</small></div>
-            <div class="achievement"><span>◆</span><b>PROOF</b><small>BUILD</small></div>
-          </div>
-        </section>
-
-        <section class="info-card">
-          <div class="card-heading"><span>MISSION LOG</span> — HISTORY</div>
-          <div id="historyList" class="history-list"><div class="empty">No history yet.</div></div>
-        </section>
-
-        <div class="bottom-nav">
-          <button class="active">⌂<span>TODAY</span></button>
-          <button>✓<span>WORK</span></button>
-          <button class="center-nav">⚡</button>
-          <button>◷<span>HISTORY</span></button>
-          <button>⚙<span>SYSTEM</span></button>
+  <section id="dashboard">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-symbol">J</div>
+        <div>
+          <strong>JARVIS</strong>
+          <span>PERSONAL CAREER OS</span>
         </div>
       </div>
-    </section>
 
-    <aside class="right-column">
-      <section class="info-card" id="enginePanel">
-        <div class="card-heading"><span>03</span> ENGINE STATUS</div>
-        <div id="engineText" style="color:#aeb5ba;font-size:11px;line-height:1.7">Initializing adaptive roadmap...</div>
-        <div class="engine-actions">
-          <button id="addManualTask">+ REAL-LIFE TASK</button>
-          <button id="checkIn430">04:30 CHECK-IN</button>
-          <button id="systemSettings">⚙ SYSTEM SETTINGS</button>
+      <div class="top-center">
+        <span class="status-dot"></span>
+        SYSTEM ONLINE
+      </div>
+
+      <div class="top-actions">
+        <button id="systemSettings" class="ghost-button">Settings</button>
+        <button id="logoutButton" class="ghost-button">Log out</button>
+      </div>
+    </header>
+
+    <main class="dashboard-shell">
+      <aside class="sidebar">
+        <div class="side-label">WORKSPACE</div>
+        <button class="nav-item active"><span>⌂</span> Today</button>
+        <button class="nav-item"><span>✓</span> Missions</button>
+        <button class="nav-item"><span>◷</span> History</button>
+        <button class="nav-item"><span>◈</span> Roadmap</button>
+
+        <div class="sidebar-divider"></div>
+        <div class="side-label">SYSTEM</div>
+        <div class="side-status"><i></i><div><b>Adaptive engine</b><small>Planning is active</small></div></div>
+        <div class="side-status"><i class="blue"></i><div><b>Career deadline</b><small>12 Feb 2027</small></div></div>
+
+        <div class="sidebar-bottom">
+          <div class="mini-card">
+            <span>Focus</span>
+            <strong>GenAI Engineering</strong>
+            <small>Build → prove → improve</small>
+          </div>
         </div>
-      </section>
-      <section class="right-streak">
-        <div class="fire-large">🔥</div><small>CURRENT STREAK</small><strong id="rightStreak">SYNCED</strong><em>Keep showing up.</em>
-      </section>
-      <section class="info-card">
-        <div class="card-heading"><span>04</span> SYSTEM LOGIC</div>
-        <ul class="feature-list">
-          <li>Prerequisites before advanced topics</li>
-          <li>Priority changes with deadlines and performance</li>
-          <li>3–5 meaningful missions per day</li>
-          <li>Missed work is recorded for review</li>
-          <li>Important work can require proof</li>
-          <li>Daily progress updates the roadmap</li>
-          <li>College workload controls mission capacity</li>
-          <li>Focus mode: Balanced / Internship / GATE / GenAI</li>
-        </ul>
-      </section>
-    </aside>
-  </main>
-</section>
+      </aside>
 
-<script type="module" src="app.js"></script>
+      <section class="main-column">
+        <div class="welcome-row">
+          <div>
+            <div class="eyebrow">TODAY · <span id="todayDate">LOADING</span></div>
+            <h1>Your next <span>best move.</span></h1>
+            <p>The engine turns your roadmap, deadlines and performance into a small set of meaningful actions.</p>
+          </div>
+          <div class="deadline-card">
+            <small>MASTER DEADLINE</small>
+            <strong>12 FEB 2027</strong>
+            <span>Reverse-planned</span>
+          </div>
+        </div>
+
+        <section class="focus-card">
+          <div class="focus-icon">✦</div>
+          <div class="focus-copy">
+            <span>TODAY'S FOCUS</span>
+            <strong>Learn less. Finish more.</strong>
+            <p>Complete the missions below with real proof. Consistency beats a giant to-do list.</p>
+          </div>
+          <div class="focus-pill">3–5 MISSIONS</div>
+        </section>
+
+        <section class="panel missions-panel">
+          <div class="panel-head">
+            <div>
+              <span class="panel-kicker">01 · EXECUTION</span>
+              <h2>Today's missions</h2>
+            </div>
+            <span class="live-pill"><i></i> LIVE</span>
+          </div>
+          <div id="taskList" class="task-list">
+            <div class="empty">Preparing your missions…</div>
+          </div>
+        </section>
+
+        <section class="metrics-grid">
+          <div class="panel progress-panel">
+            <div class="panel-head compact">
+              <div><span class="panel-kicker">02 · PROGRESS</span><h2>Today's momentum</h2></div>
+              <span id="progressText" class="metric-percent">0%</span>
+            </div>
+            <div class="progress-content">
+              <div class="progress-ring" id="progressCircle">
+                <div><strong id="progressNumber">0%</strong><small>complete</small></div>
+              </div>
+              <div class="metric-list">
+                <div><span>Completed</span><b id="completedCount">0</b></div>
+                <div><span>Pending</span><b id="pendingCount">0</b></div>
+                <div><span>Total</span><b id="totalCount">0</b></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel streak-panel">
+            <div class="panel-head compact">
+              <div><span class="panel-kicker">03 · CONSISTENCY</span><h2>Current streak</h2></div>
+              <span class="streak-badge">ACTIVE</span>
+            </div>
+            <div class="streak-number"><strong id="streakNumber">0</strong><span>days</span></div>
+            <div class="streak-line"><i></i><span>Show up. Build proof. Repeat.</span></div>
+            <div class="streak-note">Your streak is calculated from completed daily missions.</div>
+          </div>
+        </section>
+
+        <section class="panel achievements-panel">
+          <div class="panel-head compact">
+            <div><span class="panel-kicker">04 · MILESTONES</span><h2>Consistency rewards</h2></div>
+            <span class="subtle">STREAK</span>
+          </div>
+          <div class="achievement-row">
+            <div class="achievement" id="achievement1"><div>01</div><b>First day</b><small>LOCKED</small></div>
+            <div class="achievement" id="achievement3"><div>03</div><b>3 days</b><small>LOCKED</small></div>
+            <div class="achievement" id="achievement7"><div>07</div><b>7 days</b><small>LOCKED</small></div>
+            <div class="achievement" id="achievement30"><div>30</div><b>30 days</b><small>LOCKED</small></div>
+            <div class="achievement proof-achievement"><div>✦</div><b>Proof</b><small>BUILD</small></div>
+          </div>
+        </section>
+
+        <section class="panel history-panel">
+          <div class="panel-head compact">
+            <div><span class="panel-kicker">05 · REVIEW</span><h2>Recent history</h2></div>
+            <span class="subtle">LAST 7 DAYS</span>
+          </div>
+          <div id="historyList" class="history-list"><div class="empty">No history yet.</div></div>
+        </section>
+      </section>
+
+      <aside class="rightbar">
+        <section class="panel engine-panel" id="enginePanel">
+          <div class="panel-head compact">
+            <div><span class="panel-kicker">AI ENGINE</span><h2>Planning status</h2></div>
+            <span class="engine-dot">●</span>
+          </div>
+          <div id="engineText" class="engine-text">Initializing adaptive roadmap…</div>
+          <div class="engine-actions">
+            <button id="addManualTask" class="secondary-button">+ Real-life task</button>
+            <button id="checkIn430" class="secondary-button">04:30 check-in</button>
+          </div>
+        </section>
+
+        <section class="panel profile-panel">
+          <div class="profile-head">
+            <div class="avatar">VK</div>
+            <div><strong>Career trajectory</strong><small>GenAI Engineer</small></div>
+          </div>
+          <div class="trajectory">
+            <div><span>Foundation</span><i class="done"></i></div>
+            <div><span>Software engineering</span><i class="active"></i></div>
+            <div><span>ML → DL</span><i></i></div>
+            <div><span>LLMs → RAG → Agents</span><i></i></div>
+            <div><span>Projects → Internship</span><i></i></div>
+          </div>
+        </section>
+
+        <section class="panel rules-panel">
+          <div class="panel-head compact">
+            <div><span class="panel-kicker">GUARDRAILS</span><h2>How JARVIS decides</h2></div>
+          </div>
+          <ul>
+            <li><span>01</span> Prerequisites come first.</li>
+            <li><span>02</span> Weakness and failed tests increase priority.</li>
+            <li><span>03</span> Deadlines change the plan.</li>
+            <li><span>04</span> Important work needs proof.</li>
+            <li><span>05</span> Missed work returns for review.</li>
+          </ul>
+        </section>
+
+        <section class="quick-note">
+          <span>JARVIS NOTE</span>
+          <p>Don't chase a perfect day. Protect the next meaningful action.</p>
+        </section>
+      </aside>
+    </main>
+  </section>
+
+  <script type="module" src="app.js"></script>
 </body>
 </html>
