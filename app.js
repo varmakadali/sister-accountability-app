@@ -380,9 +380,11 @@ async function checkAttendance(){
 }
 
 function engineMessage(tasks){
-  const engine=tasks.filter(t=>(t.source==="engine"||t.source==="sunday-review")&&!t.deleted); const done=engine.filter(t=>t.completed).length;
-  const missed=tasks.filter(t=>t.status==="missed").length;
-  if($("engineText"))$("engineText").innerHTML=`Deadline: <b>${DEADLINE}</b> • ${daysLeft()} days left.<br>Today: <b>${done}/${engine.length}</b> JARVIS missions complete${missed?` • <b>${missed}</b> missed mission(s) queued for Sunday review.`:"."}<br>Engine chooses tasks using prerequisites, priority, performance, revision need and career deadlines. It does not unlock advanced topics before their prerequisites.`;
+  const today=dateStr();
+  const engine=tasks.filter(t=>(t.source==="engine"||t.source==="sunday-review")&&!t.deleted&&t.date===today);
+  const done=engine.filter(t=>t.completed).length;
+  const missed=tasks.filter(t=>t.status==="missed"&&!t.deleted).length;
+  if($("engineText"))$("engineText").innerHTML=`Deadline: <b>${DEADLINE}</b> • ${daysLeft()} days left.<br>Today: <b>${done}/${engine.length}</b> JARVIS missions complete${missed?` • <b>${missed}</b> missed mission(s) queued for Sunday review.`:"."}<br>Engine chooses tasks using prerequisites, priority, performance, revision need, workload and career deadlines. It does not unlock advanced topics before their prerequisites.`;
 }
 
 async function markOverdueAsMissed(tasks){
