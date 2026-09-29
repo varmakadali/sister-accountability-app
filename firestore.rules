@@ -17,6 +17,10 @@ service cloud.firestore {
       allow create: if creatingMine();
       allow read, update, delete: if mine();
     }
+    match /tests/{testId} {
+      allow create: if creatingMine();
+      allow read, update, delete: if mine();
+    }
     match /weeklyReviews/{reviewId} {
       allow create: if creatingMine();
       allow read, update, delete: if mine();
