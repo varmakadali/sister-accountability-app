@@ -179,7 +179,7 @@ function ensureEnginePanel(){
   $("addManualTask").onclick=()=>addManualTask();
   $("checkIn430").onclick=()=>checkAttendance();
   const settingsButton=$("systemSettings");
-  if(settingsButton) settingsButton.onclick=()=>configureSystem();
+  if(settingsButton) settingsButton.onclick=()=>showProfileView();
 }
 
 function skillStage(s){
@@ -347,7 +347,7 @@ async function createTestRecord(task,score,mistakes){
 
 async function generateDailyMissions(uid, force=false){
   const {skills,tasks}=await loadState(uid);
-  const settings=await getSettings(uid);
+  const profile=await getProfile(uid);\n  const settings={...await getSettings(uid),...profile.preferences};
   const today=dateStr();
   const existing=tasks.filter(t=>t.date===today);
   if(existing.some(t=>t.source==="engine") && !force) return existing;
@@ -357,7 +357,7 @@ async function generateDailyMissions(uid, force=false){
   const chosen=[];
   const used=new Set(todayTasks.map(t=>t.skillId).filter(Boolean));
   const candidates=[...modules.values()].map(m=>({m,score:scoreModule(m,skills,{},todayTasks,settings)})).filter(x=>Number.isFinite(x.score)).sort((a,b)=>b.score-a.score);
-  const capacity=settings.collegeLoad==="high"?Math.max(1,settings.dailyCapacity-1):settings.dailyCapacity;
+  const timeCap=Math.max(1,Math.floor((Number(settings.availableMinutes)||120)/25));\n  const capacity=Math.min(settings.collegeLoad==="high"?Math.max(1,settings.dailyCapacity-1):settings.dailyCapacity,timeCap);
 
   // One core learning task, one DSA/GATE task, one GenAI/engineering task, one career/proof task, one non-negotiable.
   const buckets=[
@@ -549,7 +549,91 @@ async function loadTasks(uid){
   await generateDailyMissions(uid);
 }
 
-ensureEnginePanel();
+
+function normalizeAllocation(a={}){
+  const base={genai:Number(a.genai)||30,software:Number(a.software)||20,gate:Number(a.gate)||20,career:Number(a.career)||15,english:Number(a.english)||5,projects:Number(a.projects)||5,fitness:Number(a.fitness)||5};
+  const total=Object.values(base).reduce((x,y)=>x+y,0)||100;
+  const out={}; for(const [k,v] of Object.entries(base)) out[k]=Math.round(v/total*100);
+  return out;
+}
+
+async function getProfile(uid){
+  const snap=await getDoc(doc(db,"users",uid));
+  const d=snap.exists()?snap.data():{};
+  return {
+    ...(d||{}),
+    goals:{genai:true,software:true,gate:true,internship:true,gsoc:true,projects:true,english:true,brand:true,business:true,college:true,fitness:true,futureTech:true,...(d.goals||{})},
+    preferences:{dailyCapacity:3,collegeLoad:"normal",focusMode:"balanced",availableMinutes:120,energy:"normal",allocation:normalizeAllocation(d.preferences?.allocation),...(d.preferences||{})}
+  };
+}
+
+async function saveProfile(uid,patch){
+  await setDoc(doc(db,"users",uid),{userId:uid,...patch,updatedAt:serverTimestamp()},{merge:true});
+}
+
+function modal(title,kicker,html){
+  const m=$("workspaceModal"); if(!m)return;
+  $("modalTitle").textContent=title; $("modalKicker").textContent=kicker||"WORKSPACE"; $("modalBody").innerHTML=html; m.classList.remove("hidden");
+  $("modalClose").onclick=()=>m.classList.add("hidden");
+  m.querySelector(".workspace-modal-backdrop")?.addEventListener("click",()=>m.classList.add("hidden"));
+}
+
+async function showProfileView(){
+  const p=await getProfile(currentUser.uid), pref=p.preferences||{}, g=p.goals||{}, a=normalizeAllocation(pref.allocation);
+  modal("Career OS Profile","PROFILE",`
+    <div class="form-grid">
+      <label>Daily capacity <input id="pCapacity" type="number" min="1" max="5" value="${pref.dailyCapacity||3}"></label>
+      <label>Available study minutes <input id="pMinutes" type="number" min="15" max="600" value="${pref.availableMinutes||120}"></label>
+      <label>College load <select id="pCollege"><option ${pref.collegeLoad==="low"?"selected":""}>low</option><option ${pref.collegeLoad==="normal"?"selected":""}>normal</option><option ${pref.collegeLoad==="high"?"selected":""}>high</option></select></label>
+      <label>Energy <select id="pEnergy"><option>low</option><option ${pref.energy==="normal"?"selected":""}>normal</option><option ${pref.energy==="high"?"selected":""}>high</option></select></label>
+      <label>Primary focus <select id="pFocus"><option ${pref.focusMode==="balanced"?"selected":""}>balanced</option><option ${pref.focusMode==="internship"?"selected":""}>internship</option><option ${pref.focusMode==="gate"?"selected":""}>gate</option><option ${pref.focusMode==="genai"?"selected":""}>genai</option></select></label>
+    </div>
+    <h3 class="modal-section-title">Percentage allocation</h3>
+    <div class="allocation-grid">
+      ${Object.entries(a).map(([k,v])=>`<label>${k.toUpperCase()} <input class="alloc" data-key="${k}" type="number" min="0" max="100" value="${v}"></label>`).join("")}
+    </div>
+    <h3 class="modal-section-title">Goals</h3>
+    <div class="goal-grid">${Object.entries(g).map(([k,v])=>`<label><input class="goal" data-key="${k}" type="checkbox" ${v?"checked":""}> ${k}</label>`).join("")}</div>
+    <button id="saveProfile" class="primary-button">Save profile & regenerate plan <span>→</span></button>`);
+  $("saveProfile").onclick=async()=>{
+    const alloc={};document.querySelectorAll(".alloc").forEach(x=>alloc[x.dataset.key]=Number(x.value)||0);
+    const goals={};document.querySelectorAll(".goal").forEach(x=>goals[x.dataset.key]=x.checked);
+    await saveProfile(currentUser.uid,{goals,preferences:{...pref,dailyCapacity:Math.max(1,Math.min(5,Number($("pCapacity").value)||3)),availableMinutes:Math.max(15,Number($("pMinutes").value)||120),collegeLoad:$("pCollege").value,energy:$("pEnergy").value,focusMode:$("pFocus").value,allocation:normalizeAllocation(alloc)}});
+    $("workspaceModal").classList.add("hidden"); await generateDailyMissions(currentUser.uid,true); alert("Profile saved. Your adaptive plan was rebuilt.");
+  };
+}
+
+async function showHistoryView(){
+  const tasks=allTasks.filter(t=>!t.deleted).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  const rows=tasks.slice(0,30).map(t=>`<div class="modal-row"><div><b>${esc(t.text)}</b><small>${esc(t.date||"")} · ${esc(t.source||"")}</small></div><span class="badge ${t.completed?"done":"pending"}">${t.completed?"DONE":t.status==="missed"?"MISSED":"PENDING"}</span></div>`).join("")||'<div class="empty">No history yet.</div>';
+  modal("Execution history","HISTORY",`<div class="modal-list">${rows}</div>`);
+}
+
+async function showRoadmapView(){
+  const {skills}=await loadState(currentUser.uid), health=await getRoadmapHealth(currentUser.uid);
+  const rows=[...modules.values()].map(m=>{const s=skills[m.id]||{};return {m,s,stage:skillStage(s)}}).sort((x,y)=>(y.m.weight-x.m.weight)||(x.stage.localeCompare(y.stage)));
+  modal("Full adaptive roadmap","ROADMAP",`
+    <div class="roadmap-summary"><div><span>STATUS</span><b>${health.status}</b></div><div><span>EVIDENCE</span><b>${health.progress}%</b></div><div><span>DEADLINE</span><b>${health.days}d</b></div><div><span>BOTTLENECK</span><b>${esc(health.bottleneck)}</b></div></div>
+    <div class="modal-list">${rows.map(x=>`<div class="modal-row"><div><b>${esc(x.m.name)}</b><small>${esc(x.m.category)} · weight ${x.m.weight} · ${x.s.progress||0}%</small></div><span class="stage-chip">${x.stage}</span></div>`).join("")}</div>`);
+}
+
+async function showMissionsView(){
+  const today=allTasks.filter(t=>t.date===dateStr()&&!t.deleted);
+  modal("Today's mission control","MISSIONS",`<div class="mission-control">${today.map(t=>`<article class="mission-detail"><div><span class="stage-chip">${esc(t.level||"TASK")}</span><b>${esc(t.text)}</b></div><p><strong>WHY</strong> ${esc(t.why||"Roadmap progression")}<br><strong>OUTPUT</strong> ${esc(t.output||"Proof of work")}<br><strong>EFFORT</strong> ${esc(t.effort||"30-45 min")}<br><strong>PROOF</strong> ${t.proofRequired?"Required":"Optional"}</p></article>`).join("")||'<div class="empty">No missions.</div>'}</div>`);
+}
+
+function setupWorkspaceNavigation(){
+  document.querySelectorAll(".nav-item[data-view]").forEach(btn=>btn.onclick=async()=>{
+    document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
+    const v=btn.dataset.view;
+    if(v==="today")window.scrollTo({top:0,behavior:"smooth"});
+    if(v==="missions")await showMissionsView();
+    if(v==="history")await showHistoryView();
+    if(v==="roadmap")await showRoadmapView();
+  });
+  const profile=document.querySelector(".profile-panel"); if(profile){profile.style.cursor="pointer";profile.onclick=showProfileView;}
+}
+\nensureEnginePanel();\nsetupWorkspaceNavigation();
 if($("todayDate"))$("todayDate").textContent=pretty(dateStr());
 
 function setupAuthExtras(){
