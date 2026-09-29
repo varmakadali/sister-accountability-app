@@ -1,17 +1,28 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function mine() { return signedIn() && resource.data.userId == request.auth.uid; }
+    function creatingMine() { return signedIn() && request.resource.data.userId == request.auth.uid; }
+
     match /tasks/{taskId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
-      allow update: if request.auth != null && request.auth.uid == resource.data.userId && request.resource.data.userId == request.auth.uid;
-      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if creatingMine();
+      allow read, update, delete: if mine();
+    }
+    match /skills/{skillId} {
+      allow create: if creatingMine();
+      allow read, update, delete: if mine();
     }
     match /attendance/{attendanceId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create, update: if request.auth != null && request.auth.uid == request.resource.data.userId;
-      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if creatingMine();
+      allow read, update, delete: if mine();
+    }
+    match /weeklyReviews/{reviewId} {
+      allow create: if creatingMine();
+      allow read, update, delete: if mine();
+    }
+    match /users/{uid} {
+      allow create, read, update, delete: if signedIn() && uid == request.auth.uid;
     }
   }
 }
