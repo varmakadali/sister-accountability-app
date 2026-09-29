@@ -123,6 +123,120 @@ function escapeHtml(text){
 
 
 /* =========================
+   ACCOUNTABILITY ENGINE
+========================= */
+
+const ROADMAP = [
+  { title:"Python fundamentals + one coding problem", goal:"GenAI Engineering", skill:"Programming", priority:"CRITICAL", points:10 },
+  { title:"DSA practice: solve 1 problem and write the approach", goal:"FAANG / GSoC", skill:"DSA", priority:"CRITICAL", points:10 },
+  { title:"ML/AI foundation: learn one concept and explain it in your own words", goal:"GenAI Engineering", skill:"ML", priority:"IMPORTANT", points:7 },
+  { title:"Build or improve one small GitHub project component", goal:"Projects / Internship", skill:"Project", priority:"IMPORTANT", points:7 },
+  { title:"English speaking: 10 minutes + write 5 corrected sentences", goal:"Communication", skill:"English", priority:"SUPPORTING", points:4 }
+];
+
+let attendanceState = null;
+let autoTasksCreated = false;
+
+function localDateTime(){
+  const d=new Date();
+  return { date:getDateString(d), hour:d.getHours(), minute:d.getMinutes() };
+}
+
+function isSunday(){ return new Date().getDay() === 0; }
+
+function attendanceStatus(){
+  const t=localDateTime();
+  const minutes=t.hour*60+t.minute;
+  const target=4*60+30;
+  if(minutes===target) return "OPEN";
+  if(minutes<target) return "WAITING";
+  return "MISSED";
+}
+
+function ensureAccountabilityUI(){
+  if(document.getElementById("attendanceCard")) return;
+  const taskList=document.getElementById("taskList");
+  if(!taskList) return;
+  const card=document.createElement("div");
+  card.id="attendanceCard";
+  card.className="accountability-card";
+  card.innerHTML=`<div class="accountability-head"><span>04:30 AM ATTENDANCE</span><b id="attendanceStatus">CHECKING...</b></div>
+  <p id="attendanceText">Daily attendance is required at exactly 4:30 AM.</p>
+  <button id="attendanceButton" class="attendance-button">MARK ATTENDANCE</button>`;
+  taskList.parentNode.insertBefore(card,taskList);
+  document.getElementById("attendanceButton").addEventListener("click", markAttendance);
+  refreshAttendanceUI();
+}
+
+async function markAttendance(){
+  const user=auth.currentUser; if(!user) return;
+  const now=new Date();
+  const mins=now.getHours()*60+now.getMinutes();
+  if(mins!==270){
+    alert("Attendance opens at exactly 4:30 AM. Come back at 4:30 AM.");
+    return;
+  }
+  const key=getDateString(now);
+  try{
+    await setDoc(doc(db,"attendance",`${user.uid}_${key}`),{
+      userId:user.uid,date:key,requiredTime:"04:30",status:"PRESENT",actualTime:now.toISOString(),createdAt:serverTimestamp()
+    },{merge:true});
+    attendanceState="PRESENT";
+    refreshAttendanceUI();
+  }catch(e){ console.error("ATTENDANCE ERROR",e); alert("Attendance save failed."); }
+}
+
+async function refreshAttendanceUI(){
+  const statusEl=document.getElementById("attendanceStatus");
+  const textEl=document.getElementById("attendanceText");
+  const btn=document.getElementById("attendanceButton");
+  if(!statusEl) return;
+  const user=auth.currentUser; if(!user) return;
+  const key=getDateString(new Date());
+  try{
+    const snap=await getDocs(query(collection(db,"attendance"),where("userId","==",user.uid)));
+    let found=false; snap.forEach(d=>{if(d.data().date===key && d.data().status==="PRESENT") found=true;});
+    attendanceState=found?"PRESENT":attendanceStatus();
+  }catch(e){ attendanceState=attendanceStatus(); }
+  statusEl.textContent=attendanceState;
+  btn.disabled=attendanceState!=="OPEN";
+  if(attendanceState==="PRESENT") textEl.textContent="Attendance recorded. Discipline starts at 4:30 AM.";
+  else if(attendanceState==="WAITING") textEl.textContent="Next checkpoint: exactly 4:30 AM.";
+  else if(attendanceState==="OPEN") textEl.textContent="CHECKPOINT OPEN — mark attendance now.";
+  else textEl.textContent="Today's 4:30 AM checkpoint was missed. It will be reviewed on Sunday.";
+}
+
+async function ensureDailyTasks(userId, existingTasks){
+  if(autoTasksCreated || existingTasks.some(t=>t.date===today)) return;
+  autoTasksCreated=true;
+  const todayTasks=ROADMAP.map((r,i)=>({
+    text:r.title, userId, date:today, completed:false, priority:r.priority,
+    goal:r.goal, skill:r.skill, points:r.points, source:"AI_MENTOR",
+    difficulty:i<2?"FOUNDATION":"BUILD", proofRequired:i!==4, createdAt:serverTimestamp()
+  }));
+  try{
+    for(const task of todayTasks) await addDoc(collection(db,"tasks"),task);
+  }catch(e){ console.error("AUTO TASK ERROR",e); autoTasksCreated=false; }
+}
+
+function sundayReview(allTasks){
+  const old=document.getElementById("sundayReviewCard"); if(old) old.remove();
+  if(!isSunday()) return;
+  const missed=allTasks.filter(t=>t.date && t.date<today && !t.completed);
+  const card=document.createElement("section"); card.id="sundayReviewCard"; card.className="accountability-card sunday-card";
+  card.innerHTML=`<div class="accountability-head"><span>SUNDAY ACCOUNTABILITY REVIEW</span><b>${missed.length} MISSED</b></div><p>${missed.length?"Missed work is recorded for review. Do not delete it; recover it through the next plan.":"Clean week. No missed missions found."}</p>`;
+  document.querySelector(".phone-column")?.appendChild(card);
+}
+
+function mentorMessage(tasks){
+  const pending=tasks.filter(t=>!t.completed);
+  if(!tasks.length) return "JARVIS: No mission exists. Daily mission generation is ready.";
+  if(!pending.length) return "JARVIS: Mission complete. Protect the streak and prepare for tomorrow.";
+  const critical=pending.filter(t=>t.priority==="CRITICAL").length;
+  return critical?`JARVIS: ${critical} critical mission${critical>1?"s":""} pending. Finish the highest-priority work before supporting tasks.`:`JARVIS: ${pending.length} mission${pending.length>1?"s":""} pending. Keep moving; consistency beats intensity.`;
+}
+
+/* =========================
    DATES
 ========================= */
 
@@ -277,9 +391,11 @@ onAuthStateChanged(
       }
 
 
+      ensureAccountabilityUI();
       loadTasks(
         user.uid
       );
+      setInterval(refreshAttendanceUI, 30000);
 
     }
 
@@ -503,6 +619,8 @@ function loadTasks(userId){
         );
 
 
+        ensureDailyTasks(userId, allTasks);
+
         const todayTasks =
           allTasks.filter(
             (task) =>
@@ -541,6 +659,8 @@ function loadTasks(userId){
           allTasks
         );
 
+        sundayReview(allTasks);
+
       },
 
       (error) => {
@@ -562,6 +682,8 @@ function loadTasks(userId){
 ========================= */
 
 function renderToday(tasks){
+
+  window.__todayTasks = tasks;
 
   const list =
     $("taskList");
@@ -635,6 +757,7 @@ function renderToday(tasks){
           </button>
 
           <div class="task-name">
+            <span class="priority-badge priority-${String(task.priority||"IMPORTANT").toLowerCase()}">${escapeHtml(task.priority||"IMPORTANT")}</span>
             ${escapeHtml(task.text)}
           </div>
 
@@ -1090,6 +1213,10 @@ function updateProgress(tasks){
       `${pending} mission${pending === 1 ? "" : "s"} remaining.`;
 
   }
+
+  const tasksForMentor = window.__todayTasks || [];
+  const mentor = document.getElementById("jarvisMessage");
+  if(mentor) mentor.textContent = mentorMessage(tasksForMentor);
 
 }
 

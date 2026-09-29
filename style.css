@@ -1807,3 +1807,17 @@ button{
   }
 
 }
+
+/* =========================
+   ACCOUNTABILITY ENGINE
+========================= */
+.accountability-card{margin:10px 0;padding:12px;border:1px solid #4b2520;border-radius:12px;background:#0a0b0b;box-shadow:0 0 16px rgba(255,0,32,.08)}
+.accountability-head{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:9px;letter-spacing:1px;color:#ddd}
+.accountability-head b{color:#ffb000;font-size:8px}
+.accountability-card p{font-size:9px;color:#888;line-height:1.5;margin:8px 0}
+.attendance-button{width:100%;padding:9px;border:1px solid #ff1b31;background:#16090b;color:#fff;border-radius:6px;font-size:9px;font-weight:bold;letter-spacing:1px}
+.attendance-button:not(:disabled){box-shadow:0 0 12px rgba(255,0,32,.3)}
+.attendance-button:disabled{opacity:.45;cursor:not-allowed}
+.sunday-card{border-color:#806016}
+
+.priority-badge{display:inline-block;margin-right:6px;padding:2px 4px;border:1px solid #555;border-radius:3px;font-size:6px;letter-spacing:.5px;color:#bbb;vertical-align:middle}.priority-critical{color:#ff3040;border-color:#7c2028}.priority-important{color:#ffc247;border-color:#66501e}.priority-supporting{color:#75d9a0;border-color:#24533a}.today-input,.tomorrow-input{display:none!important}
