@@ -43,3 +43,15 @@ button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
 @media(max-width:1150px){.dashboard-shell{grid-template-columns:165px minmax(0,1fr);width:94%}.rightbar{grid-column:2;grid-template-columns:1fr 1fr}.rightbar .rules-panel,.rightbar .quick-note{grid-column:span 1}.sidebar-bottom{display:none}}
 @media(max-width:800px){.topbar{padding:0 15px}.top-center{display:none}.top-actions .ghost-button:first-child{display:none}.dashboard-shell{display:block;width:94%;padding-top:18px}.sidebar{display:none}.rightbar{display:grid;grid-template-columns:1fr;margin-top:14px}.welcome-row{align-items:flex-start;flex-direction:column}.deadline-card{width:100%}.metrics-grid{grid-template-columns:1fr}.focus-card{align-items:flex-start}.focus-pill{display:none}.achievement-row{overflow-x:auto;grid-template-columns:repeat(5,100px)}.achievement{min-width:100px}.login-card{padding:34px 25px}}
 @media(max-width:520px){.topbar{height:64px}.brand span{display:none}.brand-symbol{width:32px;height:32px}.brand strong{font-size:12px}.welcome-row h1{font-size:25px}.panel{padding:14px}.progress-content{gap:12px}.progress-ring{width:105px;height:105px}.progress-ring>div{width:81px;height:81px}.progress-ring strong{font-size:20px}.task{padding:11px 9px}.task-name{font-size:10px}.task-left small{font-size:6px}}
+
+
+.auth-links{display:flex;justify-content:space-between;gap:10px;margin-top:12px}
+.auth-links button{border:0;background:transparent;color:#7584a0;font-size:10px;padding:5px}
+.auth-links button:hover{color:#b8c3d8;text-decoration:underline}
+.status-chip{font-size:7px;letter-spacing:.8px;color:#69d5a0;border:1px solid rgba(82,211,154,.22);background:rgba(82,211,154,.05);padding:5px 8px;border-radius:999px}
+.roadmap-panel{margin-bottom:14px}
+.roadmap-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.roadmap-grid div{padding:11px;border:1px solid #1d2735;border-radius:10px;background:#0b1018}
+.roadmap-grid span{display:block;color:#637187;font-size:7px;letter-spacing:.5px}
+.roadmap-grid b{display:block;margin-top:5px;font-size:11px}
+.roadmap-grid .wide{grid-column:span 2}
