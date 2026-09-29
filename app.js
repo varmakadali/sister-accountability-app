@@ -222,6 +222,14 @@ function scoreModule(m, skills, history, todayTasks, settings={}){
   if(["internship-prep","project-portfolio","gsoc-open-source","gate"].includes(m.id)) score+=pressure;
 
   const focus=settings.focusMode||"balanced";
+  const allocation=settings.allocation||{};
+  const allocCategory=["genai","dl","ml"].includes(m.category)?"genai":
+    ["programming","dsa","cs","engineering","backend","web","cloud"].includes(m.category)?"software":
+    m.category==="gate"?"gate":
+    ["career","project"].includes(m.category)?"career":
+    m.category==="communication"?"english":
+    m.category==="fitness"?"fitness":"projects";
+  score+=(Number(allocation[allocCategory])||0)*0.35;
   if(focus==="internship" && ["internship-prep","dsa","project-portfolio","github","python-basics"].includes(m.id)) score+=25;
   if(focus==="gate" && gateIds.includes(m.id)) score+=25;
   if(focus==="genai" && ["python-basics","math-ml","ml","neural-networks","pytorch","transformers","llm","rag","eval"].includes(m.id)) score+=25;
