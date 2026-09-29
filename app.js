@@ -178,6 +178,8 @@ function ensureEnginePanel(){
   $("taskList").parentElement.appendChild(card);
   $("addManualTask").onclick=()=>addManualTask();
   $("checkIn430").onclick=()=>checkAttendance();
+  const settingsButton=$("systemSettings");
+  if(settingsButton) settingsButton.onclick=()=>configureSystem();
 }
 
 function scoreModule(m, skills, history, todayTasks, settings={}){
