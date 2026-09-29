@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, setDoc, onSnapshot, doc, updateDoc, query, where, getDocs, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-functions.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCoM00m6KgrWHOn_UB9_Qf9MAowGtovZSA".replace("GtovGtov","Gtov"),
@@ -15,6 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const functions = getFunctions(app, "asia-south1");
 const $ = id => document.getElementById(id);
 const DEADLINE = "2027-02-12";
 const ATTENDANCE_TIME = "04:30";
@@ -630,6 +632,8 @@ async function showMissionsView(){
   modal("Today's mission control","MISSIONS",`<div class="mission-control">${today.map(t=>`<article class="mission-detail"><div><span class="stage-chip">${esc(t.level||"TASK")}</span><b>${esc(t.text)}</b></div><p><strong>WHY</strong> ${esc(t.why||"Roadmap progression")}<br><strong>OUTPUT</strong> ${esc(t.output||"Proof of work")}<br><strong>EFFORT</strong> ${esc(t.effort||"30-45 min")}<br><strong>PROOF</strong> ${t.proofRequired?"Required":"Optional"}</p></article>`).join("")||'<div class="empty">No missions.</div>'}</div>`);
 }
 
+async function askMentor(message){const call=httpsCallable(functions,"mentorChat");const result=await call({message});return result.data?.answer||"No response.";}
+function showMentorChat(){modal("Ask JARVIS","AI MENTOR",'<div id="mentorMessages" class="mentor-messages"><div class="mentor-bubble"><b>JARVIS</b><br>Ask about your plan, weak skills, GATE, internship, or what to study next.</div></div><div class="mentor-input-row"><textarea id="mentorInput" rows="3" placeholder="What should I study today?"></textarea><button id="mentorSend" class="primary-button">Ask JARVIS →</button></div>');const send=async()=>{const input=$("mentorInput"),box=$("mentorMessages"),m=input.value.trim();if(!m)return;box.insertAdjacentHTML("beforeend",'<div class="user-bubble">'+esc(m)+'</div>');input.value="";$("mentorSend").disabled=true;try{const a=await askMentor(m);box.insertAdjacentHTML("beforeend",'<div class="mentor-bubble"><b>JARVIS</b><br>'+esc(a).replace(/\n/g,"<br>")+'</div>')}catch(e){box.insertAdjacentHTML("beforeend",'<div class="mentor-bubble"><b>JARVIS</b><br>AI mentor is not configured yet.</div>')}$("mentorSend").disabled=false};$("mentorSend").onclick=send;}
 function setupWorkspaceNavigation(){
   document.querySelectorAll(".nav-item[data-view]").forEach(btn=>btn.onclick=async()=>{
     document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
@@ -639,7 +643,7 @@ function setupWorkspaceNavigation(){
     if(v==="history")await showHistoryView();
     if(v==="roadmap")await showRoadmapView();
   });
-  const profile=document.querySelector(".profile-panel"); if(profile){profile.style.cursor="pointer";profile.onclick=showProfileView;}
+  const enginePanel=document.querySelector(".engine-panel");if(enginePanel){const b=document.createElement("button");b.className="secondary-button";b.textContent="✦ Ask JARVIS";b.onclick=showMentorChat;enginePanel.querySelector(".engine-actions")?.prepend(b);}const profile=document.querySelector(".profile-panel"); if(profile){profile.style.cursor="pointer";profile.onclick=showProfileView;}
 }
 \nensureEnginePanel();\nsetupWorkspaceNavigation();
 if($("todayDate"))$("todayDate").textContent=pretty(dateStr());
