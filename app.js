@@ -409,7 +409,7 @@ function goalFor(m){
 
 function proofTypeFor(task){const x=((task.text||"")+" "+(task.skillId||"")).toLowerCase();if(x.includes("gate"))return"gate";if(x.includes("github")||x.includes("git"))return"github";if(x.includes("project")||x.includes("deploy"))return"project";if(x.includes("python")||x.includes("java")||x.includes("code")||x.includes("dsa")||x.includes("leetcode"))return"code";if(x.includes("english")||x.includes("speaking"))return"english";return"general";}
 function validateProof(type,value){const v=String(value||"").trim();if(!v)return{ok:false,msg:"Evidence is required."};if(type==="code"&&v.length<15)return{ok:false,msg:"Paste meaningful code/output, not a one-line claim."};if((type==="github"||type==="project")&&!/(github\.com|http:\/\/|https:\/\/)/i.test(v))return{ok:false,msg:"Add a GitHub/project/demo URL."};if(type==="gate"&&!/\d+/.test(v))return{ok:false,msg:"Include question/test score or result."};return{ok:true};}
-async async function completeTask(task){
+async function completeTask(task){
  if(task.completed)return;
  if(task.proofRequired){
    const type=proofTypeFor(task);
