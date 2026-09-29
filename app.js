@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, setDoc, onSnapshot, doc, updateDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, setDoc, onSnapshot, doc, updateDoc, query, where, getDocs, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCoM00m6KgrWHOn_UB9_Qf9MAowGtovZSA".replace("GtovGtov","Gtov"),
@@ -180,7 +180,7 @@ function ensureEnginePanel(){
   $("checkIn430").onclick=()=>checkAttendance();
 }
 
-function scoreModule(m, skills, history, todayTasks){
+function scoreModule(m, skills, history, todayTasks, settings={}){
   const s=skills[m.id]||{};
   if(s.status==="mastered") return -Infinity;
   if(m.prereqs.some(p=>(skills[p]?.status||"not_started")==="not_started")) return -Infinity;
@@ -196,6 +196,10 @@ function scoreModule(m, skills, history, todayTasks){
   if(["internship-prep","gate","gsoc-open-source","project-portfolio"].includes(m.id)) score+=pressure;
   if(m.category==="fitness"||m.category==="communication") score+=5;
   if(m.id==="youtube"||m.id==="startup") score+=2;
+  const focus=settings.focusMode||"balanced";
+  if(focus==="internship" && ["internship-prep","dsa","project-portfolio","github","python-basics"].includes(m.id)) score+=22;
+  if(focus==="gate" && ["gate","math-ml","dsa","cs","networks","os","dbms"].includes(m.id)) score+=22;
+  if(focus==="genai" && ["llm","rag","transformers","python-basics","embeddings","vector-db","mcp","eval"].includes(m.id)) score+=22;
   return score;
 }
 
@@ -232,8 +236,31 @@ async function seedSkills(uid){
   await Promise.all(batch);
 }
 
+async function getSettings(uid){
+  const snap=await getDoc(doc(db,"users",uid));
+  const d=snap.exists()?snap.data():{};
+  return {
+    dailyCapacity:Number(d.dailyCapacity)||3,
+    collegeLoad:d.collegeLoad||"normal",
+    focusMode:d.focusMode||"balanced"
+  };
+}
+
+async function configureSystem(){
+  if(!currentUser)return;
+  const current=await getSettings(currentUser.uid);
+  const cap=prompt("Daily study capacity (1-5 missions):",String(current.dailyCapacity));
+  if(cap===null)return;
+  const dailyCapacity=Math.max(1,Math.min(5,Number(cap)||3));
+  const collegeLoad=prompt("College workload today/usually: low / normal / high",current.collegeLoad)||current.collegeLoad;
+  const focusMode=prompt("Focus mode: balanced / internship / gate / genai",current.focusMode)||current.focusMode;
+  await setDoc(doc(db,"users",currentUser.uid),{userId:currentUser.uid,dailyCapacity,collegeLoad,focusMode,updatedAt:serverTimestamp()},{merge:true});
+  alert("System settings saved. Refresh/generate missions to apply.");
+}
+
 async function generateDailyMissions(uid, force=false){
   const {skills,tasks}=await loadState(uid);
+  const settings=await getSettings(uid);
   const today=dateStr();
   const existing=tasks.filter(t=>t.date===today);
   if(existing.some(t=>t.source==="engine") && !force) return existing;
@@ -242,7 +269,8 @@ async function generateDailyMissions(uid, force=false){
   const todayTasks=existing;
   const chosen=[];
   const used=new Set(todayTasks.map(t=>t.skillId).filter(Boolean));
-  const candidates=[...modules.values()].map(m=>({m,score:scoreModule(m,skills,{},todayTasks)})).filter(x=>Number.isFinite(x.score)).sort((a,b)=>b.score-a.score);
+  const candidates=[...modules.values()].map(m=>({m,score:scoreModule(m,skills,{},todayTasks,settings)})).filter(x=>Number.isFinite(x.score)).sort((a,b)=>b.score-a.score);
+  const capacity=settings.collegeLoad==="high"?Math.max(1,settings.dailyCapacity-1):settings.dailyCapacity;
 
   // One core learning task, one DSA/GATE task, one GenAI/engineering task, one career/proof task, one non-negotiable.
   const buckets=[
@@ -256,8 +284,10 @@ async function generateDailyMissions(uid, force=false){
     const pick=candidates.find(x=>bucket(x.m)&&!used.has(x.m.id));
     if(pick){chosen.push(pick);used.add(pick.m.id);}
   }
-  for(const x of candidates){ if(chosen.length>=MAX_DAILY) break; if(!used.has(x.m.id)){chosen.push(x);used.add(x.m.id);} }
+  for(const x of candidates){ if(chosen.length>=Math.min(MAX_DAILY,capacity)) break; if(!used.has(x.m.id)){chosen.push(x);used.add(x.m.id);} }
 
+  // High college workload intentionally reduces mission count instead of creating overload.
+  if(settings.collegeLoad==="high") chosen.splice(capacity);
   const created=[];
   for(const x of chosen.slice(0,MAX_DAILY)){
     const m=x.m, mission=buildMission(m,skills);
@@ -348,7 +378,7 @@ async function checkAttendance(){
 }
 
 function engineMessage(tasks){
-  const engine=tasks.filter(t=>t.source==="engine"&&!t.deleted); const done=engine.filter(t=>t.completed).length;
+  const engine=tasks.filter(t=>(t.source==="engine"||t.source==="sunday-review")&&!t.deleted); const done=engine.filter(t=>t.completed).length;
   const missed=tasks.filter(t=>t.status==="missed").length;
   if($("engineText"))$("engineText").innerHTML=`Deadline: <b>${DEADLINE}</b> • ${daysLeft()} days left.<br>Today: <b>${done}/${engine.length}</b> JARVIS missions complete${missed?` • <b>${missed}</b> missed mission(s) queued for Sunday review.`:"."}<br>Engine chooses tasks using prerequisites, priority, performance, revision need and career deadlines. It does not unlock advanced topics before their prerequisites.`;
 }
@@ -361,14 +391,32 @@ async function markOverdueAsMissed(tasks){
   await Promise.all(overdue.filter(t=>t.skillId).map(t=>setDoc(doc(db,"skills",`${currentUser.uid}_${t.skillId}`),{userId:currentUser.uid,skillId:t.skillId,status:"failed",updatedAt:serverTimestamp()},{merge:true})));
 }
 
+async function attendanceAudit(uid){
+  const now=new Date();
+  const today=dateStr();
+  const hhmm=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
+  if(hhmm<ATTENDANCE_TIME)return;
+  const ref=doc(db,"attendance",uid+"_"+today);
+  const snap=await getDoc(ref);
+  if(!snap.exists()){
+    await setDoc(ref,{userId:uid,date:today,requiredTime:ATTENDANCE_TIME,actualTime:null,status:"missed",createdAt:serverTimestamp()});
+  }
+}
+
 async function sundayReview(uid,tasks){
   const day=new Date().getDay(); if(day!==0)return;
   const missed=tasks.filter(t=>t.status==="missed"&&!t.reviewedSunday);
   if(!missed.length)return;
   const today=dateStr();
+  const completed=tasks.filter(t=>t.completed&&!t.deleted);
+  const missedAll=tasks.filter(t=>t.status==="missed"&&!t.deleted);
+  const weakSkills=[...new Set(missedAll.map(t=>t.skillId).filter(Boolean))];
   await setDoc(doc(db,"weeklyReviews",uid+"_"+today),{
-    userId:uid,date:today,missedCount:missed.length,
-    missedSkillIds:missed.map(t=>t.skillId).filter(Boolean),
+    userId:uid,date:today,missedCount:missedAll.length,
+    completedCount:completed.length,
+    missedSkillIds:weakSkills,
+    focus:"Fix missed work first, then continue prerequisites.",
+    nextWeekPlan:["Repair missed/failed skills","Continue prerequisite chain","Produce proof for one career/project task","Review GATE/DSA mistakes"],
     action:"review_and_replan",createdAt:serverTimestamp()
   },{merge:true});
   const existing=tasks.filter(t=>t.date===today&&t.source==="sunday-review");
@@ -396,6 +444,7 @@ async function loadTasks(uid){
     renderToday(todayTasks);updateProgress(todayTasks);renderHistory(allTasks);updateStreak(allTasks);engineMessage(allTasks);await sundayReview(uid,allTasks);
   },err=>{console.error(err);if($("taskList"))$("taskList").innerHTML='<div class="empty">Unable to load missions. Check Firestore rules.</div>';});
   await seedSkills(uid);
+  await attendanceAudit(uid);
   const state=await loadState(uid);
   await markOverdueAsMissed(state.tasks);
   await generateDailyMissions(uid);
