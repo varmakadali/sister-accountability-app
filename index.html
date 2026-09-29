@@ -24,6 +24,7 @@
       <input id="password" type="password" autocomplete="current-password" placeholder="••••••••">
 
       <button id="loginButton" class="primary-button">Enter workspace <span>→</span></button>
+      <div class="auth-links"><button id="createAccountButton" type="button">Create account</button><button id="forgotPasswordButton" type="button">Forgot password?</button></div>
       <p id="loginMessage" class="error-message"></p>
     </div>
     <div class="login-foot">PRIVATE WORKSPACE · FIREBASE SECURED</div>
@@ -150,6 +151,11 @@
             <div class="achievement" id="achievement30"><div>30</div><b>30 days</b><small>LOCKED</small></div>
             <div class="achievement proof-achievement"><div>✦</div><b>Proof</b><small>BUILD</small></div>
           </div>
+        </section>
+
+        <section class="panel roadmap-panel">
+          <div class="panel-head compact"><div><span class="panel-kicker">ROADMAP CONTROL</span><h2>Where you stand</h2></div><span id="roadmapStatus" class="status-chip">SYNCING</span></div>
+          <div class="roadmap-grid"><div><span>Evidence progress</span><b id="roadmapProgress">0%</b></div><div><span>Deadline</span><b id="deadlineDays">—</b></div><div class="wide"><span>Current bottleneck</span><b id="roadmapBottleneck">Calculating…</b></div></div>
         </section>
 
         <section class="panel history-panel">
