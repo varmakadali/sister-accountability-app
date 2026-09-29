@@ -409,7 +409,7 @@ function goalFor(m){
 
 function proofTypeFor(task){const x=((task.text||"")+" "+(task.skillId||"")).toLowerCase();if(x.includes("gate"))return"gate";if(x.includes("github")||x.includes("git"))return"github";if(x.includes("project")||x.includes("deploy"))return"project";if(x.includes("python")||x.includes("java")||x.includes("code")||x.includes("dsa")||x.includes("leetcode"))return"code";if(x.includes("english")||x.includes("speaking"))return"english";return"general";}
 function validateProof(type,value){const v=String(value||"").trim();if(!v)return{ok:false,msg:"Evidence is required."};if(type==="code"&&v.length<15)return{ok:false,msg:"Paste meaningful code/output, not a one-line claim."};if((type==="github"||type==="project")&&!/(github\.com|http:\/\/|https:\/\/)/i.test(v))return{ok:false,msg:"Add a GitHub/project/demo URL."};if(type==="gate"&&!/\d+/.test(v))return{ok:false,msg:"Include question/test score or result."};return{ok:true};}
-async function completeTask(task){
+async async function completeTask(task){
  if(task.completed)return;
  if(task.proofRequired){
    const type=proofTypeFor(task);
@@ -916,7 +916,7 @@ async function addManualTask(){
   await addDoc(collection(db,"tasks"),{text:text.trim(),userId:currentUser.uid,date:dateStr(),completed:false,source:"manual",category:"real-life",priority:"important",createdAt:serverTimestamp()});
 }
 
-async function checkAttendance(){
+async async function checkAttendance(){
   const now=new Date(); const hh=String(now.getHours()).padStart(2,"0"),mm=String(now.getMinutes()).padStart(2,"0");
   if(`${hh}:${mm}`!==ATTENDANCE_TIME){alert(`Attendance is a hard 04:30 AM rule. Current time: ${hh}:${mm}.`);return;}
   await setDoc(doc(db,"attendance",`${currentUser.uid}_${dateStr()}`),{userId:currentUser.uid,date:dateStr(),requiredTime:ATTENDANCE_TIME,actualTime:now.toISOString(),status:"present",createdAt:serverTimestamp()});
@@ -1019,7 +1019,8 @@ function modal(title,kicker,html){
 async function showEvidenceView(){
  const proof=allTasks.filter(t=>t.completed&&t.proofRequired);
  const verified=proof.filter(t=>t.proofStatus==="verified");
- modal("Evidence audit","PROOF",`<div class="roadmap-summary"><div><span>REQUIRED</span><b>${proof.length}</b></div><div><span>SUBMITTED</span><b>${proof.filter(t=>t.proofStatus==="submitted").length}</b></div><div><span>VERIFIED</span><b>${verified.length}</b></div><div><span>QUALITY</span><b>${proof.length?Math.round(verified.length/proof.length*100):0}%</b></div></div><div class="modal-list">${proof.slice(0,40).map(t=>`<div class="modal-row"><div><b>${esc(t.text)}</b><small>${esc(t.proofType||"general")} · ${t.proofStatus==="verified"?"Verified":"Submitted"}</small></div><span class="stage-chip">${t.proofStatus==="verified"?"VERIFIED":"REVIEW"}</span></div>`).join("")||'<div class="empty">No proof submissions yet.</div>'}</div>`);
+ modal("Evidence audit","PROOF",`<div class="roadmap-summary"><div><span>SUBMITTED</span><b>${proof.length}</b></div><div><span>VERIFIED</span><b>${verified.length}</b></div><div><span>QUALITY</span><b>${proof.length?Math.round(verified.length/proof.length*100):0}%</b></div><div><span>NEEDS REVIEW</span><b>${proof.filter(t=>t.proofStatus!=="verified").length}</b></div></div><div class="modal-list">${proof.slice(0,40).map(t=>`<div class="modal-row evidence-row"><div><b>${esc(t.text)}</b><small>${esc(t.proofType||"general")} · ${esc(t.proof||"")}</small></div><span class="stage-chip">${t.proofStatus==="verified"?"VERIFIED":`<button class="verify-proof" data-id="${t.id}">VERIFY</button>`}</span></div>`).join("")||'<div class="empty">No proof submissions yet.</div>'}</div>`);
+ document.querySelectorAll(".verify-proof").forEach(b=>b.onclick=async()=>{await updateDoc(doc(db,"tasks",b.dataset.id),{proofStatus:"verified",verifiedAt:serverTimestamp()});await showEvidenceView();});
 }
 async function showWeeklyReview(){
  const q=query(collection(db,"weeklyReviews"),where("userId","==",currentUser.uid));const snap=await getDocs(q);
