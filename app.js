@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, setDoc, onSnapshot, doc, updateDoc, query, where, getDocs, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -182,42 +182,80 @@ function ensureEnginePanel(){
   if(settingsButton) settingsButton.onclick=()=>configureSystem();
 }
 
+function skillStage(s){
+  const status=s?.status||"not_started";
+  if(status==="not_started") return "LEARN";
+  if(status==="learning") return "PRACTICE";
+  if(status==="practicing") return "TEST";
+  if(status==="tested") return (s.revisionDue && s.revisionDue<=dateStr()) ? "REVISE" : "APPLY";
+  if(status==="mastered") return "MASTERED";
+  if(status==="failed") return "RETEST";
+  return "LEARN";
+}
+
 function scoreModule(m, skills, history, todayTasks, settings={}){
   const s=skills[m.id]||{};
-  if(s.status==="mastered") return -Infinity;
-  if(m.prereqs.some(p=>(skills[p]?.status||"not_started")==="not_started")) return -Infinity;
-  let score=m.weight*10;
-  if(s.status==="tested") score+=12;
-  if(s.status==="practicing") score+=8;
-  if(s.status==="learning") score+=5;
-  if(s.status==="failed") score+=25;
-  if(s.revisionDue && s.revisionDue<=dateStr()) score+=18;
-  if(["internship-prep","gsoc-open-source","gate","project-portfolio"].includes(m.id)) score+=18;
-  if(m.category==="genai") score+=8;
-  const pressure=Math.max(0,20-Math.floor(daysLeft()/14));
-  if(["internship-prep","gate","gsoc-open-source","project-portfolio"].includes(m.id)) score+=pressure;
-  if(m.category==="fitness"||m.category==="communication") score+=5;
-  if(m.id==="youtube"||m.id==="startup") score+=2;
+  const stage=skillStage(s);
+  if(stage==="MASTERED") return -Infinity;
+  const prereqBlocked=m.prereqs.some(p=>{
+    const ps=skills[p]?.status||"not_started";
+    return !["tested","mastered"].includes(ps);
+  });
+  if(prereqBlocked) return -Infinity;
+
+  let score=m.weight*12;
+  if(stage==="TEST"||stage==="RETEST") score+=35;
+  if(stage==="REVISE") score+=28;
+  if(stage==="PRACTICE") score+=20;
+  if(stage==="LEARN") score+=12;
+  if(s.confidence<0.5) score+=12;
+  if(s.lastPassed && s.revisionDue && s.revisionDue<=dateStr()) score+=24;
+  if(s.lastFailed) score+=25;
+
+  const careerIds=["internship-prep","project-portfolio","gsoc-open-source","dsa","python-basics"];
+  const gateIds=["gate","math-ml","dsa","os","dbms","networks","coa"];
+  if(careerIds.includes(m.id)) score+=20;
+  if(gateIds.includes(m.id)) score+=16;
+  if(["llm","transformers","rag","embeddings","vector-db","mcp","eval"].includes(m.id)) score+=14;
+
+  const pressure=Math.max(0,30-Math.floor(daysLeft()/10));
+  if(["internship-prep","project-portfolio","gsoc-open-source","gate"].includes(m.id)) score+=pressure;
+
   const focus=settings.focusMode||"balanced";
-  if(focus==="internship" && ["internship-prep","dsa","project-portfolio","github","python-basics"].includes(m.id)) score+=22;
-  if(focus==="gate" && ["gate","math-ml","dsa","cs","networks","os","dbms"].includes(m.id)) score+=22;
-  if(focus==="genai" && ["llm","rag","transformers","python-basics","embeddings","vector-db","mcp","eval"].includes(m.id)) score+=22;
+  if(focus==="internship" && ["internship-prep","dsa","project-portfolio","github","python-basics"].includes(m.id)) score+=25;
+  if(focus==="gate" && gateIds.includes(m.id)) score+=25;
+  if(focus==="genai" && ["python-basics","math-ml","ml","neural-networks","pytorch","transformers","llm","rag","eval"].includes(m.id)) score+=25;
+
+  const failedCount=history.filter(t=>t.skillId===m.id&&t.status==="missed").length;
+  score+=Math.min(20,failedCount*5);
   return score;
 }
 
 function buildMission(m, skills){
   const s=skills[m.id]||{};
-  const action=(PHRASES[m.category]||PHRASES.foundation)[s.status==="practicing"?1:0];
-  const level=s.status||"not_started";
-  const text=`${m.name}: ${action}`;
-  const why = m.category==="career"||m.category==="project" ? "Direct career proof" :
-    m.category==="gate" ? "GATE preparation" :
-    m.category==="genai" ? "GenAI Engineer roadmap" : "Prerequisite / skill progression";
-  const output = m.category==="dsa"||m.category==="gate" ? "Solved questions + mistakes" :
-    m.category==="project"||m.category==="career" ? "GitHub/output proof" : "Working example or written test";
-  return {text,skillId:m.id,category:m.category,priority:m.weight>=4?"critical":m.weight>=2?"important":"supporting",
-    difficulty:Math.min(5,(s.difficulty||1)+(s.status==="failed"?0:1)),proofRequired:m.weight>=4||["project","career","gate"].includes(m.category),
-    level,why,output,effort:m.weight>=4?"45-60 min":m.weight>=2?"30-45 min":"15-30 min"};
+  const stage=skillStage(s);
+  const actions={
+    LEARN:{what:`Learn ${m.name} fundamentals in simple words and make 5 recall questions.`,output:"Short notes + 5 recall answers"},
+    PRACTICE:{what:`Practice ${m.name} with 3 small hands-on problems.`,output:"3 completed practice outputs"},
+    TEST:{what:`Take a closed-book test on ${m.name}; record score and mistakes.`,output:"Score + mistake list"},
+    RETEST:{what:`Retest ${m.name} after fixing previous mistakes.`,output:"New score + corrected mistakes"},
+    REVISE:{what:`Revise ${m.name} from memory, then solve one fresh example.`,output:"Revision notes + fresh example"},
+    APPLY:{what:`Apply ${m.name} in a small real-world example or project.`,output:"Working artifact / GitHub proof"}
+  };
+  const a=actions[stage]||actions.LEARN;
+  const why=m.category==="career"||m.category==="project"?"Career proof and deadline relevance":
+    m.category==="gate"?"GATE performance and mistake reduction":
+    stage==="TEST"||stage==="RETEST"?"Learning loop requires evidence before advancing":
+    stage==="REVISE"?"Spaced revision is due":
+    m.prereqs.length?"This is the next unlocked prerequisite":"Foundation / continuous supporting habit";
+  const proofRequired=["TEST","RETEST","APPLY"].includes(stage)||m.weight>=4||["project","career","gate"].includes(m.category);
+  return {
+    text:a.what,skillId:m.id,category:m.category,
+    priority:m.weight>=4?"critical":m.weight>=2?"important":"supporting",
+    difficulty:Math.min(5,Math.max(1,(s.difficulty||1)+(stage==="RETEST"?0:1))),
+    proofRequired,level:stage,why,output:a.output,
+    effort:m.weight>=4?"45-60 min":m.weight>=2?"30-45 min":"15-25 min"
+  };
 }
 
 async function loadState(uid){
@@ -258,6 +296,53 @@ async function configureSystem(){
   const focusMode=prompt("Focus mode: balanced / internship / gate / genai",current.focusMode)||current.focusMode;
   await setDoc(doc(db,"users",currentUser.uid),{userId:currentUser.uid,dailyCapacity,collegeLoad,focusMode,updatedAt:serverTimestamp()},{merge:true});
   alert("System settings saved. Refresh/generate missions to apply.");
+}
+
+async function initializeUser(uid){
+  const ref=doc(db,"users",uid);
+  const snap=await getDoc(ref);
+  if(!snap.exists()){
+    await setDoc(ref,{
+      userId:uid,deadline:DEADLINE,createdAt:serverTimestamp(),
+      goals:{genai:true,software:true,gate:true,internship:true,gsoc:true,projects:true,english:true,brand:true,business:true,college:true,fitness:true,futureTech:true},
+      preferences:{dailyCapacity:3,collegeLoad:"normal",focusMode:"balanced",allocation:{genai:30,software:20,gate:20,career:15,english:5,projects:5,fitness:5}},
+      roadmapPhase:"Foundation",engineVersion:3
+    });
+  }
+}
+
+async function getRoadmapHealth(uid){
+  const {skills,tasks}=await loadState(uid);
+  const active=[...modules.values()];
+  const weighted=active.reduce((sum,m)=>sum+m.weight,0);
+  const earned=active.reduce((sum,m)=>{
+    const s=skills[m.id]||{};
+    const p=Math.min(100,Number(s.progress)||0);
+    const evidence=s.status==="mastered"?100:s.status==="tested"?75:s.status==="practicing"?45:s.status==="learning"?20:0;
+    return sum+m.weight*(Math.max(p,evidence)/100);
+  },0);
+  const progress=weighted?Math.round(earned/weighted*100):0;
+  const missed=tasks.filter(t=>t.status==="missed"&&!t.deleted).length;
+  const criticalOpen=active.filter(m=>m.weight>=4).filter(m=>["not_started","learning","practicing","failed"].includes(skills[m.id]?.status||"not_started")).length;
+  const days=daysLeft();
+  let status="ON TRACK";
+  if(missed>=4||criticalOpen>Math.max(5,Math.floor(active.length*.08))) status="AT RISK";
+  if(missed>=8||progress<10) status="BEHIND";
+  const bottleneck=active.map(m=>({m,s:skills[m.id]||{},score:m.weight*10+((skills[m.id]?.status==="failed")?30:0)+(m.prereqs.some(p=>!["tested","mastered"].includes(skills[p]?.status||"not_started"))?20:0)}))
+    .filter(x=>["not_started","learning","practicing","failed"].includes(x.s.status||"not_started"))
+    .sort((a,b)=>b.score-a.score)[0]?.m;
+  return {progress,status,missed,criticalOpen,days,bottleneck:bottleneck?.name||"No single bottleneck"};
+}
+
+async function createTestRecord(task,score,mistakes){
+  if(!currentUser||!task?.skillId)return;
+  const numeric=Math.max(0,Math.min(100,Number(score)||0));
+  await addDoc(collection(db,"tests"),{userId:currentUser.uid,skillId:task.skillId,taskId:task.id,score:numeric,accuracy:numeric,mistakes:(mistakes||"").trim(),type:"adaptive",attemptDate:dateStr(),createdAt:serverTimestamp()});
+  const passed=numeric>=70;
+  const patch={userId:currentUser.uid,skillId:task.skillId,status:passed?"tested":"failed",progress:passed?75:45,confidence:numeric/100,revisionDue:addDays(dateStr(),passed?5:2),updatedAt:serverTimestamp()};
+  if(passed)patch.lastPassed=dateStr(); else patch.lastFailed=dateStr();
+  await setDoc(doc(db,"skills",`${currentUser.uid}_${task.skillId}`),patch,{merge:true});
+  return passed;
 }
 
 async function generateDailyMissions(uid, force=false){
@@ -311,15 +396,29 @@ function goalFor(m){
 }
 
 async function completeTask(task){
-  if(task.completed) return;
+  if(task.completed)return;
   let proof="";
   if(task.proofRequired){
-    proof=prompt("Proof required for this important mission. Enter a short proof (GitHub link, score, output, or what you built):")||"";
-    if(!proof.trim()){alert("Important mission needs proof before completion.");return;}
+    proof=prompt("Proof required. Enter score, GitHub link, output, or what you actually produced:")||"";
+    if(!proof.trim()){alert("This mission needs real proof before completion.");return;}
+  }
+  const stage=task.level||"LEARN";
+  if(["TEST","RETEST"].includes(stage)){
+    const score=prompt("Enter your test score (0-100):");
+    if(score===null)return;
+    const mistakes=prompt("What mistakes/weak concepts did you find?")||"";
+    const passed=await createTestRecord(task,score,mistakes);
+    await updateDoc(doc(db,"tasks",task.id),{completed:true,completedAt:serverTimestamp(),proof:proof.trim(),testScore:Number(score),testMistakes:mistakes.trim(),result:passed?"passed":"failed"});
+    if(!passed)alert("Test recorded as failed. JARVIS will prioritize this skill again.");
+    return;
   }
   await updateDoc(doc(db,"tasks",task.id),{completed:true,completedAt:serverTimestamp(),proof:proof.trim()});
   if(task.skillId){
-    await setDoc(doc(db,"skills",`${currentUser.uid}_${task.skillId}`),{userId:currentUser.uid,skillId:task.skillId,status:"tested",progress:Math.max(70,(task.difficulty||1)*15),confidence:1,lastPassed:dateStr(),revisionDue:addDays(dateStr(),3),updatedAt:serverTimestamp()},{merge:true});
+    const current=await getDoc(doc(db,"skills",`${currentUser.uid}_${task.skillId}`));
+    const s=current.exists()?current.data():{};
+    const nextStatus=stage==="APPLY"?"mastered":stage==="LEARN"?"learning":"practicing";
+    const nextProgress=stage==="APPLY"?100:stage==="LEARN"?20:45;
+    await setDoc(doc(db,"skills",`${currentUser.uid}_${task.skillId}`),{userId:currentUser.uid,skillId:task.skillId,status:nextStatus,progress:Math.max(Number(s.progress)||0,nextProgress),confidence:Math.max(Number(s.confidence)||0,stage==="APPLY"?1:.5),lastStudied:dateStr(),revisionDue:addDays(dateStr(),2),updatedAt:serverTimestamp()},{merge:true});
   }
 }
 
@@ -344,14 +443,21 @@ function renderToday(tasks){
   }
 }
 
-function updateProgress(tasks){
-  const visible=tasks.filter(t=>!t.deleted); const done=visible.filter(t=>t.completed).length; const total=visible.length; const pct=total?Math.round(done/total*100):0;
+async function updateProgress(tasks){
+  const visible=tasks.filter(t=>!t.deleted),done=visible.filter(t=>t.completed).length,total=visible.length,pct=total?Math.round(done/total*100):0;
   if($("completedCount"))$("completedCount").textContent=done;
-  if($("pendingCount"))$("pendingCount").textContent=total-done;
+  if($("pendingCount"))$("pendingCount").textContent=Math.max(0,total-done);
   if($("totalCount"))$("totalCount").textContent=total;
-  const ring=$("progressCircle"); if(ring) ring.style.background=`conic-gradient(var(--red) ${pct*3.6}deg,#351313 ${pct*3.6}deg)`;
   if($("progressNumber"))$("progressNumber").textContent=`${pct}%`;
   if($("progressText"))$("progressText").textContent=`${pct}%`;
+  const ring=$("progressCircle"); if(ring)ring.style.background=`conic-gradient(var(--accent) ${pct*3.6}deg,#202a39 ${pct*3.6}deg)`;
+  try{
+    const health=await getRoadmapHealth(currentUser.uid);
+    if($("roadmapStatus"))$("roadmapStatus").textContent=health.status;
+    if($("roadmapProgress"))$("roadmapProgress").textContent=`${health.progress}%`;
+    if($("roadmapBottleneck"))$("roadmapBottleneck").textContent=health.bottleneck;
+    if($("deadlineDays"))$("deadlineDays").textContent=`${health.days} days`;
+  }catch(e){console.error(e);}
 }
 
 function renderHistory(tasks){
@@ -379,12 +485,16 @@ async function checkAttendance(){
   alert("04:30 AM attendance recorded.");
 }
 
-function engineMessage(tasks){
-  const today=dateStr();
-  const engine=tasks.filter(t=>(t.source==="engine"||t.source==="sunday-review")&&!t.deleted&&t.date===today);
-  const done=engine.filter(t=>t.completed).length;
-  const missed=tasks.filter(t=>t.status==="missed"&&!t.deleted).length;
-  if($("engineText"))$("engineText").innerHTML=`Deadline: <b>${DEADLINE}</b> • ${daysLeft()} days left.<br>Today: <b>${done}/${engine.length}</b> JARVIS missions complete${missed?` • <b>${missed}</b> missed mission(s) queued for Sunday review.`:"."}<br>Engine chooses tasks using prerequisites, priority, performance, revision need, workload and career deadlines. It does not unlock advanced topics before their prerequisites.`;
+async function engineMessage(tasks){
+  if(!$("engineText"))return;
+  try{
+    const health=await getRoadmapHealth(currentUser.uid),today=dateStr();
+    const engine=tasks.filter(t=>(t.source==="engine"||t.source==="sunday-review")&&!t.deleted&&t.date===today);
+    const done=engine.filter(t=>t.completed).length,missed=tasks.filter(t=>t.status==="missed"&&!t.deleted).length;
+    const attendance=await getDoc(doc(db,"attendance",currentUser.uid+"_"+today));
+    const att=attendance.exists()?attendance.data().status:"not checked";
+    $("engineText").innerHTML=`<b>${health.status}</b> · ${health.progress}% roadmap evidence · <b>${health.days} days</b> to deadline.<br>Today: <b>${done}/${engine.length}</b> missions · 04:30 attendance: <b>${esc(att)}</b>.<br>Bottleneck: <b>${esc(health.bottleneck)}</b> · ${missed} missed task(s) under recovery.<br>JARVIS protects prerequisites and reduces low-value work when you fall behind.`;
+  }catch(e){console.error(e);$("engineText").textContent="Mentor engine is syncing your roadmap…";}
 }
 
 async function markOverdueAsMissed(tasks){
@@ -408,35 +518,20 @@ async function attendanceAudit(uid){
 }
 
 async function sundayReview(uid,tasks){
-  const day=new Date().getDay(); if(day!==0)return;
-  const missed=tasks.filter(t=>t.status==="missed"&&!t.reviewedSunday);
-  if(!missed.length)return;
-  const today=dateStr();
-  const completed=tasks.filter(t=>t.completed&&!t.deleted);
-  const missedAll=tasks.filter(t=>t.status==="missed"&&!t.deleted);
-  const weakSkills=[...new Set(missedAll.map(t=>t.skillId).filter(Boolean))];
-  await setDoc(doc(db,"weeklyReviews",uid+"_"+today),{
-    userId:uid,date:today,missedCount:missedAll.length,
-    completedCount:completed.length,
-    missedSkillIds:weakSkills,
-    focus:"Fix missed work first, then continue prerequisites.",
-    nextWeekPlan:["Repair missed/failed skills","Continue prerequisite chain","Produce proof for one career/project task","Review GATE/DSA mistakes"],
-    action:"review_and_replan",createdAt:serverTimestamp()
-  },{merge:true});
-  const existing=tasks.filter(t=>t.date===today&&t.source==="sunday-review");
-  const existingKeys=new Set(existing.map(t=>t.reviewOf).filter(Boolean));
-  for(const t of missed){
-    if(existingKeys.has(t.id))continue;
-    await addDoc(collection(db,"tasks"),{
-      text:"SUNDAY REVIEW: "+t.text,
-      userId:uid,date:today,completed:false,source:"sunday-review",
-      reviewOf:t.id,skillId:t.skillId,goalId:t.goalId||"Weekly Review",
-      category:t.category||"review",priority:"critical",proofRequired:true,
-      why:"Review missed work and remove the bottleneck",output:"Reason + corrected attempt + proof",effort:"30-45 min",
-      createdAt:serverTimestamp()
-    });
+  if(new Date().getDay()!==0)return;
+  const today=dateStr(),missed=tasks.filter(t=>t.status==="missed"&&!t.reviewedSunday&&!t.deleted);
+  const weekTasks=tasks.filter(t=>t.date>=addDays(today,-6)&&t.date<=today&&!t.deleted);
+  const completed=weekTasks.filter(t=>t.completed),missedAll=weekTasks.filter(t=>t.status==="missed"),weakSkills=[...new Set(missedAll.map(t=>t.skillId).filter(Boolean))];
+  const health=await getRoadmapHealth(uid);
+  await setDoc(doc(db,"weeklyReviews",uid+"_"+today),{userId:uid,week:today,date:today,completed:completed.length,missed:missedAll.length,weakSkills,roadmapStatus:health.status,roadmapProgress:health.progress,nextWeekPlan:[health.bottleneck==="No single bottleneck"?"Continue highest-value unlocked skill":`Fix bottleneck: ${health.bottleneck}`,"Complete one test and record mistakes","Produce one career/project proof artifact","Review GATE/DSA mistakes"],createdAt:serverTimestamp()},{merge:true});
+  if(!tasks.some(t=>t.date===today&&t.source==="sunday-review"&&t.reviewOfWeek===today&&!t.deleted)){
+    await addDoc(collection(db,"tasks"),{text:"SUNDAY REVIEW: Analyze this week's performance and rebuild next week's plan.",userId:uid,date:today,completed:false,source:"sunday-review",reviewOfWeek:today,category:"review",goalId:"Weekly Review",priority:"critical",proofRequired:true,why:"Sunday is the replanning checkpoint",output:"Completed/missed/weak skills + next-week plan",effort:"30-45 min",createdAt:serverTimestamp()});
   }
-  await Promise.all(missed.map(t=>updateDoc(doc(db,"tasks",t.id),{reviewedSunday:true})));
+  for(const t of missed){
+    if(tasks.some(x=>x.date===today&&x.source==="sunday-review"&&x.reviewOf===t.id&&!x.deleted))continue;
+    await addDoc(collection(db,"tasks"),{text:"RECOVERY: "+t.text,userId:uid,date:today,completed:false,source:"sunday-review",reviewOf:t.id,skillId:t.skillId,goalId:t.goalId||"Weekly Review",category:t.category||"review",priority:"critical",proofRequired:true,why:"Recover missed work without blindly dumping it into tomorrow",output:"Reason + corrected attempt + proof",effort:"30-45 min",createdAt:serverTimestamp()});
+  }
+  if(missed.length)await Promise.all(missed.map(t=>updateDoc(doc(db,"tasks",t.id),{reviewedSunday:true})));
 }
 
 async function loadTasks(uid){
@@ -456,6 +551,23 @@ async function loadTasks(uid){
 
 ensureEnginePanel();
 if($("todayDate"))$("todayDate").textContent=pretty(dateStr());
+
+function setupAuthExtras(){
+  const createBtn=$("createAccountButton"),resetBtn=$("forgotPasswordButton"),emailInput=$("email"),message=$("loginMessage");
+  if(createBtn)createBtn.onclick=async()=>{
+    const e=emailInput?.value.trim()||"",p=passwordInput?.value||"";
+    if(!e||!p){if(message)message.textContent="Enter email and password first.";return;}
+    if(p.length<6){if(message)message.textContent="Password must be at least 6 characters.";return;}
+    try{await createUserWithEmailAndPassword(auth,e,p);if(message)message.textContent="Account created. Initializing your workspace…";}
+    catch(err){console.error(err);if(message)message.textContent=`Could not create account: ${err.code||"try again"}`;}
+  };
+  if(resetBtn)resetBtn.onclick=async()=>{
+    const e=emailInput?.value.trim()||"";
+    if(!e){if(message)message.textContent="Enter your email first.";return;}
+    try{await sendPasswordResetEmail(auth,e);if(message)message.textContent="Password reset email sent.";}
+    catch(err){console.error(err);if(message)message.textContent=`Reset failed: ${err.code||"try again"}`;}
+  };
+}
 
 const loginButton=$("loginButton");
 const passwordInput=$("password");
@@ -478,6 +590,8 @@ if(loginButton){
   };
 }
 
+setupAuthExtras();
+
 if(passwordInput && loginButton){
   passwordInput.onkeydown=e=>{if(e.key==="Enter")loginButton.click()};
 }
@@ -494,7 +608,7 @@ onAuthStateChanged(auth,user=>{
   if(user){
     if(loginPage)loginPage.style.display="none";
     if(dashboard)dashboard.style.display="block";
-    loadTasks(user.uid);
+    initializeUser(user.uid).then(()=>loadTasks(user.uid)).catch(err=>{console.error(err);if($("engineText"))$("engineText").textContent="Unable to initialize your workspace. Please refresh.";});
   }else{
     if(loginPage)loginPage.style.display="flex";
     if(dashboard)dashboard.style.display="none";
