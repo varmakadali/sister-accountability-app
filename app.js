@@ -641,7 +641,7 @@ async function showMissionsView(){
 
 async function askMentor(message){const call=httpsCallable(functions,"mentorChat");const result=await call({message});return result.data?.answer||"No response.";}
 function showMentorChat(){modal("Ask JARVIS","AI MENTOR",'<div id="mentorMessages" class="mentor-messages"><div class="mentor-bubble"><b>JARVIS</b><br>Ask about your plan, weak skills, GATE, internship, or what to study next.</div></div><div class="mentor-input-row"><textarea id="mentorInput" rows="3" placeholder="What should I study today?"></textarea><button id="mentorSend" class="primary-button">Ask JARVIS →</button></div>');const send=async()=>{const input=$("mentorInput"),box=$("mentorMessages"),m=input.value.trim();if(!m)return;box.insertAdjacentHTML("beforeend",'<div class="user-bubble">'+esc(m)+'</div>');input.value="";$("mentorSend").disabled=true;try{const a=await askMentor(m);box.insertAdjacentHTML("beforeend",'<div class="mentor-bubble"><b>JARVIS</b><br>'+esc(a).replace(/\n/g,"<br>")+'</div>')}catch(e){box.insertAdjacentHTML("beforeend",'<div class="mentor-bubble"><b>JARVIS</b><br>AI mentor is not configured yet.</div>')}$("mentorSend").disabled=false};$("mentorSend").onclick=send;}
-function setupWorkspaceNavigation(){
+function setupCareerTrackerButton(){const b=$("careerTrackerButton");if(b)b.onclick=showCareerTracker;}\nfunction setupWorkspaceNavigation(){
   document.querySelectorAll(".nav-item[data-view]").forEach(btn=>btn.onclick=async()=>{
     document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
     const v=btn.dataset.view;
@@ -652,7 +652,7 @@ function setupWorkspaceNavigation(){
   });
   const enginePanel=document.querySelector(".engine-panel");if(enginePanel){const b=document.createElement("button");b.className="secondary-button";b.textContent="▣ Career Tracker";b.onclick=showCareerTracker;enginePanel.querySelector(".engine-actions")?.prepend(b);}if(enginePanel){const b=document.createElement("button");b.className="secondary-button";b.textContent="✦ Ask JARVIS";b.onclick=showMentorChat;enginePanel.querySelector(".engine-actions")?.prepend(b);}const profile=document.querySelector(".profile-panel"); if(profile){profile.style.cursor="pointer";profile.onclick=showProfileView;}
 }
-\nensureEnginePanel();\nsetupWorkspaceNavigation();
+\nensureEnginePanel();\nsetupWorkspaceNavigation();\nsetupCareerTrackerButton();
 if($("todayDate"))$("todayDate").textContent=pretty(dateStr());
 
 function setupAuthExtras(){
