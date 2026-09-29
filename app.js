@@ -916,7 +916,7 @@ async function addManualTask(){
   await addDoc(collection(db,"tasks"),{text:text.trim(),userId:currentUser.uid,date:dateStr(),completed:false,source:"manual",category:"real-life",priority:"important",createdAt:serverTimestamp()});
 }
 
-async async function checkAttendance(){
+async function checkAttendance(){
   const now=new Date(); const hh=String(now.getHours()).padStart(2,"0"),mm=String(now.getMinutes()).padStart(2,"0");
   if(`${hh}:${mm}`!==ATTENDANCE_TIME){alert(`Attendance is a hard 04:30 AM rule. Current time: ${hh}:${mm}.`);return;}
   await setDoc(doc(db,"attendance",`${currentUser.uid}_${dateStr()}`),{userId:currentUser.uid,date:dateStr(),requiredTime:ATTENDANCE_TIME,actualTime:now.toISOString(),status:"present",createdAt:serverTimestamp()});
