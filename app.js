@@ -1092,10 +1092,10 @@ async function showMissionsView(){
 }
 
 async function askMentor(message){const call=httpsCallable(functions,"mentorChat");const result=await call({message});return result.data?.answer||"No response.";}
-function showMentorChat(){modal("Ask JARVIS","AI MENTOR",'<div id="mentorMessages" class="mentor-messages"><div class="mentor-bubble"><b>JARVIS</b><br>Ask about your plan, weak skills, GATE, internship, or what to study next.</div></div><div class="mentor-input-row"><textarea id="mentorInput" rows="3" placeholder="What should I study today?"></textarea><button id="mentorSend" class="primary-button">Ask JARVIS →</button></div>');const send=async()=>{const input=$("mentorInput"),box=$("mentorMessages"),m=input.value.trim();if(!m)return;box.insertAdjacentHTML("beforeend",'<div class="user-bubble">'+esc(m)+'</div>');input.value="";$("mentorSend").disabled=true;try{const a=await askMentor(m);box.insertAdjacentHTML("beforeend",'<div class="mentor-bubble"><b>JARVIS</b><br>'+esc(a).replace(/
-/g,"<br>")+'</div>')}catch(e){box.insertAdjacentHTML("beforeend",'<div class="mentor-bubble"><b>JARVIS</b><br>AI mentor is not configured yet.</div>')}$("mentorSend").disabled=false};$("mentorSend").onclick=send;}
+function showMentorChat(){modal("Ask JARVIS","AI MENTOR",'<div id="mentorMessages" class="mentor-messages"><div class="mentor-bubble"><b>JARVIS</b><br>Ask about your plan, weak skills, GATE, internship, or what to study next.</div></div><div class="mentor-input-row"><textarea id="mentorInput" rows="3" placeholder="What should I study today?"></textarea><button id="mentorSend" class="primary-button">Ask JARVIS →</button></div>');const send=async()=>{const input=$("mentorInput"),box=$("mentorMessages"),m=input.value.trim();if(!m)return;box.insertAdjacentHTML("beforeend",'<div class="user-bubble">'+esc(m)+'</div>');input.value="";$("mentorSend").disabled=true;try{const a=await askMentor(m);box.insertAdjacentHTML("beforeend",'<div class="mentor-bubble"><b>JARVIS</b><br>'+esc(a).replace(/\n/g,"<br>")+'</div>')}catch(e){box.insertAdjacentHTML("beforeend",'<div class="mentor-bubble"><b>JARVIS</b><br>AI mentor is not configured yet.</div>')}$("mentorSend").disabled=false};$("mentorSend").onclick=send;}
 function setupReviewAnalytics(){const r=$("weeklyReviewButton"),a=$("analyticsButton"),e=$("evidenceButton");if(r)r.onclick=showWeeklyReview;if(a)a.onclick=showAnalytics;if(e)e.onclick=showEvidenceView;}
 function setupCareerTrackerButton(){const b=$("careerTrackerButton");if(b)b.onclick=showCareerTracker;}
+function setupCommandCenter(){const map={evidenceButton:showEvidenceView,weeklyReviewButton2:showWeeklyReview,analyticsButton2:showAnalytics,mentorButton:showMentorChat};Object.entries(map).forEach(([id,fn])=>{const b=$(id);if(b)b.onclick=fn});}
 function setupWorkspaceNavigation(){
   document.querySelectorAll(".nav-item[data-view]").forEach(btn=>btn.onclick=async()=>{
     document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
@@ -1104,12 +1104,15 @@ function setupWorkspaceNavigation(){
     if(v==="missions")await showMissionsView();
     if(v==="history")await showHistoryView();
     if(v==="roadmap")await showRoadmapView();
+    if(v==="review")await showWeeklyReview();
+    if(v==="analytics")await showAnalytics();
   });
   const enginePanel=document.querySelector("#enginePanel");if(enginePanel){const actions=enginePanel.querySelector(".engine-actions");if(actions){const b=document.createElement("button");b.className="secondary-button";b.textContent="✦ Ask JARVIS";b.onclick=showMentorChat;actions.prepend(b);}}const profile=document.querySelector(".profile-panel"); if(profile){profile.style.cursor="pointer";profile.onclick=showProfileView;}
 }
 
 ensureEnginePanel();
 setupWorkspaceNavigation();
+setupCommandCenter();
 setupCareerTrackerButton();
 setupReviewAnalytics();
 if($("todayDate"))$("todayDate").textContent=pretty(dateStr());
