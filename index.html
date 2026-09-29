@@ -54,10 +54,10 @@
     <main class="dashboard-shell">
       <aside class="sidebar">
         <div class="side-label">WORKSPACE</div>
-        <button class="nav-item active"><span>⌂</span> Today</button>
-        <button class="nav-item"><span>✓</span> Missions</button>
-        <button class="nav-item"><span>◷</span> History</button>
-        <button class="nav-item"><span>◈</span> Roadmap</button>
+        <button class="nav-item active" data-view="today"><span>⌂</span> Today</button>
+        <button class="nav-item" data-view="missions"><span>✓</span> Missions</button>
+        <button class="nav-item" data-view="history"><span>◷</span> History</button>
+        <button class="nav-item" data-view="roadmap"><span>◈</span> Roadmap</button>
 
         <div class="sidebar-divider"></div>
         <div class="side-label">SYSTEM</div>
@@ -213,6 +213,13 @@
         </section>
       </aside>
     </main>
+    <div id="workspaceModal" class="workspace-modal hidden">
+      <div class="workspace-modal-backdrop"></div>
+      <div class="workspace-modal-card">
+        <div class="workspace-modal-head"><div><span id="modalKicker" class="panel-kicker">WORKSPACE</span><h2 id="modalTitle">Workspace</h2></div><button id="modalClose" class="ghost-button">Close</button></div>
+        <div id="modalBody"></div>
+      </div>
+    </div>
   </section>
 
   <script type="module" src="app.js"></script>
