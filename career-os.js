@@ -419,25 +419,59 @@ async function generateDailyMissions(uid, force=false, targetDate=dateStr(), pre
     candidates.sort((a,b)=>b.score-a.score);
   }
   const timeCap=Math.max(1,Math.floor((Number(settings.availableMinutes)||120)/25));
+  const energyReduction=settings.energy==="low"?1:0;
   const baseCapacity=settings.collegeLoad==="high"?Math.max(1,settings.dailyCapacity-1):settings.dailyCapacity;
-  const capacity=Math.min(MAX_DAILY,Math.max(1,baseCapacity-academicReduction),timeCap);
+  const capacity=Math.min(MAX_DAILY,Math.max(1,baseCapacity-academicReduction-energyReduction),timeCap);
 
-  // One core learning task, one DSA/GATE task, one GenAI/engineering task, one career/proof task, one non-negotiable.
+  // ₹0 adaptive brain: hard constraints are enforced locally even when no AI API is configured.
+  // This keeps the app useful without paid API calls and prevents the planner from overloading the user.
+  const nonNegotiables=["english","fitness"];
+  const deadlineCriticalDays=Math.min(daysLeft(),internshipDaysLeft());
+  const mustProtectCareer=deadlineCriticalDays<=45;
+  if(mustProtectCareer){
+    for(const x of candidates){
+      if(["internship-prep","project-portfolio","dsa","github","python-basics"].includes(x.m.id)) x.score+=25;
+    }
+    candidates.sort((a,b)=>b.score-a.score);
+  }
+
+  // Balanced buckets: core learning, exam/DSA, GenAI/engineering, career proof, and non-negotiables.
   const buckets=[
     m=>["programming","dsa","cs","ml"].includes(m.category),
     m=>m.category==="dsa"||m.id==="gate",
     m=>["genai","dl","backend","engineering","cloud"].includes(m.category),
     m=>["career","project","communication","brand","business"].includes(m.category),
-    m=>m.id==="english"||m.id==="fitness"
+    m=>nonNegotiables.includes(m.id)
   ];
   for(const bucket of buckets){
+    if(chosen.length>=Math.min(MAX_DAILY,capacity)) break;
     const pick=candidates.find(x=>bucket(x.m)&&!used.has(x.m.id));
     if(pick){chosen.push(pick);used.add(pick.m.id);}
   }
+
+  // Protect the two non-negotiables whenever there is enough capacity.
+  for(const id of nonNegotiables){
+    if(chosen.length>=Math.min(MAX_DAILY,capacity)) break;
+    if(!used.has(id)){
+      const pick=candidates.find(x=>x.m.id===id);
+      if(pick){chosen.push(pick);used.add(id);}
+    }
+  }
   for(const x of candidates){ if(chosen.length>=Math.min(MAX_DAILY,capacity)) break; if(!used.has(x.m.id)){chosen.push(x);used.add(x.m.id);} }
 
-  // High college workload intentionally reduces mission count instead of creating overload.
-  if(settings.collegeLoad==="high") chosen.splice(capacity);
+  // High college workload / low energy intentionally reduces mission count instead of creating overload.
+  chosen.splice(capacity);
+
+  // Do not stack too many heavy missions on low-energy or exam days.
+  if(settings.energy==="low" || academicMode==="mid" || academicMode==="exam"){
+    let heavy=0;
+    for(let i=chosen.length-1;i>=0;i--){
+      if((chosen[i].m.weight||1)>=4){
+        heavy++;
+        if(heavy>1) chosen.splice(i,1);
+      }
+    }
+  }
   // Never leave the user with an empty day. If every roadmap node is complete,
   // create a meaningful proof/revision mission instead of showing "no missions".
   if(!chosen.length){
@@ -451,7 +485,7 @@ async function generateDailyMissions(uid, force=false, targetDate=dateStr(), pre
       why:mission.why,output:mission.output,effort:mission.effort,createdAt:serverTimestamp()};
     const refDoc=await addDoc(collection(db,"tasks"),ref); created.push({id:refDoc.id,...ref});
   }
-  if(!preview) await setDoc(doc(db,"users",uid),{userId:uid,deadline:DEADLINE,engineVersion:4,lastGeneratedDate:today,updatedAt:serverTimestamp()},{merge:true});
+  if(!preview) await setDoc(doc(db,"users",uid),{userId:uid,deadline:DEADLINE,engineVersion:6,lastGeneratedDate:today,updatedAt:serverTimestamp(),planner:"local-adaptive"}, {merge:true});
   return created;
 }
 async function prepareTomorrow(uid){
