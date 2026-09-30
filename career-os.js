@@ -458,7 +458,12 @@ async function prepareTomorrow(uid){
   const tomorrow=addDays(dateStr(),1);
   const {tasks}=await loadState(uid);
   const existing=tasks.filter(t=>t.date===tomorrow&&!t.deleted);
-  if(existing.some(t=>t.source==="engine"||t.source==="engine-preview")) return existing;
+  const previews=existing.filter(t=>t.preview===true);
+  const committed=existing.filter(t=>!t.preview);
+  if(committed.length) return existing;
+  if(previews.length){
+    await Promise.all(previews.map(t=>updateDoc(doc(db,"tasks",t.id),{deleted:true,deletedAt:serverTimestamp()})));
+  }
   return generateDailyMissions(uid,false,tomorrow,true);
 }
 
@@ -499,6 +504,7 @@ async function completeTask(task){
     const passed=await createTestRecord(task,score,mistakes);
     await updateDoc(doc(db,"tasks",task.id),{completed:true,completedAt:serverTimestamp(),proof:proof.trim(),testScore:Number(score),testMistakes:mistakes.trim(),result:passed?"passed":"failed"});
     if(!passed)alert("Test recorded as failed. JARVIS will prioritize this skill again.");
+    await renderTomorrowPreview(currentUser.uid);
     return;
   }
   await updateDoc(doc(db,"tasks",task.id),{completed:true,completedAt:serverTimestamp(),proof:proof.trim()});
@@ -509,6 +515,7 @@ async function completeTask(task){
     const nextProgress=stage==="APPLY"?100:stage==="LEARN"?20:45;
     await setDoc(doc(db,"skills",`${currentUser.uid}_${task.skillId}`),{userId:currentUser.uid,skillId:task.skillId,status:nextStatus,progress:Math.max(Number(s.progress)||0,nextProgress),confidence:Math.max(Number(s.confidence)||0,stage==="APPLY"?1:.5),lastStudied:dateStr(),revisionDue:addDays(dateStr(),2),updatedAt:serverTimestamp()},{merge:true});
   }
+  await renderTomorrowPreview(currentUser.uid);
 }
 
 async function failOrDelete(task){
@@ -516,6 +523,7 @@ async function failOrDelete(task){
   if(confirm("Mark this mission as MISSED? It will be reviewed on Sunday and can be repeated.")){
     await updateDoc(doc(db,"tasks",task.id),{status:"missed",missedAt:serverTimestamp()});
     if(task.skillId) await setDoc(doc(db,"skills",`${currentUser.uid}_${task.skillId}`),{userId:currentUser.uid,skillId:task.skillId,status:"failed",updatedAt:serverTimestamp()},{merge:true});
+    await renderTomorrowPreview(currentUser.uid);
   }
 }
 
@@ -526,7 +534,7 @@ function renderToday(tasks){
   for(const t of tasks){
     const row=document.createElement("div"); row.className=`task ${t.completed?"completed":""}`;
     row.innerHTML=`<div class="task-left"><button class="task-check">${t.completed?"✓":""}</button><div><div class="task-name">${esc(t.text)}</div><small style="color:#7d858b">${esc(t.priority||"supporting").toUpperCase()} • ${esc(t.source==="manual"?"REAL-LIFE":"JARVIS")}${t.proofRequired&&!t.completed?" • PROOF":""}</small>
-      ${t.source==="engine"||t.source==="sunday-review"?`<div style="margin-top:7px;color:#9da5aa;font-size:12px">WHY: ${esc(t.why||"Roadmap progression")} • OUTPUT: ${esc(t.output||"Proof of work")} • EFFORT: ${esc(t.effort||"30-45 min")}</div>`:""}</div></div><span class="badge ${t.completed?"done":"pending"}">${t.completed?"DONE":"PENDING"}</span>`;
+      ${t.source==="engine"||t.source==="ai-engine"||t.source==="sunday-review"?`<div style="margin-top:7px;color:#9da5aa;font-size:12px">WHY: ${esc(t.why||"Roadmap progression")} • OUTPUT: ${esc(t.output||"Proof of work")} • EFFORT: ${esc(t.effort||"30-45 min")}</div>`:""}</div></div><span class="badge ${t.completed?"done":"pending"}">${t.completed?"DONE":"PENDING"}</span>`;
     row.querySelector(".task-check").onclick=()=>completeTask(t);
     list.appendChild(row);
   }
