@@ -488,26 +488,25 @@ async function generateDailyMissions(uid, force=false, targetDate=dateStr(), pre
   if(!preview) await setDoc(doc(db,"users",uid),{userId:uid,deadline:DEADLINE,engineVersion:6,lastGeneratedDate:today,updatedAt:serverTimestamp(),planner:"local-adaptive"}, {merge:true});
   return created;
 }
-async function prepareTomorrow(uid){
+async function prepareTomorrow(uid,force=false){
   const tomorrow=addDays(dateStr(),1);
   const {tasks}=await loadState(uid);
   const existing=tasks.filter(t=>t.date===tomorrow&&!t.deleted);
   const previews=existing.filter(t=>t.preview===true);
   const committed=existing.filter(t=>!t.preview);
   if(committed.length) return existing;
-  if(previews.length){
-    await Promise.all(previews.map(t=>updateDoc(doc(db,"tasks",t.id),{deleted:true,deletedAt:serverTimestamp()})));
-  }
+  if(previews.length&&!force) return existing;
+  if(previews.length&&force) await Promise.all(previews.map(t=>updateDoc(doc(db,"tasks",t.id),{deleted:true,deletedAt:serverTimestamp()})));
   return generateDailyMissions(uid,false,tomorrow,true);
 }
 
-async function renderTomorrowPreview(uid){
+async function renderTomorrowPreview(uid,force=false){
   const list=$("tomorrowList"); if(!list)return;
   try{
-    const tasks=await prepareTomorrow(uid);
+    const tasks=await prepareTomorrow(uid,force);
     list.innerHTML=tasks.filter(t=>t.date===addDays(dateStr(),1)&&!t.deleted).map(t=>`<div class="task preview-task"><div class="task-left"><div><div class="task-name">${esc(t.text)}</div><small style="color:#7d858b">${esc(t.priority||"supporting").toUpperCase()} • JARVIS PREVIEW</small><div style="margin-top:6px;color:#9da5aa;font-size:12px">WHY: ${esc(t.why||"Adaptive roadmap")} • OUTPUT: ${esc(t.output||"Proof of work")} • EFFORT: ${esc(t.effort||"30-45 min")}</div></div></div><span class="badge pending">TOMORROW</span></div>`).join("") || '<div class="empty">Tomorrow is being planned…</div>';
     const note=$("tomorrowNote");
-    if(note) note.textContent="Tentative plan. Today's completion, misses, academic mode and deadlines can change it.";
+    if(note) note.textContent=force?"Replanned from today's latest feedback.":"Tentative plan. Today's completion, misses, academic mode and deadlines can change it.";
   }catch(e){console.error(e);list.innerHTML='<div class="empty">Tomorrow preview is syncing…</div>';}
 }
 
@@ -671,6 +670,13 @@ async function sundayReview(uid,tasks){
   if(missed.length)await Promise.all(missed.map(t=>updateDoc(doc(db,"tasks",t.id),{reviewedSunday:true})));
 }
 
+async function promoteTodayPreview(uid){
+  const snap=await getDocs(query(collection(db,"tasks"),where("userId","==",uid)));
+  const today=dateStr();
+  const previews=snap.docs.map(d=>({id:d.id,...d.data()})).filter(t=>t.date===today&&!t.deleted&&t.preview===true);
+  if(previews.length) await Promise.all(previews.map(t=>updateDoc(doc(db,"tasks",t.id),{preview:false,source:"engine",promotedAt:serverTimestamp()})));
+}
+
 async function loadTasks(uid){
   if(stopTasks)stopTasks();
   const q=query(collection(db,"tasks"),where("userId","==",uid));
@@ -680,6 +686,7 @@ async function loadTasks(uid){
     renderToday(todayTasks);updateProgress(todayTasks);renderHistory(allTasks);updateStreak(allTasks);engineMessage(allTasks);await sundayReview(uid,allTasks);
   },err=>{console.error(err);if($("taskList"))$("taskList").innerHTML='<div class="empty">Unable to load missions. Check Firestore rules.</div>';});
   await seedSkills(uid);
+  await promoteTodayPreview(uid);
   await attendanceAudit(uid);
   const state=await loadState(uid);
   await markOverdueAsMissed(state.tasks);
