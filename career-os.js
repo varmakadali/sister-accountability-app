@@ -19,6 +19,7 @@ const db = getFirestore(app);
 const functions = getFunctions(app, "asia-south1");
 const $ = id => document.getElementById(id);
 const DEADLINE = "2027-02-12";
+const INTERNSHIP_DEADLINE = "2026-11-30";
 const ATTENDANCE_TIME = "04:30";
 const MAX_DAILY = 5;
 let stopTasks = null;
@@ -168,7 +169,9 @@ function dateStr(d=new Date()) { return `${d.getFullYear()}-${String(d.getMonth(
 function addDays(s,n){const d=new Date(`${s}T00:00:00`);d.setDate(d.getDate()+n);return dateStr(d);}
 function pretty(s){return new Date(`${s}T00:00:00`).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}).toUpperCase();}
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));}
-function daysLeft(){return Math.max(1,Math.ceil((new Date(`${DEADLINE}T23:59:59`)-new Date())/86400000));}
+function daysUntil(target){return Math.max(0,Math.ceil((new Date(`${target}T23:59:59`)-new Date())/86400000));}
+function daysLeft(){return daysUntil(DEADLINE);}
+function internshipDaysLeft(){return daysUntil(INTERNSHIP_DEADLINE);}
 
 function ensureEnginePanel(){
   if($("enginePanel")) return;
@@ -220,7 +223,10 @@ function scoreModule(m, skills, history, todayTasks, settings={}){
   if(gateIds.includes(m.id)) score+=16;
   if(["llm","transformers","rag","embeddings","vector-db","mcp","eval"].includes(m.id)) score+=14;
 
-  const pressure=Math.max(0,30-Math.floor(daysLeft()/10));
+  const masterPressure=Math.max(0,35-Math.floor(daysLeft()/10));
+  const internshipPressure=Math.max(0,55-Math.floor(internshipDaysLeft()/2));
+  const pressure=masterPressure;
+  if(["internship-prep","project-portfolio","dsa","github","python-basics"].includes(m.id)) score+=internshipPressure;
   if(["internship-prep","project-portfolio","gsoc-open-source","gate"].includes(m.id)) score+=pressure;
 
   const focus=settings.focusMode||"balanced";
@@ -367,7 +373,8 @@ async function generateDailyMissions(uid, force=false){
   const todayTasks=existing;
   const chosen=[];
   const used=new Set(todayTasks.map(t=>t.skillId).filter(Boolean));
-  const candidates=[...modules.values()].map(m=>({m,score:scoreModule(m,skills,{},todayTasks,settings)})).filter(x=>Number.isFinite(x.score)).sort((a,b)=>b.score-a.score);
+  const recentHistory=tasks.filter(t=>!t.deleted).slice(-250);
+  const candidates=[...modules.values()].map(m=>({m,score:scoreModule(m,skills,recentHistory,todayTasks,settings)})).filter(x=>Number.isFinite(x.score)).sort((a,b)=>b.score-a.score);
   const timeCap=Math.max(1,Math.floor((Number(settings.availableMinutes)||120)/25));
   const capacity=Math.min(settings.collegeLoad==="high"?Math.max(1,settings.dailyCapacity-1):settings.dailyCapacity,timeCap);
 
@@ -387,6 +394,12 @@ async function generateDailyMissions(uid, force=false){
 
   // High college workload intentionally reduces mission count instead of creating overload.
   if(settings.collegeLoad==="high") chosen.splice(capacity);
+  // Never leave the user with an empty day. If every roadmap node is complete,
+  // create a meaningful proof/revision mission instead of showing "no missions".
+  if(!chosen.length){
+    const fallback = [...modules.values()].find(m=>m.id==="project-portfolio") || [...modules.values()].find(m=>m.id==="english") || [...modules.values()][0];
+    if(fallback) chosen.push({m:fallback,score:1});
+  }
   const created=[];
   for(const x of chosen.slice(0,MAX_DAILY)){
     const m=x.m, mission=buildMission(m,skills);
@@ -541,7 +554,13 @@ async function sundayReview(uid,tasks){
   if(!tasks.some(t=>t.date===today&&t.source==="sunday-review"&&t.reviewOfWeek===today&&!t.deleted)){
     await addDoc(collection(db,"tasks"),{text:"SUNDAY REVIEW: Analyze this week's performance and rebuild next week's plan.",userId:uid,date:today,completed:false,source:"sunday-review",reviewOfWeek:today,category:"review",goalId:"Weekly Review",priority:"critical",proofRequired:true,why:"Sunday is the replanning checkpoint",output:"Completed/missed/weak skills + next-week plan",effort:"30-45 min",createdAt:serverTimestamp()});
   }
-  for(const t of missed){
+  // Sunday recovery is deliberate, not a backlog dump: recover only the two
+  // highest-value missed missions and let the engine reprioritize the rest.
+  const recoveries=[...missed].sort((a,b)=>{
+    const rank={critical:0,important:1,supporting:2};
+    return (rank[a.priority]??3)-(rank[b.priority]??3);
+  }).slice(0,2);
+  for(const t of recoveries){
     if(tasks.some(x=>x.date===today&&x.source==="sunday-review"&&x.reviewOf===t.id&&!x.deleted))continue;
     await addDoc(collection(db,"tasks"),{text:"RECOVERY: "+t.text,userId:uid,date:today,completed:false,source:"sunday-review",reviewOf:t.id,skillId:t.skillId,goalId:t.goalId||"Weekly Review",category:t.category||"review",priority:"critical",proofRequired:true,why:"Recover missed work without blindly dumping it into tomorrow",output:"Reason + corrected attempt + proof",effort:"30-45 min",createdAt:serverTimestamp()});
   }
