@@ -42,3 +42,28 @@ ${message}`}]
   await db.collection("mentorChats").add({userId:uid,message,answer,createdAt:new Date().toISOString()});
   return {answer};
 });
+
+
+exports.planMissions=onCall({secrets:[XAI_API_KEY],region:"asia-south1",timeoutSeconds:60,memory:"256MiB"},async(request)=>{
+  if(!request.auth) throw new HttpsError("unauthenticated","Login required.");
+  const uid=request.auth.uid;
+  const state=request.data?.state||{};
+  const client=new OpenAI({apiKey:XAI_API_KEY.value(),baseURL:"https://api.x.ai/v1"});
+  const schema={type:"object",properties:{missions:{type:"array",items:{type:"object",properties:{skillId:{type:"string"},text:{type:"string"},priority:{type:"string",enum:["critical","important","supporting"]},why:{type:"string"},output:{type:"string"},effort:{type:"string"}},required:["skillId","text","priority","why","output","effort"],additionalProperties:false}}},required:["missions"],additionalProperties:false};
+  try{
+    const response=await client.responses.create({
+      model:"grok-4.7",
+      instructions:"You are the planning brain of a personal Career OS. Return only valid JSON matching the schema. Choose only skillIds supplied in the state. Respect prerequisites, academicMode, daily capacity, deadlines, completed/missed history, and non-negotiables. Never invent completed work. Keep the plan realistic and balanced.",
+      input:[{role:"user",content:JSON.stringify(state)}],
+      text:{format:{type:"json_schema",name:"career_missions",schema,strict:true}}
+    });
+    const parsed=JSON.parse(response.output_text||'{"missions":[]}');
+    const allowed=new Set((state.skills||[]).map(x=>x.skillId));
+    const missions=(parsed.missions||[]).filter(x=>allowed.has(x.skillId)).slice(0,5);
+    await db.collection("plannerRuns").add({userId:uid,date:new Date().toISOString(),count:missions.length,createdAt:new Date().toISOString()});
+    return {missions};
+  }catch(error){
+    console.error("planMissions failed",error);
+    throw new HttpsError("internal","AI planner unavailable.");
+  }
+});
