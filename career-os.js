@@ -363,6 +363,14 @@ async function createTestRecord(task,score,mistakes){
   return passed;
 }
 
+async function tryAIPlan(uid,targetDate,preview,profile,settings,skills,tasks){
+  try{
+    const planState={date:targetDate,preview,profile:{deadline:profile.deadline,goals:profile.goals,preferences:profile.preferences,roadmapPhase:profile.roadmapPhase},settings,skills:Object.values(skills).map(s=>({skillId:s.skillId,status:s.status,progress:s.progress,confidence:s.confidence,revisionDue:s.revisionDue,lastFailed:s.lastFailed})),recentTasks:tasks.filter(t=>!t.deleted).slice(-80).map(t=>({date:t.date,skillId:t.skillId,completed:t.completed,status:t.status,priority:t.priority})),deadlines:{master:DEADLINE,internship:INTERNSHIP_DEADLINE}};
+    const call=httpsCallable(functions,"planMissions");
+    const result=await call({state:planState});
+    return Array.isArray(result.data?.missions)?result.data.missions:[];
+  }catch(e){console.warn("AI planner unavailable; using local planner.",e);return [];}
+}
 async function generateDailyMissions(uid, force=false, targetDate=dateStr(), preview=false){
   const {skills,tasks}=await loadState(uid);
   const profile=await getProfile(uid);
@@ -376,6 +384,23 @@ async function generateDailyMissions(uid, force=false, targetDate=dateStr(), pre
   if(existing.length>=MAX_DAILY && !force) return existing;
 
   const todayTasks=existing;
+  if(!preview && !force && !existing.some(t=>t.source==="engine") && !existing.length){
+    const ai=await tryAIPlan(uid,today,preview,profile,settings,skills,tasks);
+    const valid=ai.filter(x=>modules.has(x.skillId)).filter(x=>{
+      const m=modules.get(x.skillId),s=skills[m.id]||{},blocked=m.prereqs.some(p=>!["tested","mastered"].includes(skills[p]?.status||"not_started"));
+      return !blocked && skillStage(s)!=="MASTERED";
+    }).slice(0,MAX_DAILY);
+    if(valid.length){
+      const created=[];
+      for(const x of valid){
+        const m=modules.get(x.skillId),mission=buildMission(m,skills);
+        const ref={text:x.text||mission.text,userId:uid,date:today,completed:false,source:"ai-engine",preview:false,goalId:goalFor(m),skillId:m.id,category:m.category,priority:x.priority||mission.priority,difficulty:mission.difficulty,proofRequired:mission.proofRequired,deadline:DEADLINE,why:x.why||mission.why,output:x.output||mission.output,effort:x.effort||mission.effort,createdAt:serverTimestamp()};
+        const refDoc=await addDoc(collection(db,"tasks"),ref);created.push({id:refDoc.id,...ref});
+      }
+      await setDoc(doc(db,"users",uid),{userId:uid,deadline:DEADLINE,engineVersion:5,lastGeneratedDate:today,planner:"grok",updatedAt:serverTimestamp()},{merge:true});
+      return created;
+    }
+  }
   const chosen=[];
   const used=new Set(todayTasks.map(t=>t.skillId).filter(Boolean));
   const recentHistory=tasks.filter(t=>!t.deleted).slice(-250);
