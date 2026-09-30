@@ -298,7 +298,9 @@ async function getSettings(uid){
   return {
     dailyCapacity:Number(d.dailyCapacity)||3,
     collegeLoad:d.collegeLoad||"normal",
-    focusMode:d.focusMode||"balanced"
+    focusMode:d.focusMode||"balanced",
+    academicMode:d.academicMode||"normal",
+    energy:d.energy||"normal"
   };
 }
 
@@ -361,12 +363,15 @@ async function createTestRecord(task,score,mistakes){
   return passed;
 }
 
-async function generateDailyMissions(uid, force=false){
+async function generateDailyMissions(uid, force=false, targetDate=dateStr(), preview=false){
   const {skills,tasks}=await loadState(uid);
   const profile=await getProfile(uid);
   const settings={...await getSettings(uid),...profile.preferences};
-  const today=dateStr();
-  const existing=tasks.filter(t=>t.date===today);
+  const today=targetDate;
+  const existing=tasks.filter(t=>t.date===today&&!t.deleted);
+  const activeToday=tasks.filter(t=>t.date===dateStr()&&!t.deleted);
+  const academicMode=settings.academicMode||"normal";
+  const academicReduction=academicMode==="semester" ? 2 : academicMode==="mid" || academicMode==="exam" ? 1 : 0;
   if(existing.some(t=>t.source==="engine") && !force) return existing;
   if(existing.length>=MAX_DAILY && !force) return existing;
 
@@ -374,9 +379,23 @@ async function generateDailyMissions(uid, force=false){
   const chosen=[];
   const used=new Set(todayTasks.map(t=>t.skillId).filter(Boolean));
   const recentHistory=tasks.filter(t=>!t.deleted).slice(-250);
-  const candidates=[...modules.values()].map(m=>({m,score:scoreModule(m,skills,recentHistory,todayTasks,settings)})).filter(x=>Number.isFinite(x.score)).sort((a,b)=>b.score-a.score);
+  // Planning agent: today's unfinished work, failed tests, deadlines and academic load
+  // are inputs. The agent never creates more work just because there is free capacity.
+  const candidates=[...modules.values()]
+    .map(m=>({m,score:scoreModule(m,skills,recentHistory,activeToday,settings)}))
+    .filter(x=>Number.isFinite(x.score))
+    .sort((a,b)=>b.score-a.score);
+  if(academicMode==="semester"||academicMode==="mid"||academicMode==="exam"){
+    for(const x of candidates){
+      if(["english","fitness"].includes(x.m.id)) x.score+=18;
+      if(["internship-prep","project-portfolio","brand","business","youtube"].includes(x.m.id)) x.score-=18;
+      if(["gate","dsa","python-basics","math-ml"].includes(x.m.id)) x.score-=4;
+    }
+    candidates.sort((a,b)=>b.score-a.score);
+  }
   const timeCap=Math.max(1,Math.floor((Number(settings.availableMinutes)||120)/25));
-  const capacity=Math.min(settings.collegeLoad==="high"?Math.max(1,settings.dailyCapacity-1):settings.dailyCapacity,timeCap);
+  const baseCapacity=settings.collegeLoad==="high"?Math.max(1,settings.dailyCapacity-1):settings.dailyCapacity;
+  const capacity=Math.min(MAX_DAILY,Math.max(1,baseCapacity-academicReduction),timeCap);
 
   // One core learning task, one DSA/GATE task, one GenAI/engineering task, one career/proof task, one non-negotiable.
   const buckets=[
@@ -403,13 +422,31 @@ async function generateDailyMissions(uid, force=false){
   const created=[];
   for(const x of chosen.slice(0,MAX_DAILY)){
     const m=x.m, mission=buildMission(m,skills);
-    const ref={text:mission.text, userId:uid,date:today,completed:false,source:"engine",goalId:goalFor(m),skillId:m.id,category:m.category,priority:mission.priority,difficulty:mission.difficulty,proofRequired:mission.proofRequired,deadline:DEADLINE,
+    const ref={text:mission.text, userId:uid,date:today,completed:false,source:"engine",preview:!!preview,goalId:goalFor(m),skillId:m.id,category:m.category,priority:mission.priority,difficulty:mission.difficulty,proofRequired:mission.proofRequired,deadline:DEADLINE,
       why:mission.why,output:mission.output,effort:mission.effort,createdAt:serverTimestamp()};
     const refDoc=await addDoc(collection(db,"tasks"),ref); created.push({id:refDoc.id,...ref});
   }
-  await setDoc(doc(db,"users",uid),{userId:uid,deadline:DEADLINE,engineVersion:2,lastGeneratedDate:today,updatedAt:serverTimestamp()},{merge:true});
+  if(!preview) await setDoc(doc(db,"users",uid),{userId:uid,deadline:DEADLINE,engineVersion:4,lastGeneratedDate:today,updatedAt:serverTimestamp()},{merge:true});
   return created;
 }
+async function prepareTomorrow(uid){
+  const tomorrow=addDays(dateStr(),1);
+  const {tasks}=await loadState(uid);
+  const existing=tasks.filter(t=>t.date===tomorrow&&!t.deleted);
+  if(existing.some(t=>t.source==="engine"||t.source==="engine-preview")) return existing;
+  return generateDailyMissions(uid,false,tomorrow,true);
+}
+
+async function renderTomorrowPreview(uid){
+  const list=$("tomorrowList"); if(!list)return;
+  try{
+    const tasks=await prepareTomorrow(uid);
+    list.innerHTML=tasks.filter(t=>t.date===addDays(dateStr(),1)&&!t.deleted).map(t=>`<div class="task preview-task"><div class="task-left"><div><div class="task-name">${esc(t.text)}</div><small style="color:#7d858b">${esc(t.priority||"supporting").toUpperCase()} • JARVIS PREVIEW</small><div style="margin-top:6px;color:#9da5aa;font-size:12px">WHY: ${esc(t.why||"Adaptive roadmap")} • OUTPUT: ${esc(t.output||"Proof of work")} • EFFORT: ${esc(t.effort||"30-45 min")}</div></div></div><span class="badge pending">TOMORROW</span></div>`).join("") || '<div class="empty">Tomorrow is being planned…</div>';
+    const note=$("tomorrowNote");
+    if(note) note.textContent="JARVIS adjusts tomorrow after today's completion/missed work is recorded.";
+  }catch(e){console.error(e);list.innerHTML='<div class="empty">Tomorrow preview is syncing…</div>';}
+}
+
 function goalFor(m){
   if(m.category==="gate")return"GATE";
   if(["career","project","brand","business"].includes(m.category))return"Career / Projects";
