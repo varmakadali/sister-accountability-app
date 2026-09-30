@@ -173,6 +173,42 @@ function daysUntil(target){return Math.max(0,Math.ceil((new Date(`${target}T23:5
 function daysLeft(){return daysUntil(DEADLINE);}
 function internshipDaysLeft(){return daysUntil(INTERNSHIP_DEADLINE);}
 
+function ensureCommandDashboard(){
+  if($("commandDashboard")||!$("taskList")) return;
+  const card=document.createElement("section");
+  card.className="card";
+  card.id="commandDashboard";
+  card.innerHTML=`<div class="card-title"><h2>⚡ COMMAND CENTER</h2><small>LIVE ROADMAP STATE</small></div>
+  <div id="commandStats" class="roadmap-summary" style="margin-top:10px"></div>
+  <div id="commandInsight" class="review-insight" style="margin-top:12px"></div>`;
+  $("taskList").parentElement.appendChild(card);
+}
+async function refreshCommandDashboard(){
+  ensureCommandDashboard();
+  if(!$("commandStats")||!currentUser)return;
+  try{
+    const health=await getRoadmapHealth(currentUser.uid);
+    const today=allTasks.filter(t=>t.date===dateStr()&&!t.deleted);
+    const done=today.filter(t=>t.completed).length;
+    const missed=today.filter(t=>t.status==="missed").length;
+    const proof=today.filter(t=>t.completed&&t.proofRequired).length;
+    const state=await loadState(currentUser.uid);
+    const autoPhase=calculateRoadmapPhase(state.skills);
+    await setDoc(doc(db,"users",currentUser.uid),{roadmapPhase:autoPhase},{merge:true});
+    const settings=await getProfile(currentUser.uid);
+    const pref=settings.preferences||{};
+    $("commandStats").innerHTML=`
+      <div><span>TODAY</span><b>${done}/${today.length}</b></div>
+      <div><span>ROADMAP</span><b>${health.progress}%</b></div>
+      <div><span>DEADLINE</span><b>${health.days}d</b></div>
+      <div><span>INTERNSHIP</span><b>${internshipDaysLeft()}d</b></div>`;
+    const mode=(pref.academicMode||"normal").toUpperCase();
+    const energy=(pref.energy||"normal").toUpperCase();
+    $("commandInsight").innerHTML=`<b>${esc(health.status)} · ${esc(mode)} · ${esc(energy)}</b>
+      <p>Bottleneck: <strong>${esc(health.bottleneck)}</strong>. Today has ${missed} missed mission(s) and ${proof} proof artifact(s). Capacity: ${Number(pref.dailyCapacity)||3} missions.</p>`;
+  }catch(e){console.error(e);}
+}
+
 function ensureEnginePanel(){
   if($("enginePanel")) return;
   const card=document.createElement("section");
@@ -329,6 +365,22 @@ async function initializeUser(uid){
   }
 }
 
+function calculateRoadmapPhase(skills){
+  const ordered=[
+    ["Foundation",["computer-fundamentals","internet-fundamentals","number-system","cli"]],
+    ["Programming",["python-basics","problem-solving","git","github"]],
+    ["CS Core",["os","dbms","networks","complexity","dsa"]],
+    ["ML",["math-ml","ml","neural-networks","pytorch"]],
+    ["GenAI",["transformers","llm","embeddings","rag","eval"]],
+    ["Career",["project-portfolio","internship-prep","gsoc-open-source"]]
+  ];
+  let phase="Foundation";
+  for(const [name,ids] of ordered){
+    const ready=ids.filter(id=>["tested","mastered"].includes(skills[id]?.status)).length;
+    if(ready>=Math.ceil(ids.length*.75)) phase=name;
+  }
+  return phase;
+}
 async function getRoadmapHealth(uid){
   const {skills,tasks}=await loadState(uid);
   const active=[...modules.values()];
@@ -683,7 +735,7 @@ async function loadTasks(uid){
   stopTasks=onSnapshot(q,async snap=>{
     allTasks=[];snap.forEach(d=>allTasks.push({id:d.id,...d.data()}));
     const todayTasks=allTasks.filter(t=>t.date===dateStr()&&!t.deleted);
-    renderToday(todayTasks);updateProgress(todayTasks);renderHistory(allTasks);updateStreak(allTasks);engineMessage(allTasks);await sundayReview(uid,allTasks);
+    renderToday(todayTasks);updateProgress(todayTasks);renderHistory(allTasks);updateStreak(allTasks);engineMessage(allTasks);refreshCommandDashboard();await sundayReview(uid,allTasks);
   },err=>{console.error(err);if($("taskList"))$("taskList").innerHTML='<div class="empty">Unable to load missions. Check Firestore rules.</div>';});
   await seedSkills(uid);
   await promoteTodayPreview(uid);
@@ -691,6 +743,8 @@ async function loadTasks(uid){
   const state=await loadState(uid);
   await markOverdueAsMissed(state.tasks);
   await generateDailyMissions(uid);
+  await renderTomorrowPreview(uid);
+  await refreshCommandDashboard();
 }
 
 
