@@ -10,6 +10,16 @@ service cloud.firestore {
       allow create, read, update, delete: if signedIn() && uid == request.auth.uid;
     }
 
+    // Attendance documents use the deterministic ID: uid_YYYY-MM-DD.
+    // A read must be allowed even when the document does not exist yet,
+    // otherwise the app cannot detect that today's attendance is missing.
+    match /attendance/{docId} {
+      allow read, delete: if signedIn() && docId.split('_')[0] == request.auth.uid;
+      allow create, update: if signedIn()
+        && docId.split('_')[0] == request.auth.uid
+        && request.resource.data.userId == request.auth.uid;
+    }
+
     match /{collection}/{docId} {
       allow create: if creatingMine();
       allow read: if existingMine();
