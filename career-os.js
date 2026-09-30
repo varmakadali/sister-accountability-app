@@ -323,7 +323,7 @@ async function initializeUser(uid){
     await setDoc(ref,{
       userId:uid,deadline:DEADLINE,createdAt:serverTimestamp(),
       goals:{genai:true,software:true,gate:true,internship:true,gsoc:true,projects:true,english:true,brand:true,business:true,college:true,fitness:true,futureTech:true},
-      preferences:{dailyCapacity:3,collegeLoad:"normal",focusMode:"balanced",allocation:{genai:30,software:20,gate:20,career:15,english:5,projects:5,fitness:5}},
+      preferences:{dailyCapacity:3,collegeLoad:"normal",focusMode:"balanced",academicMode:"normal",availableMinutes:120,energy:"normal",allocation:{genai:30,software:20,gate:20,career:15,english:5,projects:5,fitness:5}},
       roadmapPhase:"Foundation",engineVersion:3
     });
   }
@@ -443,7 +443,7 @@ async function renderTomorrowPreview(uid){
     const tasks=await prepareTomorrow(uid);
     list.innerHTML=tasks.filter(t=>t.date===addDays(dateStr(),1)&&!t.deleted).map(t=>`<div class="task preview-task"><div class="task-left"><div><div class="task-name">${esc(t.text)}</div><small style="color:#7d858b">${esc(t.priority||"supporting").toUpperCase()} • JARVIS PREVIEW</small><div style="margin-top:6px;color:#9da5aa;font-size:12px">WHY: ${esc(t.why||"Adaptive roadmap")} • OUTPUT: ${esc(t.output||"Proof of work")} • EFFORT: ${esc(t.effort||"30-45 min")}</div></div></div><span class="badge pending">TOMORROW</span></div>`).join("") || '<div class="empty">Tomorrow is being planned…</div>';
     const note=$("tomorrowNote");
-    if(note) note.textContent="JARVIS adjusts tomorrow after today's completion/missed work is recorded.";
+    if(note) note.textContent="Tentative plan. Today's completion, misses, academic mode and deadlines can change it.";
   }catch(e){console.error(e);list.innerHTML='<div class="empty">Tomorrow preview is syncing…</div>';}
 }
 
@@ -633,7 +633,7 @@ async function getProfile(uid){
   return {
     ...(d||{}),
     goals:{genai:true,software:true,gate:true,internship:true,gsoc:true,projects:true,english:true,brand:true,business:true,college:true,fitness:true,futureTech:true,...(d.goals||{})},
-    preferences:{dailyCapacity:3,collegeLoad:"normal",focusMode:"balanced",availableMinutes:120,energy:"normal",allocation:normalizeAllocation(d.preferences?.allocation),...(d.preferences||{})}
+    preferences:{dailyCapacity:3,collegeLoad:"normal",focusMode:"balanced",academicMode:"normal",availableMinutes:120,energy:"normal",allocation:normalizeAllocation(d.preferences?.allocation),...(d.preferences||{})}
   };
 }
 
@@ -688,7 +688,7 @@ async function showProfileView(){
       <label>Available study minutes <input id="pMinutes" type="number" min="15" max="600" value="${pref.availableMinutes||120}"></label>
       <label>College load <select id="pCollege"><option ${pref.collegeLoad==="low"?"selected":""}>low</option><option ${pref.collegeLoad==="normal"?"selected":""}>normal</option><option ${pref.collegeLoad==="high"?"selected":""}>high</option></select></label>
       <label>Energy <select id="pEnergy"><option>low</option><option ${pref.energy==="normal"?"selected":""}>normal</option><option ${pref.energy==="high"?"selected":""}>high</option></select></label>
-      <label>Primary focus <select id="pFocus"><option ${pref.focusMode==="balanced"?"selected":""}>balanced</option><option ${pref.focusMode==="internship"?"selected":""}>internship</option><option ${pref.focusMode==="gate"?"selected":""}>gate</option><option ${pref.focusMode==="genai"?"selected":""}>genai</option></select></label>
+      <label>Primary focus <select id="pFocus"><option ${pref.focusMode==="balanced"?"selected":""}>balanced</option><option ${pref.focusMode==="internship"?"selected":""}>internship</option><option ${pref.focusMode==="gate"?"selected":""}>gate</option><option ${pref.focusMode==="genai"?"selected":""}>genai</option></select></label>\n      <label>Academic mode <select id="pAcademic"><option ${pref.academicMode==="normal"?"selected":""}>normal</option><option ${pref.academicMode==="semester"?"selected":""}>semester</option><option ${pref.academicMode==="mid"?"selected":""}>mid</option><option ${pref.academicMode==="exam"?"selected":""}>exam</option></select></label>
     </div>
     <h3 class="modal-section-title">Percentage allocation</h3>
     <div class="allocation-grid">
@@ -700,7 +700,7 @@ async function showProfileView(){
   $("saveProfile").onclick=async()=>{
     const alloc={};document.querySelectorAll(".alloc").forEach(x=>alloc[x.dataset.key]=Number(x.value)||0);
     const goals={};document.querySelectorAll(".goal").forEach(x=>goals[x.dataset.key]=x.checked);
-    await saveProfile(currentUser.uid,{goals,preferences:{...pref,dailyCapacity:Math.max(1,Math.min(5,Number($("pCapacity").value)||3)),availableMinutes:Math.max(15,Number($("pMinutes").value)||120),collegeLoad:$("pCollege").value,energy:$("pEnergy").value,focusMode:$("pFocus").value,allocation:normalizeAllocation(alloc)}});
+    await saveProfile(currentUser.uid,{goals,preferences:{...pref,dailyCapacity:Math.max(1,Math.min(5,Number($("pCapacity").value)||3)),availableMinutes:Math.max(15,Number($("pMinutes").value)||120),collegeLoad:$("pCollege").value,energy:$("pEnergy").value,focusMode:$("pFocus").value,academicMode:$("pAcademic").value,allocation:normalizeAllocation(alloc)}});
     $("workspaceModal").classList.add("hidden"); await generateDailyMissions(currentUser.uid,true); alert("Profile saved. Your adaptive plan was rebuilt.");
   };
 }
