@@ -6,9 +6,9 @@ const OpenAI=require("openai");
 
 initializeApp();
 const db=getFirestore();
-const OPENAI_API_KEY=defineSecret("OPENAI_API_KEY");
+const XAI_API_KEY=defineSecret("XAI_API_KEY");
 
-exports.mentorChat=onCall({secrets:[OPENAI_API_KEY],region:"asia-south1",timeoutSeconds:60,memory:"256MiB"},async(request)=>{
+exports.mentorChat=onCall({secrets:[XAI_API_KEY],region:"asia-south1",timeoutSeconds:60,memory:"256MiB"},async(request)=>{
   if(!request.auth) throw new HttpsError("unauthenticated","Login required.");
   const message=String(request.data?.message||"").trim();
   if(!message) throw new HttpsError("invalid-argument","Message is required.");
@@ -26,9 +26,9 @@ exports.mentorChat=onCall({secrets:[OPENAI_API_KEY],region:"asia-south1",timeout
   const tasks=tasksSnap.docs.map(d=>d.data()).filter(x=>!x.deleted).sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))).slice(0,40);
   const tests=testsSnap.docs.map(d=>d.data()).sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||""))).slice(0,30);
 
-  const client=new OpenAI({apiKey:OPENAI_API_KEY.value()});
+  const client=new OpenAI({apiKey:XAI_API_KEY.value(),baseURL:"https://api.x.ai/v1"});
   const response=await client.responses.create({
-    model:"gpt-5.6-luna",
+    model:"grok-4.7",
     instructions:`You are the user's Personal Career OS mentor. Be direct, beginner-friendly, practical, and concise. Use the supplied workspace state as the source of truth. Do not invent progress or completed work. Prioritize the Feb 12 2027 master deadline, prerequisites, weak skills, GATE preparation, November internship preparation, GenAI engineering, projects, and college workload. Give at most 3 concrete next actions. If the user asks to change their roadmap, explain the tradeoff and propose a data-driven change; do not blindly agree. Completion always needs evidence. Respond in simple English with occasional Telugu phrases when useful.`,
     input:[{role:"user",content:`WORKSPACE STATE:
 Profile: ${JSON.stringify({deadline:user.deadline,goals:user.goals,preferences:user.preferences,roadmapPhase:user.roadmapPhase})}
